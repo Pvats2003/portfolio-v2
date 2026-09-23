@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { PaletteTrigger } from '@/components/palette/PaletteTrigger';
+import { paletteItems } from '@/content/palette';
 
 const nav = [
   { label: 'Work', href: '/#work' },
@@ -26,6 +28,7 @@ export function SiteHeader() {
               ))}
             </ul>
           </nav>
+          <PaletteTrigger items={paletteItems()} />
           <ThemeToggle />
         </div>
       </div>

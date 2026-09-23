@@ -28,18 +28,17 @@ export function ThemeToggle() {
   }, []);
 
   return (
-    <div role="radiogroup" aria-label="Theme" className="flex rounded border border-line p-0.5 text-xs">
+    <div role="group" aria-label="Theme" className="flex rounded border border-line p-0.5 text-xs">
       {choices.map((c) => (
         <button
           key={c}
           type="button"
-          role="radio"
-          aria-checked={choice === c}
+          aria-pressed={choice === c}
           onClick={() => {
             setChoice(c);
             apply(c);
           }}
-          className={`rounded-sm px-2.5 py-1 capitalize ${
+          className={`min-h-7 rounded-sm px-2.5 capitalize ${
             choice === c ? 'bg-ink text-bg' : 'text-muted hover:text-ink'
           }`}
         >
