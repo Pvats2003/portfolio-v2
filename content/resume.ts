@@ -1,8 +1,6 @@
 // Transcribed line-for-line from public/resume/Priyanshu_Vats_Resume_PV.pdf.
 // This is the single source for resume facts on the site: the /resume page renders it,
 // and other content files import from it rather than retyping facts.
-// One deliberate difference: the PDF's Karavali URL has a typo ("karaval"); the live
-// URL, confirmed by Priyanshu, is used here. See TODO.md.
 
 export const RESUME_PDF = '/resume/Priyanshu_Vats_Resume_PV.pdf';
 
@@ -74,7 +72,7 @@ export const products: ResumeProduct[] = [
     tagline: 'Autonomous Job Discovery & Application Agent',
     meta: 'Ongoing',
     bullets: [
-      'Designed a modular system spanning multi-source job discovery with cross-source dedup, deterministic + AI-assisted matching, resume/cover-letter generation, an application assistant, and a web dashboard.',
+      'Designed a modular job-search agent: discovery from Greenhouse and Lever with cross-source dedup, and deterministic + AI-assisted matching; resume tailoring, an application assistant, and a dashboard are in progress.',
       'Enforced zero fabrication: every candidate fact carries source, confidence, and verified metadata; hard stops (salary, visa, CAPTCHA/MFA) escalate to a human and nothing auto-submits. Validated by 350+ passing automated tests.',
     ],
   },
@@ -83,7 +81,7 @@ export const products: ResumeProduct[] = [
     tagline: 'AI Document Review Tool',
     meta: 'FastAPI · Next.js · Groq · Ongoing',
     bullets: [
-      'Directed the build of a copilot where auditors upload documents and query anomalies in natural language, pairing a deterministic rule engine with an LLM review layer and PDF reports; scoped across three personas with MoSCoW, a full PRD, and a Y Combinator application.',
+      'Directed the build of a copilot where auditors upload documents and query anomalies in natural language, pairing a deterministic rule engine with an LLM review layer and PDF reports; scoped across three personas with P0–P2 prioritised user stories and a full PRD.',
     ],
   },
   {
@@ -109,7 +107,7 @@ export const skills: { group: string; items: string }[] = [
   {
     group: 'Product',
     items:
-      'Product Discovery, User Research, Personas, UX Flows, Wireframing, PRDs, MoSCoW Prioritisation, Roadmapping, KPI Definition, Agile/Scrum, Sprint Planning',
+      'Product Discovery, User Research, Personas, UX Flows, Wireframing, PRDs, MoSCoW / P0–P2 Prioritisation, Roadmapping, KPI Definition, Agile/Scrum, Sprint Planning',
   },
   {
     group: 'Operations',

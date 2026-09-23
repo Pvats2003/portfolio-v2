@@ -2,14 +2,14 @@
 
 Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown on the site is listed here.
 
-## Resume ↔ source mismatches (please fix the resume, or tell me the site is wrong)
-- [ ] **(you)** **Career OS — "resume/cover-letter generation" and "a web dashboard".** The project README says resume tailoring and PDF generation are *not built yet*, and `job-agent dashboard` exits "not implemented yet"; the FastAPI dashboard is listed as not started. The site now describes only what the README says exists. Suggest resume wording: "…deterministic + AI-assisted matching, a resume-consistency validator, and an application engine that drafts only verifiable answers."
-- [ ] **(you)** **Audit AI Copilot — "MoSCoW".** The PRD ranks user stories P0 / P1 / P2, not MoSCoW. The site shows P0 · Must / P1 · Should / P2 · Later and flags it.
-- [ ] **(you)** **Audit AI Copilot — "a Y Combinator application".** The PRD (May 2026) lists "Position for YC application" as a goal. Was it actually submitted? The site doesn't claim it until you confirm.
-- [ ] **(you)** **Karavali URL typo** — `karaval.base44.app` → `karavali.base44.app` in the PDF, then replace `public/resume/Priyanshu_Vats_Resume_PV.pdf`. (The HTML resume already uses the correct URL.)
+## Resume ↔ source mismatches
+- [x] Career OS bullet now matches the README (updated resume, Sep 2026).
+- [x] Audit AI Copilot now says P0–P2, matching the PRD; the board shows P0 / P1 / P2.
+- [x] Karavali URL fixed in the PDF; `public/resume/Priyanshu_Vats_Resume_PV.pdf` replaced.
+- [x] Y Combinator: the updated resume no longer mentions it, so neither does the site. **(you)** Your answer came back as the unfilled placeholder; if it was submitted and you want it shown, say so.
 - [ ] Note, no action needed: the resume calls ANPR "real-time". Detection is (~32 ms per frame on a CPU); OCR takes ~1.2 s per plate. The case study states both numbers.
 
-## Waiting on you — shown on the site as visible TODOs
+## Waiting on you — shown on the site as visible TODOs (must be filled before "go live")
 **City Ops OS**
 - [ ] What the command center actually changed. If there's no number, say "qualitative only" and describe it.
 - [ ] Other real constraints (budget, connectivity, devices, engineering support).
@@ -26,8 +26,7 @@ Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown o
 - [ ] What you learned · what's next.
 
 **Audit AI Copilot**
-- [ ] Confirm the P0/P1/P2 → Must/Should/Later reading.
-- [ ] Current status: is the MVP live for users, and was the YC application submitted?
+- [ ] Current status: is the MVP live for users?
 - [ ] Any lessons so far, in your own words.
 
 **ANPR**

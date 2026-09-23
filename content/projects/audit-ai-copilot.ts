@@ -130,10 +130,10 @@ export const auditAiCopilot: CaseStudy = {
       blocks: [
         {
           type: 'board',
-          caption: 'User stories by priority, as written in the PRD (P0 = must-have for the MVP)',
+          caption: 'User stories by priority and status, labelled P0 / P1 / P2 as in the PRD',
           columns: [
             {
-              label: 'P0 · Must',
+              label: 'P0',
               items: [
                 { id: 'US-01', text: 'Describe a process, get a structured risk assessment in under 60 seconds', status: { label: 'Done', tone: 'ok' } },
                 { id: 'US-02', text: 'Upload a PDF or DOCX instead of retyping', status: { label: 'Done', tone: 'ok' } },
@@ -144,14 +144,14 @@ export const auditAiCopilot: CaseStudy = {
               ],
             },
             {
-              label: 'P1 · Should',
+              label: 'P1',
               items: [
                 { id: 'US-05', text: 'Ask follow-up questions about the results', status: { label: 'Done', tone: 'ok' } },
                 { id: 'US-06', text: 'See previous analyses', status: { label: 'Done', tone: 'ok' } },
               ],
             },
             {
-              label: 'P2 · Later',
+              label: 'P2',
               items: [
                 { id: 'US-09', text: 'User accounts, so each user sees only their analyses', status: { label: 'Planned' } },
                 { id: 'US-10', text: 'Annotate findings and assign remediation owners', status: { label: 'Planned' } },
@@ -159,10 +159,6 @@ export const auditAiCopilot: CaseStudy = {
             },
           ],
         }, // PRD §5
-        {
-          type: 'todo',
-          text: 'Your resume says this was scoped with MoSCoW; the PRD uses P0–P2. Confirm the Must / Should / Later reading above is right.',
-        },
       ],
     },
     {
@@ -221,7 +217,7 @@ export const auditAiCopilot: CaseStudy = {
           ],
           note: 'Targets, not results. No usage or revenue figures are published here.',
         }, // PRD §3.3
-        { type: 'todo', text: 'Current status: is the MVP live for users, and was the Y Combinator application submitted?' },
+        { type: 'todo', text: 'Current status: is the MVP live for users?' },
       ],
     },
     {

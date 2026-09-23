@@ -55,7 +55,7 @@ One superfamily, IBM Plex (SIL Open Font Licence, self-hosted with `next/font`):
 
 ## 4. Signature motifs
 
-1. **Shift markers.** The homepage's first three entries are `SOD` (start of day: the problem headline), `MOD` (mid-day report: the proof strip) and `EOD` (end of day: what shipped, the flagship). Everything after is a numbered entry (`04`, `05`…). Case-study chapters are numbered too, with their template section (Problem, Constraints, Decision, Turning point, …) as the label. Don't invent clock times: markers are structure, not data.
+1. **Shift markers.** `SOD` (start of day) marks the homepage hero and `EOD` (end of day) marks the contact section, the last entry on the page. Every section in between is numbered (`01` proof, `02` flagship, `03`…), so "end of day" never lands mid-page. Other pages use numbers only. Case-study chapters are numbered too, with their template section (Problem, Constraints, Decision, Turning point, …) as the label. Don't invent clock times: markers are structure, not data.
 2. **Status chips.** Mono, uppercase, 1 px border: `LIVE` (ok, with a dot), `BEING INTEGRATED` (accent), dates and states (muted). Only for real states from the resume.
 3. **Dot grid.** A quiet 20 px dot grid (`.dot-grid`) behind page headers and the hero only. Reading areas stay clean paper.
 4. **Before → after.** Replaced systems are shown struck through in mono, followed by the one thing that replaced them, marked with an accent rule.

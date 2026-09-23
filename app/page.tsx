@@ -7,8 +7,8 @@ import { archive, selectedWork } from '@/content/work';
 
 // Homepage, in the order set in the brief:
 // hero → proof → flagship → selected work → how I work → experience → archive → contact.
-// The first three entries use shift markers (start of day → mid-day report → end of day: shipped);
-// the rest are numbered entries.
+// The hero opens the log (SOD, start of day) and contact closes it (EOD, end of day);
+// every section in between is a numbered entry.
 
 export default function Home() {
   return (
@@ -51,7 +51,7 @@ export default function Home() {
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Proof strip — directly under the hero */}
-        <LogSection marker="MOD" label="Field report" className="border-t-0 pt-0 sm:pt-0">
+        <LogSection marker="01" label="Field report" className="border-t-0 pt-0 sm:pt-0">
           <h2 className="sr-only">Proof</h2>
           <ul className="grid grid-cols-1 border-l border-t border-line sm:grid-cols-2 lg:grid-cols-4">
             {proof.map((s, i) => (
@@ -65,12 +65,12 @@ export default function Home() {
         </LogSection>
 
         {/* Flagship */}
-        <LogSection id="work" marker="EOD" label="Shipped" heading="The story: from WhatsApp threads to one view per city">
+        <LogSection id="work" marker="02" label="Shipped" heading="The story: from WhatsApp threads to one view per city">
           <FlagshipCard />
         </LogSection>
 
         {/* Selected work */}
-        <LogSection id="selected" marker="04" label="Selected work" heading="Other things I’ve shipped and scoped">
+        <LogSection id="selected" marker="03" label="Selected work" heading="Other things I’ve shipped and scoped">
           <div className="grid gap-4 lg:grid-cols-3">
             {selectedWork.map((card) => (
               <WorkCardView key={card.slug} card={card} />
@@ -79,7 +79,7 @@ export default function Home() {
         </LogSection>
 
         {/* How I work */}
-        <LogSection id="method" marker="05" label="How I work" heading="Discover → Structure → Build → Operate → Iterate">
+        <LogSection id="method" marker="04" label="How I work" heading="Discover → Structure → Build → Operate → Iterate">
           <ol className="border-t border-line">
             {howIWork.map((s, i) => (
               <li key={s.step} className="grid gap-2 border-b border-line py-5 sm:grid-cols-[10rem_1fr_1.4fr] sm:gap-6">
@@ -97,7 +97,7 @@ export default function Home() {
         </LogSection>
 
         {/* Experience & leadership */}
-        <LogSection id="record" marker="06" label="Experience" heading="Experience & leadership">
+        <LogSection id="record" marker="05" label="Experience" heading="Experience & leadership">
           <ol className="border-t border-line">
             {record.map((r) => (
               <li key={r.title} className="grid gap-2 border-b border-line py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
@@ -119,7 +119,7 @@ export default function Home() {
         </LogSection>
 
         {/* Archive */}
-        <LogSection id="archive" marker="07" label="Archive" heading="Archive">
+        <LogSection id="archive" marker="06" label="Archive" heading="Archive">
           <div className="grid gap-4 sm:grid-cols-2">
             {archive.map((card) => (
               <WorkCardView key={card.slug} card={card} compact />
@@ -128,7 +128,7 @@ export default function Home() {
         </LogSection>
 
         {/* Contact */}
-        <LogSection id="contact" marker="08" label="Contact" heading={contact.line}>
+        <LogSection id="contact" marker="EOD" label="End of day" heading={contact.line}>
           <ul className="grid max-w-3xl border-l border-t border-line sm:grid-cols-2">
             {contact.links.map((l) => (
               <li key={l.label} className="border-b border-r border-line bg-surface">

@@ -233,11 +233,11 @@ Once questions 1–8 are answered: **Phase 1**. I scaffold the new repo and buil
 | R-P1.1 | Four systems (Sheets, Apps Script, OCR form, Node.js backend) → single per-city view; design being integrated into Instawork's internal ops tool |
 | R-P1.2 | Local-first, zero-cost; no accounts/infra/setup; traded away cross-device sync |
 | R-P2 | Career OS: Autonomous Job Discovery & Application Agent · Ongoing |
-| R-P2.1 | Modules: discovery + dedup, deterministic + AI matching, resume/cover-letter generation, application assistant, dashboard |
+| R-P2.1 | Modular job-search agent: discovery from Greenhouse and Lever with cross-source dedup, deterministic + AI-assisted matching; resume tailoring, application assistant and dashboard in progress (updated resume, Sep 2026) |
 | R-P2.2 | Zero fabrication: source/confidence/verified metadata; hard stops (salary, visa, CAPTCHA/MFA); nothing auto-submits; 350+ passing tests |
 | R-P3 | Audit AI Copilot: AI Document Review Tool · FastAPI · Next.js · Groq · Ongoing |
-| R-P3.1 | Directed the build; upload + natural-language anomaly queries; rule engine + LLM review + PDF reports; three personas, MoSCoW, full PRD, YC application |
-| R-P4 | Karavali: Community-Driven Local Discovery App · Solo founder · Apr 2026 – Present · Live MVP · karaval.base44.app (typo on PDF; live URL is karavali.base44.app) |
+| R-P3.1 | Directed the build; upload + natural-language anomaly queries; rule engine + LLM review + PDF reports; three personas, P0–P2 prioritised user stories, full PRD (updated resume, Sep 2026) |
+| R-P4 | Karavali: Community-Driven Local Discovery App · Solo founder · Apr 2026 – Present · Live MVP · karavali.base44.app (typo fixed in the Sep 2026 PDF) |
 | R-P4.1 | Coastal Karnataka discovery gap; pivot from campus travel app; AI recommendations + gamification for Udupi and Dakshina Kannada; live MVP in one week |
 | R-P5 | ANPR · B.Tech Final Year Project · Jan – May 2026 |
 | R-P5.1 | Real-time plate detection/reading: YOLOv8n (89.1% mAP@50), OpenCV, Tesseract OCR |

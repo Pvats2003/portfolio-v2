@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 /**
- * One log entry: a marker in the timestamp column (SOD / MOD / EOD or an entry number),
+ * One log entry: a marker in the timestamp column (SOD / EOD or an entry number),
  * a short label under it, and the content on the right. The site's core layout unit.
  */
 export function LogSection({
