@@ -173,6 +173,7 @@ export const cityOpsOs: CaseStudy = {
         {
           type: 'tradeoff',
           caption: 'What local-first gave, and what it cost',
+          columnLabel: 'With local-first',
           rows: [
             { dimension: 'Accounts', result: 'None needed', kind: 'gained' }, // R-P1.2
             { dimension: 'Infra budget', result: 'Zero — no backend, servers, or paid APIs', kind: 'gained' }, // R-P1.2

@@ -2,7 +2,9 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { Block, CaseStudy, Chapter } from '@/content/types';
 import { Chip } from '@/components/site/Chip';
+import { nextCaseStudy } from '@/content/projects';
 import { ConvergeDiagram, SprawlDiagram } from './Diagrams';
+import { BeforeAfter, Board, DataTable, Personas, Pipeline } from './Blocks';
 
 // The case-study template: Field Log frame (timestamp column, shift-style markers, chips)
 // around a long-form reading column (serif body, pull-quotes, generous measure).
@@ -61,15 +63,25 @@ function renderBlock(block: Block, i: number) {
       return <Todo key={i}>{block.text}</Todo>;
     case 'diagram':
       return <div key={i}>{block.name === 'sprawl' ? <SprawlDiagram /> : <ConvergeDiagram />}</div>;
+    case 'pipeline':
+      return <Pipeline key={i} block={block} />;
+    case 'personas':
+      return <Personas key={i} block={block} />;
+    case 'board':
+      return <Board key={i} block={block} />;
+    case 'beforeAfter':
+      return <BeforeAfter key={i} block={block} />;
+    case 'table':
+      return <DataTable key={i} block={block} />;
     case 'tradeoff':
       return (
         <table key={i} className="w-full max-w-[38rem] border-collapse text-left">
           <caption className="pb-3 text-left font-mono text-xs uppercase tracking-wider text-muted">{block.caption}</caption>
           <thead>
             <tr className="border-b border-ink font-mono text-xs uppercase tracking-wider text-muted">
-              <th scope="col" className="py-2 pr-4 font-normal">With local-first</th>
+              <th scope="col" className="py-2 pr-4 font-normal">{block.columnLabel ?? 'Choice'}</th>
               <th scope="col" className="py-2 pr-4 font-normal">Result</th>
-              <th scope="col" className="py-2 font-normal">
+              <th scope="col" className="hidden py-2 font-normal sm:table-cell">
                 <span className="sr-only">Gained or given up</span>
               </th>
             </tr>
@@ -78,8 +90,13 @@ function renderBlock(block: Block, i: number) {
             {block.rows.map((r) => (
               <tr key={r.dimension} className="border-b border-line align-top">
                 <th scope="row" className="py-3 pr-4 font-sans text-base font-medium">{r.dimension}</th>
-                <td className="py-3 pr-4">{r.result}</td>
-                <td className="py-3 text-right">
+                <td className="py-3 pr-4">
+                  {r.result}
+                  <span className="mt-1.5 block sm:hidden">
+                    <Chip tone={r.kind === 'gained' ? 'ok' : 'accent'}>{r.kind === 'gained' ? 'Gained' : 'Given up'}</Chip>
+                  </span>
+                </td>
+                <td className="hidden py-3 text-right sm:table-cell">
                   <Chip tone={r.kind === 'gained' ? 'ok' : 'accent'}>{r.kind === 'gained' ? 'Gained' : 'Given up'}</Chip>
                 </td>
               </tr>
@@ -127,6 +144,7 @@ function ChapterEntry({ chapter, n }: { chapter: Chapter; n: number }) {
 }
 
 export function CaseStudyView({ study }: { study: CaseStudy }) {
+  const next = nextCaseStudy(study.slug);
   return (
     <article>
       {/* Case header: the one place the dot grid shows, so the reading area stays clean paper. */}
@@ -151,6 +169,22 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
               </div>
               <h1 className="mt-5 font-sans text-5xl font-semibold tracking-tight sm:text-6xl">{study.title}</h1>
               <p className="mt-2 font-mono text-sm text-muted">{study.kicker}</p>
+              {study.links && (
+                <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1">
+                  {study.links.map((l) => (
+                    <li key={l.href}>
+                      <a
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent"
+                      >
+                        {l.label} ↗<span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
@@ -193,9 +227,14 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
 
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line py-8 font-mono text-xs text-muted">
           <span>End of case log · {study.title}</span>
-          <Link href="/" className="hover:text-accent">
-            ← All work
-          </Link>
+          <span className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link href="/#work" className="inline-flex min-h-11 items-center hover:text-accent">
+              ← All work
+            </Link>
+            <Link href={`/work/${next.slug}`} className="inline-flex min-h-11 items-center text-ink hover:text-accent">
+              Next case: {next.title} →
+            </Link>
+          </span>
         </footer>
       </div>
     </article>
