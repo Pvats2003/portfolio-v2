@@ -15,14 +15,17 @@
 
 ## Where things live
 - `content/` — all copy, stats and project data (typed TS files). Components never hard-code copy.
-- `app/globals.css` — design tokens as CSS variables (light + dark), mapped to Tailwind via `@theme inline`.
-- `app/lab/*` — **Phase 1 only.** Deleted once a direction is chosen.
+- `app/globals.css` — design tokens as CSS variables (Paper light + Night shift dark), mapped to Tailwind via `@theme inline`.
+- `content/resume.ts` — line-for-line transcription of the resume PDF; other content files import facts from it.
+- `content/site.ts` (hero, proof, how I work, contact, about, record) · `content/work.ts` (homepage cards) · `content/projects/*.ts` (case studies).
+- `DESIGN.md` — the Field Log identity: tokens, type, layout, motifs, motion. Follow it for any new UI.
+- `components/site/LogSection.tsx` — the timestamp-column section every page is built from.
 
 ## Build rules
 - Next.js 16 App Router, TypeScript strict, Tailwind v4, `next/font` (self-hosted, free-licence faces).
 - Motion: CSS only, always gated by `prefers-reduced-motion: no-preference`. Never animate the headline or delay reading.
 - Every text/background pair must pass WCAG AA (4.5:1 body, 3:1 large text) in **both** themes.
-- Load a font only on the pages that use it (a shared font module makes every page preload every font).
+- Fonts load once, in the root layout. Plex Serif has `preload: false` because only case studies use it; keep new faces out unless DESIGN.md changes.
 - Before committing: `npm run lint && npm run typecheck && npm run build`.
 
 ## Git

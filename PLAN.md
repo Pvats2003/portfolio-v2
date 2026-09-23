@@ -14,9 +14,10 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | 4 | Priyanshu switches on Vercel Analytics once the project exists (reminder at Phase 5). |
 | 5 | **`karavali.base44.app` is the live URL.** `karaval.base44.app` is a typo on the resume (it 404s); Priyanshu will fix the PDF. |
 | 6 | **The live Karavali MVP is on Base44.** That's the only stack stated; nothing about Supabase or React. |
-| 7 | **Conflicting answers.** Point 7 said “cut it”, and the closing line said “keep in archive”. It stays unbuilt until he confirms which. |
+| 7 | **KYC is cut everywhere.** |
 | 8 | **He doesn't own `priyanshuvats.com`.** Canonical URL and `og:url` use the Vercel URL until a domain is bought. |
 | Direction | **A · Field Log** is the site identity (shift markers, status chips, timestamp column, IBM Plex Sans + Mono). `/work` case studies use C's long-form reading treatment (serif body, pull-quotes, generous measure) inside A's frame. A hybrid case-study page must be approved before DESIGN.md is written. |
+| Serif | IBM Plex Serif for case-study reading (confirmed). |
 | Headline | **Option C**: “Field operations lived in WhatsApp threads. I scoped, designed, and shipped the fix.” The proof strip directly below carries 10,000+ hours and 50+ field staff. |
 | 16 | Agreed: no "built" in the headline, and never imply City Ops OS ran all 10,000+ hours. Headlines keep scale (what he ran) separate from the tool (what he designed and shipped). |
 
@@ -132,7 +133,6 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | Certifications: Google UX Design (Coursera), IBM Business Analyst, IBM Program Manager | R-ED1.1 |
 | Revels (Painting & Publicity): led a 10-member core team (2025) and 30 volunteers (2024) | R-ED1.2 |
 | Skills, as four groups: Product · Operations · AI/Product Development (Claude Code, LLM/OCR integrations, React web apps, Apps Script automations) · Tools | R-K1–K4 |
-| Lightweight KYC concept (3 personas, 5-screen flow, 2-sprint roadmap) | **O (Q7)** |
 
 **Not used anywhere, because it isn't on the resume:** user or traction numbers for any product, a count of cities, Karavali users, Audit AI customers, and any real screenshot of an internal tool.
 
@@ -148,7 +148,6 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 /work/audit-ai-copilot     Selected work (persona cards + MoSCoW board)
 /work/anpr                 Archive
 /work/itc-powerhouse       Archive
-/work/kyc                  Archive, only if kept (Q7)
 /about                     Short, human story + certifications + TODO paragraph
 /resume                    HTML resume + exact PDF download
 /resume/Priyanshu_Vats_Resume_PV.pdf   Static file (the canonical PDF)
@@ -178,7 +177,7 @@ Questions 1–8 block Phase 1. The rest can be answered any time before Phase 3.
 4. Once the new Vercel project exists, can you switch on **Analytics** in its dashboard? (It's free, and I can't turn it on from here.)
 5. **Karavali URL:** I can't test `karavali.base44.app` vs `karaval.base44.app` from here, because this session's network policy blocks both. Either tell me which one works, or allow `*.base44.app`, `*.web.app` and `*.vercel.app` in the environment's network settings and I'll test them myself.
 6. **Karavali stack:** the old site says React + Supabase, but the `base44.app` host suggests it was built on Base44. What did you actually use? Until you answer, I'll state no stack at all.
-7. **Lightweight KYC:** keep it in the Archive labelled "Concept", or cut it?
+7. ~~Lightweight KYC~~ Answered: cut.
 8. **Domain:** do you own `priyanshuvats.com`? If yes, it becomes the canonical URL. If not, I'll use the new Vercel URL until you pick a domain.
 
 **Content (before Phase 3)**
