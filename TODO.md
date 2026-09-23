@@ -42,10 +42,10 @@ These questions need your own words, so they were hidden rather than filled with
 ## Visual-first redesign (branch `visual-first`, waiting for approval before merging to main)
 - [x] Homepage and City Ops OS approved; the other five case studies done the same way.
 - [x] Names in the field officer screenshot are real, so they stay replaced with demo text.
-- [x] Karavali: Discover only for now; Plans and Events skipped (Events screenshot deleted).
+- [x] Karavali: Discover (hero) and the “Match your vibe” planner (annotated); Plans and Events skipped (Events screenshot deleted).
 - [ ] **(you)** These screenshots still haven't reached me. They're not on GitHub (`origin/visual-first` had no new commits, Sep 23), and images pasted into chat don't save as files. Upload them as files (like the resume PDFs), or commit them to `public/work/<slug>/` on GitHub and check the commit shows up:
   - new City Ops manager screenshot with demo data (the old one, with 0.0h and a test item, stays until then — on this branch only);
-  - Karavali Explore;
+  - Karavali Explore, and the “Your AI Itinerary” preview (both were pasted into chat, so they didn't save as files);
   - Audit AI results screen after running the sample (it slots into "What I built", where a hidden TODO marks the spot).
 - [x] Audit AI model: GPT-4o-mini (OpenAI) — the case study says so. **(you)** Your resume PDF still says “FastAPI · Next.js · Groq”; the /resume page mirrors the PDF, so it keeps saying Groq until you replace the PDF. After that, update `content/resume.ts` to match (the build's drift check will list the exact line).
 - [x] Career OS, ANPR, ITC keep diagrams for now.

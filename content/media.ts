@@ -4,6 +4,7 @@ import type { StaticImageData } from 'next/image';
 import cityOpsDesktop from '@/public/work/city-ops-os/command-center-desktop.png';
 import cityOpsPhone from '@/public/work/city-ops-os/field-officer-cockpit-phone.png';
 import karavaliDiscover from '@/public/work/karavali/discover-home.webp';
+import karavaliVibe from '@/public/work/karavali/match-your-vibe.webp';
 import auditInput from '@/public/work/audit-ai-copilot/process-input.png';
 
 export type Media = {
@@ -36,6 +37,12 @@ export const media = {
     frame: 'browser',
     bar: 'karavali.base44.app',
     alt: 'Karavali’s Discover page: the headline “Travel with people, not just places.” over a beach at sunset, with buttons to find people going out and to explore places.',
+  },
+  karavaliVibe: {
+    src: karavaliVibe,
+    frame: 'browser',
+    bar: 'karavali.base44.app',
+    alt: 'Karavali’s “Match your vibe” planner: the heading “Find the right people for your plan”, choices for budget (under ₹200, ₹200–500, ₹500+), vibe (chill, adventure, social, romantic, foodie) and best time (morning to night), and a “Plan my day in 10 seconds” button.',
   },
   auditInput: {
     src: auditInput,

@@ -66,6 +66,24 @@ export const karavali: CaseStudy = {
       ],
     },
     {
+      id: 'planner',
+      section: 'What I built',
+      heading: 'Match your vibe: find people for a plan',
+      blocks: [
+        {
+          type: 'shot',
+          media: 'karavaliVibe',
+          callouts: [
+            { x: 16.4, y: 44, label: 'Budget: under ₹200, ₹200–500, ₹500+' },
+            { x: 16.4, y: 58.7, label: 'Vibe: chill, adventure, social, romantic, foodie' },
+            { x: 16.4, y: 73.5, label: 'Best time of day' },
+            { x: 17.6, y: 92, label: '“Plan my day in 10 seconds”' },
+          ],
+        },
+        { type: 'p', text: 'The planner asks for a budget, a vibe and a time of day, then connects you with people planning the same thing.' }, // screenshot copy
+      ],
+    },
+    {
       id: 'learned',
       section: 'Learned',
       heading: 'What I learned',
