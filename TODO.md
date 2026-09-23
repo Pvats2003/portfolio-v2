@@ -3,17 +3,18 @@
 Items waiting on Priyanshu are marked **(you)**.
 
 ## Blocking the next step
-- [ ] **(you)** Create the empty GitHub repo `Pvats2003/portfolio-v2` (no README). This session can't create repos (GitHub returns "Resource not accessible by integration").
-- [ ] **(you)** Pick a direction, or a hybrid of A / B / C, and a headline option (A / B / C).
-- [ ] **(you)** Import the repo in Vercel if the GitHub-app connection doesn't pick it up.
-
-## Unanswered from Phase 0 (the answer template came back with placeholders)
-- [ ] **(you)** Q6 — Karavali stack: what did the live MVP use (Base44? React + Supabase?). Until answered, no stack is stated anywhere.
-- [ ] **(you)** Q7 — Lightweight KYC concept: keep it in the Archive labelled "Concept", or cut it?
-- [ ] **(you)** Q8 — Do you own `priyanshuvats.com`? Until answered, the canonical URL and `og:url` will use the Vercel URL.
+- [ ] **(you)** Import `Pvats2003/portfolio-v2` into Vercel (steps in the chat). Send me the preview URL.
+- [ ] **(you)** Approve (or adjust) the hybrid case-study page at `/work/city-ops-os`, then I write `DESIGN.md` and delete `/lab`.
+- [ ] **(you)** KYC concept: point 7 said “cut it”, the closing line said “keep in archive”. Which one?
 
 ## Resume fixes (flagged by you or found here)
 - [ ] **(you)** Resume PDF: `karaval.base44.app` → `karavali.base44.app` (typo; the correct URL is confirmed). Then replace `public/resume/Priyanshu_Vats_Resume_PV.pdf`.
+
+## City Ops OS case study (visible TODOs on /work/city-ops-os)
+- [ ] **(you)** Confirm City Ops OS was built with AI-assisted development (Claude Code), as the “How it was made” line says.
+- [ ] **(you)** Any other real constraints: connectivity at sites, the devices field staff use, who needed the city view.
+- [ ] **(you)** Command center: what it solved, and where it fell short.
+- [ ] **(you)** Two or three lessons learned, in your own words.
 
 ## Phase 3 content questions (PLAN.md §4, Q9–19)
 - [ ] **(you)** Q9 — Career OS old-site-only details (5 named sources, "0 ORM drift", Ruff/Mypy, SQLAlchemy/Pydantic): keep or cut? Default: cut.

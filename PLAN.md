@@ -13,9 +13,11 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | 3 | Priyanshu installs the Vercel GitHub App for `portfolio-v2`, and imports the repo in Vercel himself if the connection still fails. |
 | 4 | Priyanshu switches on Vercel Analytics once the project exists (reminder at Phase 5). |
 | 5 | **`karavali.base44.app` is the live URL.** `karaval.base44.app` is a typo on the resume (it 404s); Priyanshu will fix the PDF. |
-| 6 | **Open.** The answer came back as a template placeholder. No Karavali stack is stated until confirmed. |
-| 7 | **Open.** The KYC concept is neither built nor linked until he decides. |
-| 8 | **Open.** Canonical URL and `og:url` use the Vercel URL until he says he owns `priyanshuvats.com`. |
+| 6 | **The live Karavali MVP is on Base44.** That's the only stack stated; nothing about Supabase or React. |
+| 7 | **Conflicting answers.** Point 7 said “cut it”, and the closing line said “keep in archive”. It stays unbuilt until he confirms which. |
+| 8 | **He doesn't own `priyanshuvats.com`.** Canonical URL and `og:url` use the Vercel URL until a domain is bought. |
+| Direction | **A · Field Log** is the site identity (shift markers, status chips, timestamp column, IBM Plex Sans + Mono). `/work` case studies use C's long-form reading treatment (serif body, pull-quotes, generous measure) inside A's frame. A hybrid case-study page must be approved before DESIGN.md is written. |
+| Headline | **Option C**: “Field operations lived in WhatsApp threads. I scoped, designed, and shipped the fix.” The proof strip directly below carries 10,000+ hours and 50+ field staff. |
 | 16 | Agreed: no "built" in the headline, and never imply City Ops OS ran all 10,000+ hours. Headlines keep scale (what he ran) separate from the tool (what he designed and shipped). |
 
 ---

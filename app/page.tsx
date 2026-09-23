@@ -28,6 +28,13 @@ export default function Home() {
           </li>
         ))}
       </ul>
+      <h2 className="mt-14 text-lg font-semibold">Chosen: A, with C’s reading treatment for case studies</h2>
+      <p className="mt-2 text-sm text-muted">Preview of the hybrid case-study template, before DESIGN.md is written.</p>
+      <p className="mt-4">
+        <Link href="/work/city-ops-os" className="underline underline-offset-4 hover:text-muted">
+          City Ops OS — hybrid case study →
+        </Link>
+      </p>
       <h2 className="mt-14 text-lg font-semibold">Headline options</h2>
       <p className="mt-2 text-sm text-muted">
         Each direction shows a different one; any headline works in any direction.
