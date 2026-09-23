@@ -24,54 +24,63 @@ export const careerOs: CaseStudy = {
     { label: 'Quality', value: '350 passing tests · clean ruff and mypy · no ORM–migration drift' }, // README
   ],
   links: [{ label: 'Code on GitHub', href: 'https://github.com/Pvats2003/career_ops_intel' }],
+  hero: {
+    type: 'pipeline',
+    caption: 'From candidate facts to a reviewed application — every stage writes an audit record.',
+    steps: [
+      { label: 'Candidate facts', detail: 'Source, confidence, verified' },
+      { label: 'Discovery', detail: 'Greenhouse & Lever, official APIs' },
+      { label: 'De-duplication', detail: 'Per-source ID + cross-source fingerprint' },
+      { label: 'Matching', detail: 'Deterministic, then semantic' },
+      { label: 'Decision', detail: 'Apply · Review · Save · Skip · Human' },
+      { label: 'Answers', detail: 'Hard-block → answer bank → checked draft' },
+      { label: 'Human review', detail: 'Nothing auto-submits', accent: true },
+    ],
+  }, // README (Phases 1–6A)
   chapters: [
     {
       id: 'problem',
       section: 'Problem',
-      heading: 'The risk in automating applications is what the system says about you',
+      heading: 'The risk is what the system says about you',
       blocks: [
         {
+          type: 'beforeAfter',
+          before: { label: 'A naive agent', points: ['Guesses a salary expectation', 'Guesses visa status', 'Claims skills it can’t prove'] },
+          after: {
+            label: 'Career OS',
+            points: [
+              'Unknown facts stay “UNKNOWN”, confidence 0.0', // README
+              'Salary, visa and legal questions go to a human', // README, R-P2.2
+              'Every claim traces back to the resume', // README (Phase 4)
+            ],
+          },
+        },
+        {
           type: 'p',
-          text: 'Finding and triaging job postings is a search problem, and it can run unattended. Filling in an application is different: a guessed salary expectation, visa status or skill claim on a real application is a real problem, and it is exactly what a naive agent would guess.',
+          text: 'Finding jobs can run unattended. Filling in an application can’t: a guessed salary, visa status or skill claim on a real application is a real problem — and exactly what a naive agent would guess.',
         },
         { type: 'quote', text: 'High-quality applications over high application count.' }, // README core principle
       ],
     },
     {
-      id: 'constraints',
-      section: 'Constraints',
-      heading: 'Rules the system had to live by',
-      blocks: [
-        {
-          type: 'list',
-          items: [
-            'Never fabricate. Anything not in the candidate knowledge base is the literal value UNKNOWN, with confidence 0.0 and verified = false.', // README
-            'Humans in the loop by default. Automated submission is off unless several independent gates all agree.', // README
-            'Only official, public, read-only job APIs — Greenhouse and Lever. Sources behind login walls or restrictive terms stay disabled.', // README
-            'It must still work with no AI API key configured, and say so rather than silently degrading.', // README
-          ],
-        },
-      ],
-    },
-    {
       id: 'deterministic-first',
       section: 'Decision',
-      heading: 'Deterministic first; the LLM only where judgment is genuinely needed',
+      heading: 'Deterministic first; the LLM only where judgment is needed',
       blocks: [
-        {
-          type: 'p',
-          text: 'Skills, education, location, seniority and eligibility are pattern-matchable, so they are scored deterministically — no LLM, no cost, always explainable. Only role alignment, experience similarity and project relevance go to a semantic stage, and that stage is skipped entirely when cheap signals have already decided the outcome.', // README (Phase 3)
-        },
         {
           type: 'tradeoff',
           caption: 'What the split bought, and what it gave up',
           columnLabel: 'Choice',
           rows: [
             { dimension: 'Explainability', result: 'Every deterministic sub-score is traceable', kind: 'gained' }, // README
-            { dimension: 'Cost', result: 'LLM skipped for excluded, hard-stopped or clearly poor matches — 2 of 4 sample jobs never needed a call', kind: 'gained' }, // README
+            { dimension: 'Cost', result: 'LLM skipped for clearly decided matches — 2 of 4 sample jobs never needed a call', kind: 'gained' }, // README
             { dimension: 'Availability', result: 'Runs with no API key, deterministic-only', kind: 'gained' }, // README
             { dimension: 'Auto-apply without a second opinion', result: 'Never — without the semantic stage, a decision is capped at REVIEW', kind: 'given-up' }, // README
           ],
+        },
+        {
+          type: 'p',
+          text: 'Skills, education, location, seniority and eligibility are pattern-matchable, so they’re scored deterministically: no LLM, no cost, always explainable. Only role alignment, experience and project relevance go to a semantic stage — skipped when cheap signals already decide.', // README (Phase 3)
         },
       ],
     },
@@ -81,12 +90,20 @@ export const careerOs: CaseStudy = {
       heading: 'Every fact carries its evidence',
       blocks: [
         {
-          type: 'p',
-          text: 'The candidate profile is a set of facts, each with a value, a source file, a confidence score and a verified flag. Skills also carry an evidence level: self-declared, demonstrated by a specific experience, or only adjacent — so matching can tell “has used it” from “claims it”.', // README (Phase 1)
-        },
+          type: 'table',
+          caption: 'What every candidate fact carries',
+          head: ['Field', 'Holds'],
+          rows: [
+            ['Value', 'The fact itself'],
+            ['Source', 'The file it came from'],
+            ['Confidence', 'A confidence score'],
+            ['Verified', 'True or false'],
+            ['Evidence', 'For skills: self-declared, demonstrated, or only adjacent'],
+          ],
+        }, // README (Phase 1)
         {
           type: 'p',
-          text: 'A resume validator then proves, on every parse, that each fact traces back to the actual resume file. To test it, fabricated facts — a fake job, employer, skill, achievement, certification and project — were injected into the real profile; every one was caught, with zero false positives on the unmodified profile.', // README (Phase 4)
+          text: 'A resume validator proves on every parse that each fact traces back to the resume. To test it, fabricated facts — a fake job, employer, skill, achievement, certification and project — were injected: every one was caught, with zero false positives.', // README (Phase 4)
         },
         { type: 'quote', text: 'Automate the work. Never automate trust.' }, // brief
       ],
@@ -97,34 +114,17 @@ export const careerOs: CaseStudy = {
       heading: 'Hard stops that route to a human',
       blocks: [
         {
-          type: 'list',
-          items: [
-            'Salary, visa, legal and demographic questions are never answered by a model; if the fact is unknown, the application goes to a human.', // README (Phase 5), R-P2.2
-            'Any other drafted answer passes a deterministic fabrication check: every name and multi-digit number in it must already exist in the resume or profile.', // README
-            'A CAPTCHA, MFA prompt or unexpected form structure stops the flow and hands it to a human.', // README (Phase 6A), R-P2.2
-            'Submitting needs every gate at once: dry-run off, live mode on, top automation level or explicit human approval, and rate limits clear. Today the only provider refuses to submit, by design.', // README
+          type: 'table',
+          caption: 'What stops the flow',
+          head: ['Trigger', 'What happens'],
+          rows: [
+            ['Salary, visa, legal or demographic question', 'Never answered by a model; if the fact is unknown, a human decides'], // README (Phase 5), R-P2.2
+            ['Any other drafted answer', 'Every name and multi-digit number must already exist in the resume or profile'], // README
+            ['CAPTCHA, MFA or an unexpected form', 'The flow stops and hands over to a human'], // README (Phase 6A), R-P2.2
+            ['Submit', 'Needs every gate at once: dry-run off, live mode on, top automation level or human approval, rate limits clear'], // README
           ],
         },
-      ],
-    },
-    {
-      id: 'built',
-      section: 'What I built',
-      heading: 'The pipeline, as it stands',
-      blocks: [
-        {
-          type: 'pipeline',
-          caption: 'From candidate facts to a reviewed application — every stage writes an audit record.',
-          steps: [
-            { label: 'Candidate facts', detail: 'Source, confidence, verified' },
-            { label: 'Discovery', detail: 'Greenhouse & Lever' },
-            { label: 'De-duplication', detail: 'Per-source ID + cross-source fingerprint' },
-            { label: 'Matching', detail: 'Deterministic, then semantic' },
-            { label: 'Decision', detail: 'Apply · Review · Save · Skip · Human required' },
-            { label: 'Answers', detail: 'Hard-block → answer bank → checked LLM draft' },
-            { label: 'Human review', detail: 'Nothing auto-submits', accent: true },
-          ],
-        }, // README (Phases 1–6A)
+        { type: 'p', text: 'Today the only application provider refuses to submit, by design.' }, // README
       ],
     },
     {
@@ -142,7 +142,7 @@ export const careerOs: CaseStudy = {
         },
         {
           type: 'p',
-          text: 'The tests caught a real bug before it shipped: a hard-stop match would have attempted a state transition the state machine didn’t allow, and crashed in production the first time it happened. The integration suite found it; the fix was a one-line change to the transition graph.', // README (adversarial review finding)
+          text: 'The tests caught a real bug before it shipped: a hard-stop match would have attempted a state transition the state machine didn’t allow, crashing the first time it happened. The fix was a one-line change to the transition graph.', // README (adversarial review finding)
         },
       ],
     },

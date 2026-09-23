@@ -4,7 +4,6 @@ import type { StaticImageData } from 'next/image';
 import cityOpsDesktop from '@/public/work/city-ops-os/command-center-desktop.png';
 import cityOpsPhone from '@/public/work/city-ops-os/field-officer-cockpit-phone.png';
 import karavaliDiscover from '@/public/work/karavali/discover-home.webp';
-import karavaliEvents from '@/public/work/karavali/events-around-manipal.webp';
 import auditInput from '@/public/work/audit-ai-copilot/process-input.png';
 
 export type Media = {
@@ -37,12 +36,6 @@ export const media = {
     frame: 'browser',
     bar: 'karavali.base44.app',
     alt: 'Karavali’s Discover page: the headline “Travel with people, not just places.” over a beach at sunset, with buttons to find people going out and to explore places.',
-  },
-  karavaliEvents: {
-    src: karavaliEvents,
-    frame: 'browser',
-    bar: 'karavali.base44.app',
-    alt: 'Karavali’s Events page for around Manipal: filters for fest, social, outdoors, food, wellness and culture, above event cards tagged Flagship, Recurring and Limited Spots.',
   },
   auditInput: {
     src: auditInput,

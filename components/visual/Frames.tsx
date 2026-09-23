@@ -47,14 +47,14 @@ export function PhoneFrame({ demo, children }: { demo?: boolean; children: React
 }
 
 /** A diagram sheet: dot-grid paper with a mono label, for projects that have no screenshot. */
-export function DiagramSheet({ label = 'Diagram', children }: { label?: string; children: ReactNode }) {
+export function DiagramSheet({ label = 'Diagram', fit = false, children }: { label?: string; fit?: boolean; children: ReactNode }) {
   return (
     <div className="overflow-hidden border border-line bg-surface">
       <div className="flex items-center justify-between border-b border-line px-3 py-2 font-mono text-[0.6875rem] uppercase tracking-wider text-muted">
         <span>{label}</span>
       </div>
-      {/* Same proportions as the screenshots, so cards in a row line up. */}
-      <div className="dot-grid flex aspect-[1890/826] items-center overflow-hidden p-3 sm:p-4">{children}</div>
+      {/* Cards use the screenshots' proportions so a row lines up; `fit` lets a large diagram size itself. */}
+      <div className={`dot-grid flex items-center p-3 sm:p-4 ${fit ? 'sm:p-6' : 'aspect-[1890/826] overflow-hidden'}`}>{children}</div>
     </div>
   );
 }

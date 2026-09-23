@@ -11,6 +11,7 @@ import { AnnotatedScreenshot } from '@/components/visual/AnnotatedScreenshot';
 import { DevicePair } from '@/components/visual/DevicePair';
 import { Gallery } from '@/components/visual/Gallery';
 import { Shot } from '@/components/visual/Shot';
+import { DiagramSheet } from '@/components/visual/Frames';
 
 // The case-study template: Field Log frame (timestamp column, shift-style markers, chips)
 // around a long-form reading column (serif body, pull-quotes, generous measure).
@@ -32,6 +33,8 @@ function PullQuote({ children }: { children: ReactNode }) {
     </p>
   );
 }
+
+const TEXT_BLOCKS = new Set<Block['type']>(['p', 'list', 'quote', 'todo']);
 
 // Widths the chapter column renders at, so next/image picks the right file.
 const CHAPTER_SIZES = '(min-width: 1152px) 900px, (min-width: 640px) 80vw, 100vw';
@@ -168,7 +171,16 @@ function ChapterEntry({ chapter, n }: { chapter: Chapter; n: number }) {
         >
           {chapter.heading}
         </h2>
-        {chapter.blocks.map((b, i) => renderBlock(b, i))}
+        {chapter.blocks.map((b, i) =>
+          TEXT_BLOCKS.has(b.type) ? (
+            renderBlock(b, i)
+          ) : (
+            // Marks visuals, so QA can measure how much text sits between them.
+            <div key={i} data-visual="">
+              {renderBlock(b, i)}
+            </div>
+          ),
+        )}
       </div>
     </section>
   );
@@ -224,7 +236,17 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
             </div>
           </div>
 
-          {study.hero && <div className="mt-8 max-w-4xl sm:mt-10">{renderBlock(study.hero, 0, true)}</div>}
+          {study.hero && (
+            <div data-visual="" className="mt-8 max-w-4xl sm:mt-10">
+              {study.hero.type === 'pipeline' ? (
+                <DiagramSheet label="Diagram" fit>
+                  {renderBlock(study.hero, 0)}
+                </DiagramSheet>
+              ) : (
+                renderBlock(study.hero, 0, true)
+              )}
+            </div>
+          )}
 
           <div className="mt-10 grid gap-4 sm:grid-cols-[7rem_1fr] sm:gap-8">
             <p className="font-mono text-xs uppercase tracking-wider text-muted sm:pt-2">TL;DR</p>
@@ -244,7 +266,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         {/* Role & timeline */}
         <section aria-label="Role and timeline" className="grid gap-4 py-10 sm:grid-cols-[7rem_1fr] sm:gap-8">
           <p className="font-mono text-xs uppercase tracking-wider text-muted sm:pt-3">Role &amp; timeline</p>
-          <dl className="grid grid-cols-1 border-l border-t border-line sm:grid-cols-2 lg:grid-cols-3">
+          <dl data-visual="" className="grid grid-cols-1 border-l border-t border-line sm:grid-cols-2 lg:grid-cols-3">
             {study.meta.map((m) => (
               <div key={m.label} className="border-b border-r border-line bg-surface px-4 py-3">
                 <dt className="font-mono text-xs uppercase tracking-wider text-muted">{m.label}</dt>

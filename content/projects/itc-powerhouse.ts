@@ -20,6 +20,16 @@ export const itcPowerhouse: CaseStudy = {
     { label: 'When', value: 'June – July 2024' }, // R-E2
     { label: 'Scope', value: '15+ sub-distribution boards' }, // R-E2.1
   ],
+  hero: {
+    type: 'pipeline',
+    caption: 'What the internship covered, end to end.',
+    steps: [
+      { label: 'Three supply paths', detail: 'RUPS · bypass · DG supply' }, // R-E2.1
+      { label: 'Switchover logic', detail: 'Analysed', accent: true }, // R-E2.1
+      { label: '15+ sub-distribution boards', detail: 'Mapped' }, // R-E2.1
+      { label: 'Findings', detail: 'Operator training · stakeholder presentations' }, // R-E2.1
+    ],
+  },
   chapters: [
     {
       id: 'work',
@@ -27,20 +37,18 @@ export const itcPowerhouse: CaseStudy = {
       heading: 'A map of how power actually flows',
       blocks: [
         {
-          type: 'list',
+          type: 'facts',
           items: [
-            'Mapped power distribution across 15+ sub-distribution boards.', // R-E2.1
-            'Covered the three supply paths: RUPS, bypass and DG supply.', // R-E2.1
-            'Analysed the switchover logic between them, and where a single failure could take something down.', // R-E2.1
+            { value: '15+', label: 'sub-distribution boards mapped' }, // R-E2.1
+            { value: '3', label: 'supply paths: RUPS, bypass, DG' }, // R-E2.1
+            { value: '2', label: 'audiences: operators, stakeholders' }, // R-E2.1
           ],
         },
+        {
+          type: 'p',
+          text: 'I analysed the switchover logic between the three supply paths and where a single failure could take something down, then documented it for operator training and stakeholder presentations.', // R-E2.1
+        },
       ],
-    },
-    {
-      id: 'outcome',
-      section: 'Outcome',
-      heading: 'Documentation other people used',
-      blocks: [{ type: 'p', text: 'The findings were documented for operator training and for stakeholder presentations.' }], // R-E2.1
     },
     {
       id: 'learned',

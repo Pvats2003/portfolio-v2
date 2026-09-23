@@ -39,12 +39,16 @@ These questions need your own words, so they were hidden rather than filled with
 **About**
 - [ ] A personal paragraph in your own words.
 
-## Visual-first redesign (in review on branch `visual-first`)
-- [ ] **(you)** Review the new homepage and City Ops OS page, then I'll do the other five case studies.
-- [ ] **(you)** Re-attach three screenshots that didn't reach me: Karavali Explore, Karavali Plans, and Audit AI with the sample loaded.
-- [ ] **(you)** The field officer screenshot showed "Iliyas", "Shakthi Welding Shop" and "Balaji Dhaba". I replaced them with demo text (no real field-worker names, rule 2). If they're fictional, say so and I'll restore them.
-- [ ] **(you)** Audit AI's header says "Rule Engine + GPT-4o-mini"; your resume and the site say Groq. Which is right?
-- [ ] **(you)** Career OS, ANPR and ITC have no screenshots, so their cards show small flow diagrams. Send screenshots (e.g. Career OS CLI output, ANPR detection frames without readable private plates) if you have them.
+## Visual-first redesign (branch `visual-first`, waiting for approval before merging to main)
+- [x] Homepage and City Ops OS approved; the other five case studies done the same way.
+- [x] Names in the field officer screenshot are real, so they stay replaced with demo text.
+- [x] Karavali: Discover only for now; Plans and Events skipped (Events screenshot deleted).
+- [ ] **(you)** These screenshots didn't reach me — images pasted into chat don't land as files. Please upload them as files (like the resume PDFs) or add them to `public/work/<slug>/` on GitHub:
+  - new City Ops manager screenshot with demo data (the old one, with 0.0h and a test item, stays until then — on this branch only);
+  - Karavali Explore;
+  - Audit AI results screen after running the sample (it slots into "What I built", where a hidden TODO marks the spot).
+- [ ] **(you)** Audit AI model: your message still had the "[Groq / GPT-4o-mini]" placeholder. Sources disagree: resume PDF, Word resume and PRD say Groq (LLaMA 3.1 8B, "OpenAI fallback if needed"); the app header says GPT-4o-mini; the PM resume says "OpenAI API". The case study now just says "an LLM layer" until you confirm. If it's GPT-4o-mini, the resume line "FastAPI · Next.js · Groq" needs changing.
+- [x] Career OS, ANPR, ITC keep diagrams for now.
 
 ## Still-open questions (PLAN.md §4)
 - [x] Q11: phone number shown (contact section, footer, resume page, ⌘K, structured data).
