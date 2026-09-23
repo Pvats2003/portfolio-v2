@@ -10,7 +10,7 @@ import { ConvergeDiagram, SprawlDiagram } from './Diagrams';
 /** Visible placeholder for missing information. Every one is also listed in TODO.md. */
 function Todo({ children }: { children: ReactNode }) {
   return (
-    <p className="max-w-[38rem] border border-dashed border-accent px-4 py-3 font-text text-sm leading-relaxed">
+    <p className="max-w-[38rem] border border-dashed border-accent px-4 py-3 font-sans text-sm leading-relaxed">
       <span className="mr-2 font-mono text-xs font-medium uppercase tracking-wider text-accent">TODO(priyanshu)</span>
       {children}
     </p>
@@ -50,7 +50,7 @@ function renderBlock(block: Block, i: number) {
           {block.items.map((f) => (
             <div key={f.label} className="flex flex-col-reverse border-b border-r border-line bg-surface px-4 py-3">
               <dt className="mt-1 text-sm text-muted">{f.label}</dt>
-              <dd className="font-display text-2xl font-semibold tabular leading-tight">{f.value}</dd>
+              <dd className="font-sans text-2xl font-semibold tabular leading-tight">{f.value}</dd>
             </div>
           ))}
         </dl>
@@ -77,7 +77,7 @@ function renderBlock(block: Block, i: number) {
           <tbody className="font-serif text-lg">
             {block.rows.map((r) => (
               <tr key={r.dimension} className="border-b border-line align-top">
-                <th scope="row" className="py-3 pr-4 font-text text-base font-medium">{r.dimension}</th>
+                <th scope="row" className="py-3 pr-4 font-sans text-base font-medium">{r.dimension}</th>
                 <td className="py-3 pr-4">{r.result}</td>
                 <td className="py-3 text-right">
                   <Chip tone={r.kind === 'gained' ? 'ok' : 'accent'}>{r.kind === 'gained' ? 'Gained' : 'Given up'}</Chip>
@@ -114,8 +114,8 @@ function ChapterEntry({ chapter, n }: { chapter: Chapter; n: number }) {
           id={`${chapter.id}-h`}
           className={
             turning
-              ? 'max-w-3xl font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl'
-              : 'max-w-[38rem] font-display text-2xl font-semibold leading-tight tracking-tight sm:text-3xl'
+              ? 'max-w-3xl font-sans text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl'
+              : 'max-w-[38rem] font-sans text-2xl font-semibold leading-tight tracking-tight sm:text-3xl'
           }
         >
           {chapter.heading}
@@ -130,7 +130,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
   return (
     <article>
       {/* Case header: the one place the dot grid shows, so the reading area stays clean paper. */}
-      <header className="a-grid border-b border-line">
+      <header className="dot-grid border-b border-line">
         <div className="mx-auto max-w-6xl px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
           <Link href="/" className="font-mono text-xs text-muted hover:text-accent">
             ← All work
@@ -149,7 +149,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                   </Chip>
                 ))}
               </div>
-              <h1 className="mt-5 font-display text-5xl font-semibold tracking-tight sm:text-6xl">{study.title}</h1>
+              <h1 className="mt-5 font-sans text-5xl font-semibold tracking-tight sm:text-6xl">{study.title}</h1>
               <p className="mt-2 font-mono text-sm text-muted">{study.kicker}</p>
             </div>
           </div>
@@ -175,11 +175,11 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
           <dl className="grid grid-cols-1 border-l border-t border-line sm:grid-cols-2 lg:grid-cols-3">
             {study.meta.map((m) => (
               <div key={m.label} className="border-b border-r border-line bg-surface px-4 py-3">
-                <dt className="font-mono text-[11px] uppercase tracking-wider text-muted">{m.label}</dt>
+                <dt className="font-mono text-xs uppercase tracking-wider text-muted">{m.label}</dt>
                 <dd className="mt-1 text-sm leading-snug">
                   {m.value}
                   {m.todo && (
-                    <span className="mt-1 block font-mono text-[11px] text-accent">TODO(priyanshu): {m.todo}</span>
+                    <span className="mt-1 block font-mono text-xs text-accent">TODO(priyanshu): {m.todo}</span>
                   )}
                 </dd>
               </div>

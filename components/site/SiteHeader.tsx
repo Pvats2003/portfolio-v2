@@ -1,24 +1,33 @@
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { RESUME_PDF } from '@/content/lab';
 
-// Draft site header in the Field Log identity. Links are limited to pages that exist today.
+const nav = [
+  { label: 'Work', href: '/#work' },
+  { label: 'About', href: '/about' },
+  { label: 'Resume', href: '/resume' },
+];
+
 export function SiteHeader() {
   return (
     <header className="border-b border-line">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link href="/" className="font-mono text-xs uppercase tracking-wider hover:text-accent">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3 sm:px-6">
+        <Link href="/" className="font-mono text-xs font-medium uppercase tracking-wider hover:text-accent">
           Priyanshu Vats
         </Link>
-        <nav aria-label="Primary" className="flex items-center gap-5 font-mono text-xs uppercase tracking-wider text-muted">
-          <Link href="/" className="hover:text-ink">
-            Work
-          </Link>
-          <a href={RESUME_PDF} className="hover:text-ink">
-            Resume
-          </a>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <nav aria-label="Primary">
+            <ul className="flex items-center gap-5 font-mono text-xs uppercase tracking-wider text-muted">
+              {nav.map((n) => (
+                <li key={n.href}>
+                  <Link href={n.href} className="inline-flex min-h-11 items-center hover:text-ink">
+                    {n.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
           <ThemeToggle />
-        </nav>
+        </div>
       </div>
     </header>
   );

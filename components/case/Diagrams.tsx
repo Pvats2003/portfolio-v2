@@ -21,14 +21,14 @@ export function SprawlDiagram() {
         {fourSystems.map((s) => (
           <div key={s.name} className="relative border border-current/30 bg-ink p-3 sm:p-4">
             <p className="font-mono text-xs uppercase tracking-wider sm:text-sm">{s.name}</p>
-            <p className="mt-1 text-xs opacity-75 sm:text-sm">{s.from}</p>
+            <p className="mt-1 text-xs text-line sm:text-sm">{s.from}</p>
           </div>
         ))}
-        <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-current bg-ink px-3 py-1 font-mono text-[11px] uppercase tracking-wider">
+        <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-current bg-ink px-3 py-1 font-mono text-xs uppercase tracking-wider">
           1 city
         </p>
       </div>
-      <figcaption className="mt-4 font-mono text-xs opacity-75">Four separate systems for a single city.</figcaption>
+      <figcaption className="mt-4 font-mono text-xs text-line">Four separate systems for a single city.</figcaption>
     </figure>
   );
 }
@@ -53,7 +53,7 @@ export function ConvergeDiagram() {
           <path d="M70 50 L100 50" stroke="var(--accent)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
         </svg>
         <div className="border-l-2 border-accent pl-3">
-          <p className="font-display text-lg font-semibold leading-tight sm:text-xl">City Ops OS</p>
+          <p className="font-sans text-lg font-semibold leading-tight sm:text-xl">City Ops OS</p>
           <p className="mt-1 font-mono text-xs text-muted">one per-city view</p>
         </div>
       </div>
