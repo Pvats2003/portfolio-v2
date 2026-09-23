@@ -1,52 +1,150 @@
 import Link from 'next/link';
-import { headlineOptions } from '@/content/lab';
+import type { CSSProperties } from 'react';
+import { LogSection } from '@/components/site/LogSection';
+import { FlagshipCard, WorkCardView } from '@/components/home/WorkCards';
+import { contact, hero, howIWork, proof, record } from '@/content/site';
+import { archive, selectedWork } from '@/content/work';
 
-// Phase 1 placeholder home: an index of the three visual directions.
-// Replaced by the real homepage once a direction is chosen.
-const directions = [
-  { href: '/lab/a', name: 'A · Field Log', says: 'An operator who writes things down.' },
-  { href: '/lab/b', name: 'B · Control Room', says: 'Runs systems at scale.' },
-  { href: '/lab/c', name: 'C · Editorial Case Files', says: 'A product thinker with taste.' },
-];
+// Homepage, in the order set in the brief:
+// hero → proof → flagship → selected work → how I work → experience → archive → contact.
+// The first three entries use shift markers (start of day → mid-day report → end of day: shipped);
+// the rest are numbered entries.
 
 export default function Home() {
   return (
-    <main id="main" className="mx-auto max-w-3xl px-5 py-16 font-[system-ui] sm:py-24">
-      <p className="text-sm text-muted">Priyanshu Vats · portfolio rebuild</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">Phase 1 — pick a visual direction</h1>
-      <p className="mt-4 text-muted">
-        Each direction renders the same hero, proof strip, and flagship card from the same content file, so you can judge
-        design alone. Use the theme switch at the top of each page to see light and dark.
-      </p>
-      <ul className="mt-10 divide-y divide-line border-y border-line">
-        {directions.map((d) => (
-          <li key={d.href}>
-            <Link href={d.href} className="flex items-baseline justify-between gap-4 py-5 hover:text-muted">
-              <span className="text-lg font-medium">{d.name}</span>
-              <span className="text-sm text-muted">“{d.says}” →</span>
+    <>
+      {/* Hero */}
+      <div className="dot-grid">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <p className="pt-10 font-mono text-xs uppercase tracking-wider text-muted sm:pt-16">{hero.eyebrow}</p>
+          <section aria-labelledby="hero-h" className="grid gap-3 py-10 sm:grid-cols-[7rem_1fr] sm:gap-8 sm:py-14">
+            <p className="font-mono text-xs text-muted sm:pt-3">
+              <span className="font-medium text-accent">SOD</span>
+              <span aria-hidden className="mx-1.5 sm:hidden">
+                ·
+              </span>
+              <span className="uppercase tracking-wider sm:mt-1 sm:block">Start of day</span>
+            </p>
+            <div className="min-w-0">
+              <h1 id="hero-h" className="max-w-4xl text-[2.25rem] font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+                {hero.headline[0]} <span className="text-accent">{hero.headline[1]}</span>
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{hero.subline}</p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href={hero.primaryCta.href}
+                  className="inline-flex min-h-11 items-center bg-ink px-5 text-sm font-medium text-bg hover:bg-accent hover:text-on-accent"
+                >
+                  {hero.primaryCta.label} <span aria-hidden className="ml-2">→</span>
+                </Link>
+                <a
+                  href={hero.secondaryCta.href}
+                  className="inline-flex min-h-11 items-center border border-ink px-5 font-mono text-sm hover:bg-ink hover:text-bg"
+                >
+                  {hero.secondaryCta.label}
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        {/* Proof strip — directly under the hero */}
+        <LogSection marker="MOD" label="Field report" className="border-t-0 pt-0 sm:pt-0">
+          <h2 className="sr-only">Proof</h2>
+          <ul className="grid grid-cols-1 border-l border-t border-line sm:grid-cols-2 lg:grid-cols-4">
+            {proof.map((s, i) => (
+              <li key={s.key} className="log-in border-b border-r border-line bg-surface p-5" style={{ '--i': i } as CSSProperties}>
+                <p className="font-mono text-xs uppercase tracking-wider text-muted">{s.key}</p>
+                <p className={`mt-3 font-semibold leading-none tabular ${s.numeric ? 'text-4xl' : 'text-2xl'}`}>{s.value}</p>
+                <p className="mt-2 text-sm leading-snug text-muted">{s.label}</p>
+              </li>
+            ))}
+          </ul>
+        </LogSection>
+
+        {/* Flagship */}
+        <LogSection id="work" marker="EOD" label="Shipped" heading="The story: from WhatsApp threads to one view per city">
+          <FlagshipCard />
+        </LogSection>
+
+        {/* Selected work */}
+        <LogSection id="selected" marker="04" label="Selected work" heading="Other things I’ve shipped and scoped">
+          <div className="grid gap-4 lg:grid-cols-3">
+            {selectedWork.map((card) => (
+              <WorkCardView key={card.slug} card={card} />
+            ))}
+          </div>
+        </LogSection>
+
+        {/* How I work */}
+        <LogSection id="method" marker="05" label="How I work" heading="Discover → Structure → Build → Operate → Iterate">
+          <ol className="border-t border-line">
+            {howIWork.map((s, i) => (
+              <li key={s.step} className="grid gap-2 border-b border-line py-5 sm:grid-cols-[10rem_1fr_1.4fr] sm:gap-6">
+                <p className="font-mono text-sm">
+                  <span className="text-accent tabular">{String(i + 1).padStart(2, '0')}</span> {s.step}
+                </p>
+                <p className="font-medium">{s.line}</p>
+                <p className="text-sm leading-relaxed text-muted">
+                  <span className="font-mono text-xs uppercase tracking-wider">Example · </span>
+                  {s.example}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </LogSection>
+
+        {/* Experience & leadership */}
+        <LogSection id="record" marker="06" label="Experience" heading="Experience & leadership">
+          <ol className="border-t border-line">
+            {record.map((r) => (
+              <li key={r.title} className="grid gap-2 border-b border-line py-5 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                <p className="font-mono text-xs text-muted sm:pt-1">{r.period}</p>
+                <div>
+                  <p className="font-semibold">
+                    {r.title} <span className="font-normal text-muted">· {r.org}</span>
+                  </p>
+                  <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">{r.line}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6">
+            <Link href="/resume" className="font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent">
+              Full resume →
             </Link>
-          </li>
-        ))}
-      </ul>
-      <h2 className="mt-14 text-lg font-semibold">Chosen: A, with C’s reading treatment for case studies</h2>
-      <p className="mt-2 text-sm text-muted">Preview of the hybrid case-study template, before DESIGN.md is written.</p>
-      <p className="mt-4">
-        <Link href="/work/city-ops-os" className="underline underline-offset-4 hover:text-muted">
-          City Ops OS — hybrid case study →
-        </Link>
-      </p>
-      <h2 className="mt-14 text-lg font-semibold">Headline options</h2>
-      <p className="mt-2 text-sm text-muted">
-        Each direction shows a different one; any headline works in any direction.
-      </p>
-      <ol className="mt-4 space-y-4">
-        {headlineOptions.map((h) => (
-          <li key={h.id} className="border-l-2 border-line pl-4">
-            <span className="text-xs font-medium text-muted">Option {h.id} (shown in direction {h.id})</span>
-            <p className="mt-1">{h.lines.join(' ')}</p>
-          </li>
-        ))}
-      </ol>
-    </main>
+          </p>
+        </LogSection>
+
+        {/* Archive */}
+        <LogSection id="archive" marker="07" label="Archive" heading="Archive">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {archive.map((card) => (
+              <WorkCardView key={card.slug} card={card} compact />
+            ))}
+          </div>
+        </LogSection>
+
+        {/* Contact */}
+        <LogSection id="contact" marker="08" label="Contact" heading={contact.line}>
+          <ul className="grid max-w-3xl border-l border-t border-line sm:grid-cols-2">
+            {contact.links.map((l) => (
+              <li key={l.label} className="border-b border-r border-line bg-surface">
+                <a
+                  href={l.href}
+                  className="block min-h-11 p-5 hover:bg-bg"
+                  {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  <span className="block font-mono text-xs uppercase tracking-wider text-muted">{l.label}</span>
+                  <span className="mt-2 block break-words text-base font-medium underline decoration-line underline-offset-4">{l.value}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </LogSection>
+      </div>
+    </>
   );
 }
