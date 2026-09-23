@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { Block, CaseStudy, Chapter } from '@/content/types';
 import { Chip } from '@/components/site/Chip';
+import { ReadTracker } from '@/components/analytics/ReadTracker';
 import { nextCaseStudy } from '@/content/projects';
 import { ConvergeDiagram, SprawlDiagram } from './Diagrams';
 import { BeforeAfter, Board, DataTable, Personas, Pipeline } from './Blocks';
@@ -21,7 +22,7 @@ function Todo({ children }: { children: ReactNode }) {
 
 function PullQuote({ children }: { children: ReactNode }) {
   return (
-    <p className="max-w-[38rem] border-l-2 border-accent py-1 pl-5 font-serif text-2xl italic leading-snug sm:text-[1.75rem]">
+    <p className="max-w-[38rem] border-l-2 border-accent py-1 pl-5 font-serif text-2xl leading-snug sm:text-[1.75rem]">
       {children}
     </p>
   );
@@ -224,6 +225,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
         {study.chapters.map((ch, i) => (
           <ChapterEntry key={ch.id} chapter={ch} n={i + 1} />
         ))}
+        <ReadTracker slug={study.slug} />
 
         <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line py-8 font-mono text-xs text-muted">
           <span>End of case log · {study.title}</span>

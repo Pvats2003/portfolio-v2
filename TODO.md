@@ -47,5 +47,7 @@ Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown o
 - [ ] **(you)** Q18 — Start month for Career OS (Audit AI now shows the PRD date, May 2026).
 
 ## Next build steps
-- [ ] Phase 4 — ⌘K palette (`cmdk`), per-page OG images, JSON-LD `Person`, `sitemap.xml` / `robots.txt`, Vercel Analytics events, README "how to update" guide.
-- [ ] Phase 5 — remind Priyanshu to switch on Vercel Analytics; Lighthouse on the live preview; turn indexing on at "go live".
+- [x] Phase 4: ⌘K palette (`cmdk`), per-page OG images, JSON-LD `Person`, `sitemap.xml` / `robots.txt`, canonical URLs, Vercel Analytics events, README "how to update" guide.
+- [ ] Phase 5: **(you)** switch on Vercel Web Analytics for the project. Until then its script 404s on the preview, which shows up as a console error. Then check the Analytics tab shows the custom events (`resume_download`, `contact_click`, `case_study_read`). Vercel has limited custom events to paid plans in the past; if they're missing on Hobby, page views still work.
+- [ ] Phase 5: run PageSpeed Insights on the live preview (this session can't reach vercel.app). Local simulated mobile LCP varies 1.9–2.6 s and is the same with every client component removed, so it's the React/Next runtime rather than site code. With real throttling (Lighthouse devtools mode) LCP is 1.7 s.
+- [ ] Go live: fill every visible TODO above, flip `INDEXABLE` to `true` in `content/site.ts`, and swap `SITE_URL` if a domain is added.

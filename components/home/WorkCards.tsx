@@ -91,7 +91,7 @@ export function WorkCardView({ card, compact = false }: { card: WorkCard; compac
           </ul>
         )}
         {card.quote && (
-          <p className="mt-5 border-l-2 border-accent pl-3 font-serif text-lg italic leading-snug">{card.quote}</p>
+          <p className="mt-5 border-l-2 border-accent pl-3 font-serif text-lg leading-snug">{card.quote}</p>
         )}
       </div>
       <footer className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line px-5 py-3 sm:px-6">

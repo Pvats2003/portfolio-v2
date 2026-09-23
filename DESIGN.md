@@ -35,7 +35,7 @@ One superfamily, IBM Plex (SIL Open Font Licence, self-hosted with `next/font`):
 |---|---|---|
 | **Plex Sans** 400 / 500 / 600 | UI, headings, body on non-case pages | Everything by default |
 | **Plex Mono** 400 / 500 | Log metadata: markers, labels, chips, dates, stack lines, captions | Always small (12–14 px), usually uppercase + `tracking-wider` |
-| **Plex Serif** 400 + italic | Long-form reading and pull-quotes | Case studies (`.reading`), TL;DRs, pull-quotes, the Career OS line |
+| **Plex Serif** 400 (no italic: one file fewer) | Long-form reading and pull-quotes | Case studies (`.reading`), TL;DRs, pull-quotes, the Career OS line |
 
 **Scale.** Tailwind's default steps only: `text-xs` 12 · `sm` 14 · `base` 16 · `lg` 18 · `xl` 20 · `2xl` 24 · `3xl` 30 · `4xl` 36 · `5xl` 48 · `6xl` 60.
 - Hero headline: `2.25rem` (mobile) → `5xl` → `6xl`, semibold, `leading-[1.08]`, `tracking-tight`.
@@ -66,7 +66,7 @@ Inside the Field Log frame:
 - The header (dot grid) holds the case number, chips, title, mono kicker, and a three-line serif **TL;DR**.
 - **Role & timeline** sits in a grid of cells.
 - Chapters: sans heading, `.reading` serif body, at most 38 rem wide.
-- **Pull-quote:** serif italic, `2xl` → `1.75rem`, with a 2 px accent left rule. One per chapter at most, and only for a sentence the facts support.
+- **Pull-quote:** upright serif, `2xl` → `1.75rem`, with a 2 px accent left rule. One per chapter at most, and only for a sentence the facts support.
 - **Trade-off table:** serif cells with a `GAINED` / `GIVEN UP` chip per row.
 - **Diagrams:** hand-built. The labels are HTML text; SVG draws only the lines, using `currentColor` or `var(--line)` / `var(--accent)`, so they follow the theme and stay legible at 375 px.
 - **TODO blocks:** a dashed accent border with a `TODO(priyanshu)` mono label. Visible on purpose; each one is also listed in `TODO.md`.

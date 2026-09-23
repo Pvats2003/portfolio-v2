@@ -2,7 +2,7 @@
 
 A new portfolio built from scratch with Next.js, TypeScript and Tailwind CSS. It's in progress: see `PLAN.md` for the plan and `TODO.md` for what's open.
 
-**Current phase: 3 (case studies).** Home, About, Resume, 404 and all six case studies are built. Phase 4 adds the command palette, sharing images and analytics. Design rules are in `DESIGN.md`.
+**Current phase: 4 (engineering) done.** Home, About, Resume, 404, six case studies, the ⌘K / Ctrl+K palette, sharing images, sitemap, structured data and analytics events are in. Next: Phase 5 (verify and launch). Design rules are in `DESIGN.md`.
 
 ## Run it on your computer
 
@@ -31,4 +31,13 @@ npm run build      # production build
 
 ## How to update the site
 
-_A full 10-line guide arrives in Phase 4._ For now: homepage text is in `content/site.ts`, work cards are in `content/work.ts`, each case study is one file in `content/projects/` (add a new one by copying a file and adding one line to `content/projects/index.ts`), and resume facts are in `content/resume.ts`. Edit the words between the quote marks, save, and the page updates.
+1. Every word on the site lives in the `content/` folder. You never need to touch `app/` or `components/`.
+2. Homepage text (headline, stats, "How I work", contact) → `content/site.ts`. Homepage cards → `content/work.ts`.
+3. Each case study is one file in `content/projects/`. Change the words between the quote marks `'…'` and keep the commas.
+4. New case study: copy an existing file in `content/projects/`, rename it, change `slug`, then add it to the list in `content/projects/index.ts`. Its page, sharing image, sitemap entry and ⌘K entry appear automatically.
+5. New resume: replace `public/resume/Priyanshu_Vats_Resume_PV.pdf` (keep the name) and update `content/resume.ts` to match it line for line.
+6. A line starting with `{ type: 'todo'` shows as a visible TODO box. Replace it with `{ type: 'p', text: '…' }` once you have the real answer, and tick it off in `TODO.md`.
+7. Apostrophes inside text: use ’ (curly) instead of ' so the quote marks don't break.
+8. Check your edit: `npm run dev`, then open http://localhost:3000. If something's wrong, the terminal says which file and line.
+9. Before pushing, run `npm run lint && npm run typecheck && npm run build`. All three must finish without errors.
+10. Push to `main` on GitHub and Vercel redeploys the site automatically in about a minute.
