@@ -50,6 +50,14 @@ These questions need your own words, so they were hidden rather than filled with
 - [x] Audit AI model: GPT-4o-mini (OpenAI) — the case study says so. **(you)** Your resume PDF still says “FastAPI · Next.js · Groq”; the /resume page mirrors the PDF, so it keeps saying Groq until you replace the PDF. After that, update `content/resume.ts` to match (the build's drift check will list the exact line).
 - [x] Career OS, ANPR, ITC keep diagrams for now.
 
+## Visual upgrade v3 (branch `visual-v3`, waiting for approval)
+- [ ] **(you)** Vercel: the live URL still serves Phase 2. Pushes reach Vercel, and `main` builds cleanly from a fresh clone, so check Deployments (see the chat for exactly what to look for).
+- [ ] **(you)** Replace these screenshots — they read as empty or test data:
+  - City Ops command center: "0.0h / 20h" in red and zero counts; the "CITY-OPS-PERSISTENCE-TEST" item is cropped out for now.
+  - City Ops field officer phone: "RIG-PERSISTENCE-TEST-01", "NA" location, mostly empty list.
+  - Audit AI: an empty input screen; the results screen after running the sample would be much stronger.
+- [ ] **(you)** Send screenshots as files (paperclip) in a message on their own — pasted images don't arrive.
+
 ## Still-open questions (PLAN.md §4)
 - [x] Q11: phone number shown (contact section, footer, resume page, ⌘K, structured data).
 - [ ] **(you)** Q13 — City Ops OS start and ship months (the case says "2026 – Present").

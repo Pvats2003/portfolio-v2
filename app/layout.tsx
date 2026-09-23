@@ -3,6 +3,7 @@ import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif } from 'next/font/google';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { ClickTracker } from '@/components/analytics/ClickTracker';
+import { RevealObserver } from '@/components/motion/RevealObserver';
 import { INDEXABLE, RESUME_PDF, SITE_DESCRIPTION, SITE_URL, identity } from '@/content/site';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
@@ -29,8 +30,8 @@ export const metadata: Metadata = {
   robots: INDEXABLE ? { index: true, follow: true } : { index: false, follow: false },
 };
 
-// Runs before first paint so a saved theme choice never flashes the wrong theme.
-const themeScript = `try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}`;
+// Runs before first paint: marks JS as available (for scroll-reveal) and applies a saved theme without a flash.
+const themeScript = `document.documentElement.classList.add('js');try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <SiteHeader />
         <main id="main">{children}</main>
         <SiteFooter />
+        <RevealObserver />
         <ClickTracker resume={RESUME_PDF} linkedin={identity.linkedin.href} github={identity.github.href} />
         {/* Cookieless page views. Only loads on Vercel, where the /_vercel/insights script exists. */}
         {process.env.VERCEL && <Analytics />}

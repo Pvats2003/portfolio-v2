@@ -129,11 +129,10 @@ export const cityOpsOs: CaseStudy = {
           type: 'shot',
           media: 'cityOpsDesktop',
           callouts: [
-            { x: 52.5, y: 13.5, label: 'Plan the day, assign field officers, start sessions, report issues' },
-            { x: 20.5, y: 31, label: 'Recording hours against the day’s target' },
-            { x: 43, y: 31, label: 'Businesses, field officers, live sessions, issues and fleet at a glance' },
-            { x: 19.5, y: 76.5, label: 'Field execution checks: evidence, location mismatches, prechecks' },
-            { x: 19.5, y: 92, label: 'A “What needs my attention?” feed' },
+            { x: 52.5, y: 15.9, label: 'Plan the day, assign field officers, start sessions, report issues' },
+            { x: 20.5, y: 36.6, label: 'Recording hours against the day’s target' },
+            { x: 43, y: 36.6, label: 'Businesses, field officers, live sessions, issues and fleet at a glance' },
+            { x: 19.5, y: 90.3, label: 'Field execution checks: evidence, location mismatches, prechecks' },
           ],
         },
         {

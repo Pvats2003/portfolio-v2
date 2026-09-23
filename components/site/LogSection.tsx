@@ -12,6 +12,7 @@ export function LogSection({
   children,
   className = '',
   hideHeading = false,
+  stack = false,
 }: {
   id?: string;
   marker: string;
@@ -22,20 +23,22 @@ export function LogSection({
   className?: string;
   /** Heading kept for screen readers and the outline, but not shown (when it would only repeat the label). */
   hideHeading?: boolean;
+  /** Marker and label sit above the content (full width) instead of in the timestamp column. */
+  stack?: boolean;
 }) {
   const headingId = id ? `${id}-h` : undefined;
   return (
     <section
       id={id}
       aria-labelledby={heading ? headingId : undefined}
-      className={`grid scroll-mt-4 gap-4 border-t border-line py-12 sm:grid-cols-[7rem_1fr] sm:gap-8 sm:py-16 ${className}`}
+      className={`grid scroll-mt-4 gap-4 border-t border-line py-10 sm:gap-8 sm:py-16 ${stack ? 'sm:gap-6' : 'sm:grid-cols-[7rem_1fr]'} ${className}`}
     >
-      <p className="font-mono text-xs text-muted sm:pt-1.5">
+      <p className={`font-mono text-xs text-muted ${stack ? '' : 'sm:pt-1.5'}`}>
         <span className="font-medium text-accent">{marker}</span>
-        <span aria-hidden className="mx-1.5 sm:hidden">
+        <span aria-hidden className={`mx-1.5 ${stack ? '' : 'sm:hidden'}`}>
           ·
         </span>
-        <span className="uppercase tracking-wider sm:mt-1 sm:block">{label}</span>
+        <span className={`uppercase tracking-wider ${stack ? '' : 'sm:mt-1 sm:block'}`}>{label}</span>
       </p>
       <div className="min-w-0">
         {heading && (

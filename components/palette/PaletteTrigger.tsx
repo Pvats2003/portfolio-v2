@@ -39,9 +39,13 @@ export function PaletteTrigger({ items }: { items: PaletteItem[] }) {
           setLoaded(true);
           setOpen(true);
         }}
-        className="inline-flex min-h-11 items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted hover:text-ink"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 font-mono text-xs uppercase tracking-wider text-muted hover:text-ink sm:min-w-0"
       >
-        Jump to
+        <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 sm:hidden" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <circle cx="7" cy="7" r="4.5" />
+          <path d="M10.5 10.5L14 14" />
+        </svg>
+        <span className="sr-only sm:not-sr-only">Jump to</span>
         <kbd className="hidden rounded-sm border border-line px-1.5 py-0.5 font-mono text-xs normal-case tracking-normal sm:inline">
           {apple ? '⌘K' : 'Ctrl K'}
         </kbd>

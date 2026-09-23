@@ -29,9 +29,9 @@ export const hero = {
 export type ProofStat = { key: string; value: string; label: string };
 
 export const proof: ProofStat[] = [
-  { key: 'HRS', value: '10,000+', label: 'recording hours logged' }, // R-E1.1
-  { key: 'CREW', value: '50+', label: 'field staff coordinated' }, // R-E1.1
-  { key: 'SITES', value: '116', label: 'recording businesses mapped' }, // R-E1.2
+  { key: 'HRS', value: '10,000+', label: 'recording hours' }, // R-E1.1
+  { key: 'CREW', value: '50+', label: 'field staff' }, // R-E1.1
+  { key: 'SITES', value: '116', label: 'sites mapped' }, // R-E1.2
 ];
 
 /** How I work: five one-line steps. */

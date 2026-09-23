@@ -3,6 +3,7 @@
 // → What I built → Outcome / evidence → What I learned → What's next.
 
 import type { MediaKey } from './media';
+import type { IllustrationName } from '@/components/visual/Illustrations';
 
 export type ChipTone = 'ok' | 'accent' | 'muted';
 export type Chip = { label: string; tone?: ChipTone };
@@ -40,7 +41,9 @@ export type Block =
   | { type: 'shot'; media: MediaKey; caption?: string; callouts?: { x: number; y: number; label: string }[] }
   | { type: 'gallery'; items: { media: MediaKey; caption: string }[] }
   /** Desktop + phone screenshots of the same product: one system, two roles. */
-  | { type: 'devicePair'; desktop: MediaKey; phone: MediaKey; desktopLabel: string; phoneLabel: string };
+  | { type: 'devicePair'; desktop: MediaKey; phone: MediaKey; desktopLabel: string; phoneLabel: string }
+  /** A labelled illustration, for projects with no screenshot. */
+  | { type: 'illustration'; name: IllustrationName };
 
 export type Chapter = {
   id: string;

@@ -1,60 +1,64 @@
 import type { ReactNode } from 'react';
 
-// Device frames in Field Log tokens: hairline borders, surface chrome, mono labels. Theme-aware.
+// One frame system in Field Log tokens: every visual sits on a Plate, inside a BrowserFrame or PhoneFrame.
+// Same radius, border, shadow and padding everywhere, in both themes.
 
-export function DemoTag() {
+export type PlateTag = 'Demo data' | 'Illustration';
+
+export function Tag({ children }: { children: ReactNode }) {
   return (
-    <span className="whitespace-nowrap border border-line bg-bg px-1.5 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wider text-muted">
-      Demo data
+    <span className="whitespace-nowrap rounded-full border border-line bg-surface px-2 py-0.5 font-mono text-[0.6875rem] uppercase tracking-wider text-muted">
+      {children}
     </span>
   );
 }
 
-/** A browser window: three dots, an address bar, then the screenshot. */
-export function BrowserFrame({ bar, demo, children }: { bar?: string; demo?: boolean; children: ReactNode }) {
+/** The tinted presentation plate behind a visual. `tag` labels demo data or illustrations. */
+export function Plate({
+  tag,
+  children,
+  className = '',
+  pad = 'p-4 sm:p-8',
+}: {
+  tag?: PlateTag;
+  children: ReactNode;
+  className?: string;
+  pad?: string;
+}) {
   return (
-    <div className="overflow-hidden border border-line bg-surface">
-      <div className="flex items-center gap-3 border-b border-line px-3 py-2">
-        <span aria-hidden className="flex gap-1.5">
-          <span className="h-2 w-2 rounded-full border border-line bg-bg" />
-          <span className="h-2 w-2 rounded-full border border-line bg-bg" />
-          <span className="h-2 w-2 rounded-full border border-line bg-bg" />
+    <div className={`plate relative overflow-hidden ${pad} ${className}`}>
+      {tag && (
+        <span className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4">
+          <Tag>{tag}</Tag>
         </span>
-        {bar && <span className="min-w-0 flex-1 truncate bg-bg px-2 py-0.5 font-mono text-[0.6875rem] text-muted">{bar}</span>}
-        {!bar && <span className="flex-1" />}
-        {demo && <DemoTag />}
-      </div>
-      <div className="relative">{children}</div>
-    </div>
-  );
-}
-
-/** A phone: ink outline, speaker slot, rounded screen. */
-export function PhoneFrame({ demo, children }: { demo?: boolean; children: ReactNode }) {
-  return (
-    <div>
-      <div className="rounded-[1.75rem] border-2 border-ink bg-surface p-1.5">
-        <div aria-hidden className="mx-auto mb-1.5 mt-0.5 h-1 w-10 rounded-full bg-line" />
-        <div className="relative overflow-hidden rounded-[1.25rem] border border-line">{children}</div>
-      </div>
-      {demo && (
-        <p className="mt-2 text-center">
-          <DemoTag />
-        </p>
       )}
+      {children}
     </div>
   );
 }
 
-/** A diagram sheet: dot-grid paper with a mono label, for projects that have no screenshot. */
-export function DiagramSheet({ label = 'Diagram', fit = false, children }: { label?: string; fit?: boolean; children: ReactNode }) {
+/** Minimal browser chrome: three dots and, optionally, the address. */
+export function BrowserFrame({ bar, children }: { bar?: string; children: ReactNode }) {
   return (
-    <div className="overflow-hidden border border-line bg-surface">
-      <div className="flex items-center justify-between border-b border-line px-3 py-2 font-mono text-[0.6875rem] uppercase tracking-wider text-muted">
-        <span>{label}</span>
+    <div className="frame-shadow overflow-hidden rounded-frame border border-line bg-surface">
+      <div className="flex items-center gap-3 border-b border-line px-3 py-1.5">
+        <span aria-hidden className="flex gap-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-line" />
+          <span className="h-1.5 w-1.5 rounded-full bg-line" />
+          <span className="h-1.5 w-1.5 rounded-full bg-line" />
+        </span>
+        {bar && <span className="min-w-0 truncate font-mono text-[0.625rem] text-muted">{bar}</span>}
       </div>
-      {/* Cards use the screenshots' proportions so a row lines up; `fit` lets a large diagram size itself. */}
-      <div className={`dot-grid flex items-center p-3 sm:p-4 ${fit ? 'sm:p-6' : 'aspect-[1890/826] overflow-hidden'}`}>{children}</div>
+      <div className="relative overflow-hidden">{children}</div>
+    </div>
+  );
+}
+
+/** A simple phone bezel. No notch art, no reflections. */
+export function PhoneFrame({ children }: { children: ReactNode }) {
+  return (
+    <div className="frame-shadow rounded-[1.75rem] border border-line bg-surface p-1.5">
+      <div className="relative overflow-hidden rounded-[1.35rem] border border-line">{children}</div>
     </div>
   );
 }

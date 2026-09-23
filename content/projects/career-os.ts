@@ -24,19 +24,7 @@ export const careerOs: CaseStudy = {
     { label: 'Quality', value: '350 passing tests · clean ruff and mypy · no ORM–migration drift' }, // README
   ],
   links: [{ label: 'Code on GitHub', href: 'https://github.com/Pvats2003/career_ops_intel' }],
-  hero: {
-    type: 'pipeline',
-    caption: 'From candidate facts to a reviewed application — every stage writes an audit record.',
-    steps: [
-      { label: 'Candidate facts', detail: 'Source, confidence, verified' },
-      { label: 'Discovery', detail: 'Greenhouse & Lever, official APIs' },
-      { label: 'De-duplication', detail: 'Per-source ID + cross-source fingerprint' },
-      { label: 'Matching', detail: 'Deterministic, then semantic' },
-      { label: 'Decision', detail: 'Apply · Review · Save · Skip · Human' },
-      { label: 'Answers', detail: 'Hard-block → answer bank → checked draft' },
-      { label: 'Human review', detail: 'Nothing auto-submits', accent: true },
-    ],
-  }, // README (Phases 1–6A)
+  hero: { type: 'illustration', name: 'career-os' },
   chapters: [
     {
       id: 'problem',
@@ -128,6 +116,26 @@ export const careerOs: CaseStudy = {
       ],
     },
     {
+      id: 'built',
+      section: 'What I built',
+      heading: 'The pipeline, as it stands',
+      blocks: [
+        {
+          type: 'pipeline',
+          caption: 'From candidate facts to a reviewed application — every stage writes an audit record.',
+          steps: [
+            { label: 'Candidate facts', detail: 'Source, confidence, verified' },
+            { label: 'Discovery', detail: 'Greenhouse & Lever, official APIs' },
+            { label: 'De-duplication', detail: 'Per-source ID + cross-source fingerprint' },
+            { label: 'Matching', detail: 'Deterministic, then semantic' },
+            { label: 'Decision', detail: 'Apply · Review · Save · Skip · Human' },
+            { label: 'Answers', detail: 'Hard-block → answer bank → checked draft' },
+            { label: 'Human review', detail: 'Nothing auto-submits', accent: true },
+          ],
+        }, // README (Phases 1–6A)
+      ],
+    },
+    {
       id: 'outcome',
       section: 'Outcome',
       heading: 'Tested like it will touch real applications',
@@ -158,11 +166,13 @@ export const careerOs: CaseStudy = {
       heading: 'What’s next',
       blocks: [
         {
-          type: 'list',
-          items: [
-            'A first real application provider against a structured ATS (Greenhouse or Lever), still dry-run gated.', // README (Phase 6B)
-            'Resume variants and controlled tailoring — reordering and emphasis, never new claims.', // README (What remains)
-            'A dashboard, a scheduler and notifications.', // README (What remains)
+          type: 'table',
+          caption: 'What remains, from the README',
+          head: ['Next', 'What it means'],
+          rows: [
+            ['Provider', 'A first real application provider against a structured ATS (Greenhouse or Lever), still dry-run gated'], // README (Phase 6B)
+            ['Tailoring', 'Resume variants: reordering and emphasis, never new claims'], // README (What remains)
+            ['Operations', 'A dashboard, a scheduler and notifications'], // README (What remains)
           ],
         },
       ],

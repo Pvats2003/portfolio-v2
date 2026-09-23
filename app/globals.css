@@ -15,6 +15,9 @@
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
   --color-ok: var(--ok);
+  --color-plate: var(--plate);
+  --radius-frame: 10px;
+  --radius-plate: 16px;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
   --font-serif: var(--font-plex-serif), ui-serif, Georgia, serif;
@@ -31,6 +34,10 @@
   --on-accent: #fbf8f2;
   --ok: #2f6b3a;
   --grid: rgba(30, 26, 21, 0.09);
+  /* Presentation plate behind every visual, and the one shadow frames use. */
+  --plate: #e8dfcf;
+  --plate-glow: rgba(166, 58, 27, 0.1);
+  --frame-shadow: 0 1px 2px rgba(30, 26, 21, 0.08), 0 18px 40px -18px rgba(30, 26, 21, 0.35);
   color-scheme: light;
 }
 
@@ -46,6 +53,9 @@
     --on-accent: #17140f;
     --ok: #7cc48a;
     --grid: rgba(238, 231, 218, 0.07);
+    --plate: #231e17;
+    --plate-glow: rgba(240, 138, 93, 0.12);
+    --frame-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 44px -18px rgba(0, 0, 0, 0.75);
     color-scheme: dark;
   }
 }
@@ -59,7 +69,49 @@
   --on-accent: #17140f;
   --ok: #7cc48a;
   --grid: rgba(238, 231, 218, 0.07);
+  --plate: #231e17;
+  --plate-glow: rgba(240, 138, 93, 0.12);
+  --frame-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 44px -18px rgba(0, 0, 0, 0.75);
   color-scheme: dark;
+}
+
+/* Night-shift panel: the hero uses the dark palette in both themes, so screenshots pop.
+   In the dark theme it goes one step deeper than the page. */
+.night {
+  --bg: #17140f;
+  --surface: #201c16;
+  --ink: #eee7da;
+  --muted: #aba190;
+  --line: #3b352c;
+  --accent: #f08a5d;
+  --on-accent: #17140f;
+  --ok: #7cc48a;
+  --grid: rgba(238, 231, 218, 0.07);
+  --plate: #231e17;
+  --plate-glow: rgba(240, 138, 93, 0.16);
+  --frame-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 48px -20px rgba(0, 0, 0, 0.8);
+  color-scheme: dark;
+  background: var(--bg);
+  color: var(--ink);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .night {
+    --bg: #0f0c08;
+  }
+}
+:root[data-theme='dark'] .night {
+  --bg: #0f0c08;
+}
+
+/* Presentation plate: a tinted field with a soft accent glow from the top. */
+.plate {
+  background:
+    radial-gradient(120% 70% at 50% 0%, var(--plate-glow), transparent 65%),
+    var(--plate);
+  border-radius: var(--radius-plate);
+}
+.frame-shadow {
+  box-shadow: var(--frame-shadow);
 }
 
 /* ---------- Base ---------- */
@@ -152,6 +204,26 @@ body {
   .log-in {
     animation: log-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
     animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+  }
+  /* Visuals rise in once as they scroll into view (html.js is set before paint; see layout). */
+  .js [data-reveal] {
+    transition:
+      opacity 400ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 400ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .js [data-reveal]:not([data-in]) {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  /* Count-up numbers stay hidden (space kept) until they start counting; shown after 2.5 s regardless. */
+  .js .countup:not([data-counted]) {
+    visibility: hidden;
+    animation: countup-fallback 0s 2.5s forwards;
+  }
+  @keyframes countup-fallback {
+    to {
+      visibility: visible;
+    }
   }
   @keyframes log-in {
     from {

@@ -21,19 +21,7 @@ export const anpr: CaseStudy = {
     { label: 'Stack', value: 'YOLOv8n (Ultralytics) · PyTorch · OpenCV · Tesseract 5 · Gradio' }, // report, R-P5.1
     { label: 'Data', value: 'Public Kaggle Indian vehicle dataset · 1,695 images · 35 states' }, // report §3.3
   ],
-  hero: {
-    type: 'pipeline',
-    caption: 'Works on images, video files, webcams and RTSP camera streams, behind a Gradio web interface.',
-    steps: [
-      { label: 'Input', detail: 'Image · video · webcam · RTSP' },
-      { label: 'Low-light boost', detail: 'Only if the frame is dark' },
-      { label: 'YOLOv8n detection', detail: 'Plate boxes + confidence', accent: true },
-      { label: 'Crop', detail: '4 px padding' },
-      { label: '9-step clean-up', detail: 'Upscale → … → pad' },
-      { label: 'Tesseract ×6', detail: '3 modes × 2 variants' },
-      { label: 'Grammar correction', detail: 'Indian plate format' },
-    ],
-  }, // report §3.2, §3.5
+  hero: { type: 'illustration', name: 'anpr' },
   chapters: [
     {
       id: 'problem',
@@ -96,6 +84,26 @@ export const anpr: CaseStudy = {
           type: 'p',
           text: 'Each crop gets a nine-step clean-up, and Tesseract reads six variants of it. Then characters in the wrong kind of position are corrected — a 0 in the state code becomes O, an O in the district becomes 0 — and the state code is checked against the 35 valid ones.', // report §3.5
         },
+      ],
+    },
+    {
+      id: 'built',
+      section: 'What I built',
+      heading: 'The end-to-end pipeline',
+      blocks: [
+        {
+          type: 'pipeline',
+          caption: 'Works on images, video files, webcams and RTSP camera streams, behind a Gradio web interface.',
+          steps: [
+            { label: 'Input', detail: 'Image · video · webcam · RTSP' },
+            { label: 'Low-light boost', detail: 'Only if the frame is dark' },
+            { label: 'YOLOv8n detection', detail: 'Plate boxes + confidence', accent: true },
+            { label: 'Crop', detail: '4 px padding' },
+            { label: '9-step clean-up', detail: 'Upscale → … → pad' },
+            { label: 'Tesseract ×6', detail: '3 modes × 2 variants' },
+            { label: 'Grammar correction', detail: 'Indian plate format' },
+          ],
+        }, // report §3.2, §3.5
       ],
     },
     {

@@ -71,15 +71,18 @@ Inside the Field Log frame:
 - **Diagrams:** hand-built. The labels are HTML text; SVG draws only the lines, using `currentColor` or `var(--line)` / `var(--accent)`, so they follow the theme and stay legible at 375 px.
 - **TODO blocks:** a dashed accent border with a `TODO(priyanshu)` mono label. Visible on purpose; each one is also listed in `TODO.md`.
 
-## 5b. Visual-first (Sep 2026)
-- **Cards lead with a visual**: a framed screenshot (or, where none exists yet, a `DiagramSheet` flow built from sourced facts), then the title, at most 25 words and **one** proof chip.
-- **Case studies open with a hero visual** above the fold, then the 3-line TL;DR. Every chapter pairs its text with a visual (screenshot, diagram, table, before/after); keep text between visuals under ~80 words.
-- **Components** (`components/visual/`): `BrowserFrame`, `PhoneFrame`, `DiagramSheet`, `Shot` (next/image inside the right frame), `AnnotatedScreenshot` (numbered accent markers + one-line labels), `Gallery` (2–4 shots), `DevicePair` (desktop with a phone overlapping its corner: one system, two roles).
-- Frames use tokens only: `border-line`, `bg-surface`, mono labels; the phone outline is `border-ink`. Callout markers are `bg-accent` / `text-on-accent`.
-- Screenshots with made-up data carry a **Demo data** tag. Real people's names in screenshots are replaced with demo text before they enter the repo.
-- Images: static imports in `content/media.ts` (real width/height, blur placeholder), AVIF/WebP, accurate `sizes`, lazy unless it's the case-study hero (`preload`). Alt text says what the screen shows.
+## 5b. Visual system (v3)
+- **Hero = night-shift panel** (`.night` scopes the dark tokens) in both themes; in the dark theme it sits one step deeper than the page. First screen on 390px and 1440px: headline, proof tiles (10,000+ / 50+ / 116, counting up once), and the City Ops OS desktop + phone pair.
+- **Every visual sits on a Plate** (`.plate`: `--plate` tint + a soft `--plate-glow` from the top, `rounded-plate` 16px). Frames inside: `BrowserFrame` (three dots, optional address) or `PhoneFrame` (simple bezel), both `rounded-frame` 10px, `border-line`, `.frame-shadow`. No realistic mockups or reflections.
+- **Tags on the plate, top right:** "Demo data" for made-up data, "Illustration" for drawn visuals. Nothing else.
+- **Crops:** `Shot aspect=… focus=…` crops in CSS to the strongest region. The City Ops desktop file itself is cropped to hide a test item until a clean screenshot arrives.
+- **Illustrations** (Career OS pipeline card, ANPR detection frame with an "XX 00 XX 0000" placeholder plate, ITC single-line diagram) are built only from sourced facts and always tagged.
+- **Cards:** the visual is the card (plate 5:4), then title, one line, one chip. Hover/focus: lift 4px, image zoom 3% — motion-safe only.
+- **Rhythm:** no phone screen is text-only for more than one screen (checked with a script: longest text-only stretch < 844px).
+- Callouts: accent circles with a soft accent ring, numbered labels aligned in a grid below.
 
 ## 6. Motion
+- v3 adds two effects, both off under reduced motion: `[data-reveal]` visuals fade + rise 12px (400ms, once) via `RevealObserver`; proof numbers count up once (`CountUp`, 900ms). No parallax, scroll-jacking or cursor effects.
 
 - One animation on the whole site: `.log-in`. Secondary blocks (proof cells, the flagship card) fade in once, 70 ms apart. **The headline is never animated**, so reading never waits.
 - Hover and focus are colour changes only.
