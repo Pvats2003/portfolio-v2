@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Priyanshu Vats — portfolio v2
 
-## Getting Started
+A new portfolio built from scratch with Next.js, TypeScript and Tailwind CSS. It's in progress: see `PLAN.md` for the plan and `TODO.md` for what's open.
 
-First, run the development server:
+**Current phase: 1 (visual direction).** The site has three trial designs to choose between: `/lab/a`, `/lab/b` and `/lab/c`.
+
+## Run it on your computer
+
+You need **Node.js 20.9 or newer**. Check with `node -v`; if you don't have it, install the "LTS" version from nodejs.org.
 
 ```bash
+git clone https://github.com/Pvats2003/portfolio-v2.git
+cd portfolio-v2
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open **http://localhost:3000** in your browser. The home page links to the three directions. At the top of each one:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **A · Field Log / B · Control Room / C · Editorial** switches between directions.
+- **System / Light / Dark** switches the theme. It's remembered until you pick "System" again.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To see the finished, optimised version (the one Lighthouse measures), run `npm run build` and then `npm run start` instead of `npm run dev`.
 
-## Learn More
+To stop the server, press `Ctrl + C` in the terminal.
 
-To learn more about Next.js, take a look at the following resources:
+## Checks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run lint       # code style
+npm run typecheck  # TypeScript
+npm run build      # production build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How to update the site
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+_A full 10-line guide arrives in Phase 4, once the real pages exist._ For now, all the text shown in the three directions lives in one file, `content/lab.ts`. Edit a line there, save, and every direction updates.
