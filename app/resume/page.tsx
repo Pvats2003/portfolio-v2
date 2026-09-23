@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import { education, experience, identity, products, RESUME_PDF, skills, summary } from '@/content/resume';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Resume',
   description: `${identity.name} — ${identity.title}.`,
-};
+  path: '/resume',
+});
 
 // Rendered from content/resume.ts, which is transcribed line-for-line from the PDF offered here.
 
@@ -58,7 +60,7 @@ export default function ResumePage() {
                 </h3>
                 <p className="font-mono text-xs text-muted">{r.period}</p>
               </div>
-              {r.context && <p className="mt-1 text-sm italic text-muted">{r.context}</p>}
+              {r.context && <p className="mt-1 text-sm text-muted">{r.context}</p>}
               <ul className="mt-3 space-y-2 text-sm leading-relaxed">
                 {r.bullets.map((b) => (
                   <li key={b} className="grid grid-cols-[1rem_1fr]">

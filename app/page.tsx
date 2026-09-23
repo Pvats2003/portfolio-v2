@@ -1,8 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { LogSection } from '@/components/site/LogSection';
 import { FlagshipCard, WorkCardView } from '@/components/home/WorkCards';
-import { contact, hero, howIWork, proof, record } from '@/content/site';
+import { contact, hero, howIWork, proof, record, SITE_DESCRIPTION, SITE_URL } from '@/content/site';
+import { education, experience, identity } from '@/content/resume';
+import { pageMetadata } from '@/lib/seo';
 import { archive, selectedWork } from '@/content/work';
 
 // Homepage, in the order set in the brief:
@@ -10,9 +13,30 @@ import { archive, selectedWork } from '@/content/work';
 // The hero opens the log (SOD, start of day) and contact closes it (EOD, end of day);
 // every section in between is a numbered entry.
 
+export const metadata: Metadata = pageMetadata({ description: SITE_DESCRIPTION, path: '/' });
+
+// Structured data for search engines: who this site is about, and where else they are.
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: identity.name,
+  url: SITE_URL,
+  email: `mailto:${identity.email}`,
+  jobTitle: experience[0].title,
+  worksFor: { '@type': 'Organization', name: experience[0].org },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: education.school },
+  address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressRegion: 'KA', addressCountry: 'IN' },
+  sameAs: [identity.linkedin.href, identity.github.href],
+};
+
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        // Escape "<" so the JSON can never close the script tag early.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(person).replace(/</g, '\\u003c') }}
+      />
       {/* Hero */}
       <div className="dot-grid">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">

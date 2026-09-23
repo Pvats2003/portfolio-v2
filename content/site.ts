@@ -7,6 +7,12 @@ export { identity, RESUME_PDF };
 // Canonical URL: the Vercel preview until a domain is bought (PLAN.md, decision 8).
 export const SITE_URL = 'https://portfolio-v2-chi-two-55.vercel.app';
 
+// Search engines are kept out until "go live". Flip to true then (it controls the robots meta tag and robots.txt).
+export const INDEXABLE = false;
+
+export const SITE_DESCRIPTION =
+  'I run robotics data-collection operations in the field and ship the tools that fix them. Open to APM, Product Ops, and Founder’s Office roles in Bengaluru.';
+
 export const hero = {
   eyebrow: 'Ops log · Priyanshu Vats · Bengaluru',
   // Headline option C (chosen). Scale lives in the proof strip, not the headline.

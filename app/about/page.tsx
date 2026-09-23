@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { pageMetadata } from '@/lib/seo';
 import { LogSection } from '@/components/site/LogSection';
 import { about, contact } from '@/content/site';
 import { education } from '@/content/resume';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'About',
   description: 'From Bihar to MIT Manipal ECE, into field operations in Andhra Pradesh, and now building the tools those operations need.',
-};
+  path: '/about',
+});
 
 export default function AboutPage() {
   return (
