@@ -25,11 +25,7 @@ export const cityOpsOs: CaseStudy = {
     { label: 'Company', value: 'Instawork Robotics Labs · May 2026 – Present' }, // R-E1
     { label: 'City Ops OS', value: 'Live · 2026 – Present' }, // R-P1
     { label: 'Stack', value: 'React · Zustand · localStorage · Firebase Hosting' }, // R-P1
-    {
-      label: 'How it was made',
-      value: 'AI-assisted development, directed through Claude Code', // R-S4 (general)
-      todo: 'Confirm City Ops OS specifically was built this way.',
-    },
+    { label: 'How it was made', value: 'AI-assisted development — I directed the build through Claude Code' }, // R-S4 + Priyanshu (confirmed)
     { label: 'Where', value: 'Andhra Pradesh (Rajampet, Kadapa) & Karnataka' }, // R-E1.0, R-E1.1
   ],
   chapters: [
@@ -132,7 +128,14 @@ export const cityOpsOs: CaseStudy = {
           type: 'p',
           text: 'Next I prototyped a React form that uses Claude Vision to read recording metadata straight from phone screenshots.', // R-E1.4
         },
-        { type: 'todo', text: 'What it taught you, and why it isn’t in use — in your own words.' },
+        {
+          type: 'p',
+          text: 'Reading metadata off small phone screenshots was unreliable. I iterated on image compression, on parsing model responses that came back wrapped in markdown code fences, and on cropping to the relevant region of the screen.', // Priyanshu
+        },
+        {
+          type: 'p',
+          text: 'That improved accuracy, but the form wasn’t adopted — and testing it alongside the other two tools is what showed me where this was heading.', // Priyanshu
+        },
       ],
     },
     {
