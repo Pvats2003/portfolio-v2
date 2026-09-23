@@ -1,7 +1,8 @@
 import type { CaseStudy } from '../types';
 
 // Sources: resume (R-P4, R-P4.1) and Priyanshu's answers (live URL; built on Base44).
-// The resume is thin on Karavali, so most of the "why" is a visible TODO rather than a guess.
+// The resume is thin on Karavali, so most of the "why" is a TODO (hidden on the live site) rather than a guess.
+// Screenshots: public/work/karavali/ (Discover now; Explore when it arrives. Plans and Events are skipped.)
 
 export const karavali: CaseStudy = {
   slug: 'karavali',
@@ -22,20 +23,12 @@ export const karavali: CaseStudy = {
     { label: 'Region', value: 'Udupi & Dakshina Kannada' }, // R-P4.1
   ],
   links: [{ label: 'karavali.base44.app', href: 'https://karavali.base44.app' }], // Priyanshu (decision 5)
+  hero: { type: 'shot', media: 'karavaliDiscover' },
   chapters: [
-    {
-      id: 'problem',
-      section: 'Problem',
-      heading: 'Local knowledge that never reaches a visitor',
-      blocks: [
-        { type: 'p', text: 'Coastal Karnataka had no good way to surface community-sourced local discovery.' }, // R-P4.1
-        { type: 'todo', text: 'What showed you the gap — conversations, your own trips, what existing apps got wrong?' },
-      ],
-    },
     {
       id: 'pivot',
       section: 'Decision',
-      heading: 'The pivot',
+      heading: 'From campus travel to local discovery',
       blocks: [
         {
           type: 'beforeAfter',
@@ -43,31 +36,33 @@ export const karavali: CaseStudy = {
           after: {
             label: 'After',
             points: [
-              'A community-driven discovery platform for coastal Karnataka', // R-P4.1
+              'Community-driven discovery for coastal Karnataka', // R-P4.1
               'AI recommendations', // R-P4.1
               'Gamification to encourage exploring', // R-P4.1
               'Focused on Udupi and Dakshina Kannada', // R-P4.1
             ],
           },
         },
+        { type: 'p', text: 'Coastal Karnataka had no good way to surface community-sourced local discovery, so I pivoted the campus travel idea into one.' }, // R-P4.1
+        { type: 'todo', text: 'What showed you the gap — conversations, your own trips, what existing apps got wrong?' },
         { type: 'todo', text: 'Why you pivoted, and what you let go of from the campus travel idea.' },
       ],
     },
     {
-      id: 'speed',
-      section: 'Decision',
-      heading: 'Ship in a week',
+      id: 'shipped',
+      section: 'What I built',
+      heading: 'Live in one week, on Base44',
       blocks: [
-        { type: 'p', text: 'I built the MVP on Base44 and had it live in one week.' }, // R-P4.1, Priyanshu
+        {
+          type: 'facts',
+          items: [
+            { value: '1 week', label: 'to a live MVP' }, // R-P4.1
+            { value: 'Solo', label: 'founder' }, // R-P4
+            { value: '2', label: 'districts: Udupi, Dakshina Kannada' }, // R-P4.1
+          ],
+        },
+        { type: 'p', text: 'I built the MVP on Base44 and had it live in one week, at karavali.base44.app. No user or traction numbers are published here.' }, // R-P4.1, Priyanshu
         { type: 'todo', text: 'Why Base44, and what you traded for that speed.' },
-      ],
-    },
-    {
-      id: 'outcome',
-      section: 'Outcome',
-      heading: 'A live MVP',
-      blocks: [
-        { type: 'p', text: 'Karavali is live at karavali.base44.app. No user or traction numbers are published here.' }, // Priyanshu
       ],
     },
     {

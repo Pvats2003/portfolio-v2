@@ -2,6 +2,7 @@ import type { CaseStudy } from '../types';
 
 // Sources: resume (R-P3, R-P3.1) and Priyanshu's PRD, "Audit AI Copilot — PRD v1.0, May 2026" ("PRD" below).
 // PRD targets are labelled as targets; no results are claimed.
+// The PRD names Groq; the shipped app uses OpenAI GPT-4o-mini (Priyanshu, Sep 2026), so the site says GPT-4o-mini.
 
 export const auditAiCopilot: CaseStudy = {
   slug: 'audit-ai-copilot',
@@ -13,24 +14,21 @@ export const auditAiCopilot: CaseStudy = {
   tldr: [
     'An audit-risk copilot for mid-market finance teams that can’t justify a full consultancy engagement.', // PRD §1–2
     'A deterministic rule engine produces reproducible findings; an LLM rewrites and enriches them — it never adds findings of its own.', // PRD §6.1, R-P3.1
-    'I wrote the PRD — three personas, prioritised user stories, roadmap and pricing — and directed the build: FastAPI, Groq, and PDF reports.', // PRD, R-P3.1
+    'I wrote the PRD — three personas, prioritised user stories, roadmap and pricing — and directed the build: FastAPI, OpenAI’s GPT-4o-mini, and PDF reports.', // PRD, R-P3.1; model: Priyanshu
   ],
   meta: [
     { label: 'Role', value: 'Founder & product manager — wrote the PRD, directed the build' }, // PRD cover, R-P3.1
     { label: 'Timeline', value: 'PRD v1.0 and MVP · May 2026 · ongoing' }, // PRD, R-P3
-    { label: 'Stack', value: 'FastAPI · Groq (LLaMA 3.1) · ReportLab · pypdf · python-docx · Next.js' }, // PRD §7, R-P3
+    { label: 'Stack', value: 'FastAPI · Next.js · OpenAI GPT-4o-mini · ReportLab · pypdf · python-docx' }, // PRD §7, R-P3; model: Priyanshu (Sep 2026)
     { label: 'Scope', value: '3 personas · 10 user stories · 10-rule engine · 7 API endpoints' }, // PRD §4, §5, §6.1, §7.4
   ],
+  hero: { type: 'shot', media: 'auditInput' },
   chapters: [
     {
       id: 'problem',
       section: 'Problem',
       heading: 'Mid-market finance teams audit themselves with spreadsheets',
       blocks: [
-        {
-          type: 'p',
-          text: 'Companies with $10M–$200M in revenue face a bad choice: pay for an audit engagement they can barely justify, or go unaudited and accumulate risk nobody has looked at. Enterprise audit tools come with large annual contracts and long implementations, so a finance controller at a $50M company typically handles compliance and audit prep alone — with spreadsheets, email and memory.', // PRD §1, §2.1
-        },
         {
           type: 'table',
           caption: 'The problem, broken down (from the PRD)',
@@ -43,6 +41,10 @@ export const auditAiCopilot: CaseStudy = {
             ['Expertise gap', 'Mid-market finance teams lack internal audit training'],
           ],
         }, // PRD §2.2
+        {
+          type: 'p',
+          text: 'Companies with $10M–$200M in revenue can barely justify an audit engagement, and enterprise tools mean large contracts and long rollouts. So a finance controller at a $50M company handles compliance alone — with spreadsheets, email and memory.', // PRD §1, §2.1
+        },
       ],
     },
     {
@@ -90,12 +92,13 @@ export const auditAiCopilot: CaseStudy = {
       heading: 'What the MVP had to respect',
       blocks: [
         {
-          type: 'list',
-          items: [
-            'Findings must be reproducible and auditable — and still produced when the AI model is unavailable.', // PRD §3.1, US-08
-            'Meet auditors where they work: accept the PDF and DOCX documents they already have, up to 10 MB.', // PRD §6.2, US-02
-            'Run at zero infrastructure cost: a free-tier LLM API and free-tier hosting.', // PRD §7.2
-            'Findings reference compliance frameworks but are not legal advice; every report says so.', // PRD §9
+          type: 'table',
+          caption: 'Constraint, and how the MVP meets it',
+          head: ['Constraint', 'How the MVP meets it'],
+          rows: [
+            ['Reproducible, even without AI', 'The rule engine always runs; the LLM is optional'], // PRD §3.1, US-08
+            ['Use the documents auditors have', 'PDF and DOCX uploads up to 10 MB'], // PRD §6.2, US-02
+            ['Not legal advice', 'Every report says so'], // PRD §9
           ],
         },
       ],
@@ -106,8 +109,19 @@ export const auditAiCopilot: CaseStudy = {
       heading: 'Rules decide; the LLM only explains',
       blocks: [
         {
+          type: 'pipeline',
+          caption: 'The rule engine always runs; the LLM enhances only when it’s available.',
+          steps: [
+            { label: 'Input', detail: 'Process text, or a PDF/DOCX' },
+            { label: 'Rule engine', detail: '10 rules · always runs', accent: true },
+            { label: 'LLM enhancement', detail: 'GPT-4o-mini · if available' }, // Priyanshu
+            { label: 'Structured findings', detail: 'Risks, gaps, controls, severity' },
+            { label: 'Report', detail: 'Web view · branded PDF' },
+          ],
+        }, // PRD §7.1
+        {
           type: 'p',
-          text: 'The rule engine always runs first and produces every finding. Its output then goes to the LLM, which refines the language, maps each control to a framework (SOX, Basel III, MiFID II, ISO 31000, COSO) and adds business-impact analysis. If the LLM fails, the rule-engine findings are returned on their own — never a blank result.', // PRD §1, §6.1, US-08
+          text: 'The LLM refines the language, maps each control to a framework (SOX, Basel III, MiFID II, ISO 31000, COSO) and adds business impact. If it fails, the rule-engine findings come back on their own — never a blank result.', // PRD §1, §6.1, US-08
         },
         {
           type: 'tradeoff',
@@ -164,19 +178,8 @@ export const auditAiCopilot: CaseStudy = {
     {
       id: 'built',
       section: 'What I built',
-      heading: 'The review pipeline',
+      heading: 'Ten rules, run on every analysis',
       blocks: [
-        {
-          type: 'pipeline',
-          caption: 'The rule engine always runs; the LLM enhances only when it’s available.',
-          steps: [
-            { label: 'Input', detail: 'Process text, or a PDF/DOCX' },
-            { label: 'Rule engine', detail: '10 rules · always runs', accent: true },
-            { label: 'LLM enhancement', detail: 'Groq · if available' },
-            { label: 'Structured findings', detail: 'Risks, gaps, controls, severity' },
-            { label: 'Report', detail: 'Web view · branded PDF' },
-          ],
-        }, // PRD §7.1
         {
           type: 'table',
           caption: 'The 10 detection rules',
@@ -194,6 +197,7 @@ export const auditAiCopilot: CaseStudy = {
             ['TST-001', 'Deployments with no UAT or QA gate'],
           ],
         }, // PRD §6.1
+        { type: 'todo', text: 'Add the results screen (after running the sample) here once the screenshot arrives.' },
       ],
     },
     {
@@ -201,10 +205,6 @@ export const auditAiCopilot: CaseStudy = {
       section: 'Outcome',
       heading: 'Where it stands',
       blocks: [
-        {
-          type: 'p',
-          text: 'The MVP covers all P0 and P1 stories: text and document analysis, framework-tagged findings, follow-up Q&A, history, and branded PDF reports. Accounts and team collaboration are planned.', // PRD §5, §8
-        },
         {
           type: 'table',
           caption: 'Success metrics I set in the PRD',
@@ -217,6 +217,10 @@ export const auditAiCopilot: CaseStudy = {
           ],
           note: 'Targets, not results. No usage or revenue figures are published here.',
         }, // PRD §3.3
+        {
+          type: 'p',
+          text: 'The MVP covers all P0 and P1 stories: text and document analysis, framework-tagged findings, follow-up Q&A, history, and branded PDF reports. Accounts and team collaboration are planned.', // PRD §5, §8
+        },
         { type: 'todo', text: 'Current status: is the MVP live for users?' },
       ],
     },
@@ -228,10 +232,10 @@ export const auditAiCopilot: CaseStudy = {
         {
           type: 'list',
           items: [
-            'Tool or service? Does the user do the work, or do we produce the report on demand?', // PRD §11
-            'Is the primary user a solo finance controller or a team? That decides how soon collaboration matters.', // PRD §11
-            'What is the retention hook? Session-based history doesn’t create long-term stickiness.', // PRD §11
-            'Should the rule engine be user-configurable for each industry?', // PRD §11
+            'Tool or service: does the user do the work, or do we?', // PRD §11
+            'Solo controller or a team? It decides when collaboration matters.', // PRD §11
+            'What is the retention hook? Session-based history doesn’t create stickiness.', // PRD §11
+            'Should the rule engine be configurable per industry?', // PRD §11
           ],
         },
         { type: 'todo', text: 'Any lessons from building it so far, in your own words.' },
@@ -243,12 +247,13 @@ export const auditAiCopilot: CaseStudy = {
       heading: 'Roadmap in the PRD',
       blocks: [
         {
-          type: 'list',
-          items: [
-            'v1.1 — user accounts, persistent history, team sharing.', // PRD §8
-            'v1.2 — continuous monitoring: save a process, re-run weekly, see new risks as a delta.', // PRD §8
-            'v1.3 — a 25-rule library and industry templates.', // PRD §8
-            'v2.0 — collaboration: annotate findings, assign owners, track remediation.', // PRD §8
+          type: 'pipeline',
+          caption: 'Planned releases, in order',
+          steps: [
+            { label: 'v1.1', detail: 'Accounts, persistent history, team sharing' }, // PRD §8
+            { label: 'v1.2', detail: 'Continuous monitoring: weekly re-runs, risk deltas' }, // PRD §8
+            { label: 'v1.3', detail: '25-rule library, industry templates' }, // PRD §8
+            { label: 'v2.0', detail: 'Annotate findings, assign owners, track remediation', accent: true }, // PRD §8
           ],
         },
       ],

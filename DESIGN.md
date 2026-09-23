@@ -71,6 +71,14 @@ Inside the Field Log frame:
 - **Diagrams:** hand-built. The labels are HTML text; SVG draws only the lines, using `currentColor` or `var(--line)` / `var(--accent)`, so they follow the theme and stay legible at 375 px.
 - **TODO blocks:** a dashed accent border with a `TODO(priyanshu)` mono label. Visible on purpose; each one is also listed in `TODO.md`.
 
+## 5b. Visual-first (Sep 2026)
+- **Cards lead with a visual**: a framed screenshot (or, where none exists yet, a `DiagramSheet` flow built from sourced facts), then the title, at most 25 words and **one** proof chip.
+- **Case studies open with a hero visual** above the fold, then the 3-line TL;DR. Every chapter pairs its text with a visual (screenshot, diagram, table, before/after); keep text between visuals under ~80 words.
+- **Components** (`components/visual/`): `BrowserFrame`, `PhoneFrame`, `DiagramSheet`, `Shot` (next/image inside the right frame), `AnnotatedScreenshot` (numbered accent markers + one-line labels), `Gallery` (2–4 shots), `DevicePair` (desktop with a phone overlapping its corner: one system, two roles).
+- Frames use tokens only: `border-line`, `bg-surface`, mono labels; the phone outline is `border-ink`. Callout markers are `bg-accent` / `text-on-accent`.
+- Screenshots with made-up data carry a **Demo data** tag. Real people's names in screenshots are replaced with demo text before they enter the repo.
+- Images: static imports in `content/media.ts` (real width/height, blur placeholder), AVIF/WebP, accurate `sizes`, lazy unless it's the case-study hero (`preload`). Alt text says what the screen shows.
+
 ## 6. Motion
 
 - One animation on the whole site: `.log-in`. Secondary blocks (proof cells, the flagship card) fade in once, 70 ms apart. **The headline is never animated**, so reading never waits.

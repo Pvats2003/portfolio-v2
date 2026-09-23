@@ -1,6 +1,8 @@
 // Shapes for case-study content. Every case study follows one template:
-// TL;DR → Role & timeline → Problem → Constraints → Key decisions & trade-offs
+// hero visual → TL;DR → Role & timeline → Problem → Constraints → Key decisions & trade-offs
 // → What I built → Outcome / evidence → What I learned → What's next.
+
+import type { MediaKey } from './media';
 
 export type ChipTone = 'ok' | 'accent' | 'muted';
 export type Chip = { label: string; tone?: ChipTone };
@@ -33,7 +35,12 @@ export type Block =
   /** A prioritisation board: columns of items with a status chip each. */
   | { type: 'board'; caption: string; columns: { label: string; items: { id?: string; text: string; status?: Chip }[] }[] }
   | { type: 'beforeAfter'; before: { label: string; points: string[] }; after: { label: string; points: string[] } }
-  | { type: 'table'; caption: string; head: string[]; rows: string[][]; note?: string };
+  | { type: 'table'; caption: string; head: string[]; rows: string[][]; note?: string }
+  /** A framed screenshot, optionally with numbered callouts (x/y in % of the image). */
+  | { type: 'shot'; media: MediaKey; caption?: string; callouts?: { x: number; y: number; label: string }[] }
+  | { type: 'gallery'; items: { media: MediaKey; caption: string }[] }
+  /** Desktop + phone screenshots of the same product: one system, two roles. */
+  | { type: 'devicePair'; desktop: MediaKey; phone: MediaKey; desktopLabel: string; phoneLabel: string };
 
 export type Chapter = {
   id: string;
@@ -54,6 +61,8 @@ export type CaseStudy = {
   /** Exactly three lines. */
   tldr: [string, string, string];
   meta: MetaItem[];
+  /** The visual shown above the fold, before the TL;DR. */
+  hero?: Block;
   /** Public links shown in the header (live product, code). */
   links?: { label: string; href: string }[];
   chapters: Chapter[];

@@ -1,119 +1,75 @@
 import Link from 'next/link';
-import type { CSSProperties } from 'react';
 import { Chip } from '@/components/site/Chip';
+import { DevicePair } from '@/components/visual/DevicePair';
+import { DiagramSheet } from '@/components/visual/Frames';
+import { FlowDiagram } from '@/components/visual/FlowDiagram';
+import { Shot } from '@/components/visual/Shot';
 import type { WorkCard } from '@/content/work';
 import { flagship } from '@/content/work';
 
-/** The flagship card: before → after, trade-off, outcome. */
+const linkClass = 'inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent';
+
+/** The flagship: City Ops OS on desktop and phone — one system, two roles. */
 export function FlagshipCard() {
   return (
-    <article aria-labelledby="flagship-title" className="log-in border border-line bg-surface" style={{ '--i': 4 } as CSSProperties}>
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3">
-        <p className="font-mono text-xs uppercase tracking-wider text-muted">Flagship · Instawork Robotics Labs</p>
-        <div className="flex flex-wrap gap-2">
-          {flagship.chips.map((c) => (
-            <Chip key={c.label} tone={c.tone}>
-              {c.label}
-            </Chip>
-          ))}
-        </div>
-      </header>
-      <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1.2fr_1fr]">
+    <article aria-labelledby="flagship-title">
+      <DevicePair desktop="cityOpsDesktop" phone="cityOpsPhone" desktopLabel="Manager · command center" phoneLabel="Field officer · cockpit" />
+      <div className="mt-6 grid gap-4 border-t border-line pt-5 sm:grid-cols-[1fr_auto] sm:items-end">
         <div>
-          <h3 id="flagship-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            {flagship.title}
+          <h3 id="flagship-title" className="text-2xl font-semibold tracking-tight">
+            {flagship.title} <span className="text-accent">· {flagship.label}</span>
           </h3>
-          <p className="mt-1 font-mono text-xs text-muted">Local-first operating system for city field ops</p>
-          <p className="mt-5 max-w-lg text-base leading-relaxed sm:text-lg">{flagship.summary}</p>
-          <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted">
-            <span className="font-mono text-xs uppercase tracking-wider text-accent">Trade-off · </span>
-            {flagship.tradeoff}
+          <p className="mt-2 max-w-xl leading-relaxed">{flagship.blurb}</p>
+          <p className="mt-3">
+            <Chip tone={flagship.proof.tone}>{flagship.proof.label}</Chip>
           </p>
         </div>
-        <div className="font-mono text-sm">
-          <p className="text-xs uppercase tracking-wider text-muted">Before</p>
-          <ol className="mt-2 space-y-1.5">
-            {flagship.before.map((b, i) => (
-              <li key={b} className="flex gap-3 border-b border-dashed border-line pb-1.5 text-muted">
-                <span className="tabular">{String(i + 1).padStart(2, '0')}</span>
-                <span className="line-through decoration-accent/70">{b}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-4 text-xs uppercase tracking-wider text-muted">After</p>
-          <p className="mt-2 border-l-2 border-accent pl-3 text-base text-ink">{flagship.after}</p>
-          <p className="mt-5 text-xs text-muted">{flagship.stack}</p>
-        </div>
-      </div>
-      <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3">
-        <p className="flex flex-wrap items-center gap-2 text-sm">
-          <Chip tone="accent">Being integrated</Chip>
-          <span className="text-muted">{flagship.outcome}</span>
-        </p>
-        <Link
-          href={flagship.href!}
-          className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent"
-        >
-          Read the decision log →
+        <Link href={flagship.href} className={linkClass}>
+          Decision log →
         </Link>
-      </footer>
+      </div>
     </article>
   );
 }
 
-/** Work card: links to its case study, plus an optional external link (e.g. a live product). */
-export function WorkCardView({ card, compact = false }: { card: WorkCard; compact?: boolean }) {
+/** Work card: the visual leads, then title, one short line and one proof chip. */
+export function WorkCardView({ card }: { card: WorkCard }) {
   return (
-    <article aria-labelledby={`${card.slug}-title`} className="flex flex-col border border-line bg-surface">
-      <div className="flex-1 p-5 sm:p-6">
-        <div className="flex flex-wrap gap-2">
-          {card.chips.map((c) => (
-            <Chip key={c.label} tone={c.tone}>
-              {c.label}
-            </Chip>
-          ))}
-        </div>
-        <h3 id={`${card.slug}-title`} className={`mt-4 font-semibold tracking-tight ${compact ? 'text-xl' : 'text-2xl'}`}>
-          {card.title}
+    <article aria-labelledby={`${card.slug}-title`} className="flex flex-col">
+      {card.visual.kind === 'shot' ? (
+        <Shot id={card.visual.media} sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw" />
+      ) : (
+        <DiagramSheet label="Diagram">
+          <FlowDiagram label={card.visual.label} steps={card.visual.steps} />
+        </DiagramSheet>
+      )}
+      <div className="mt-4 flex-1">
+        <h3 id={`${card.slug}-title`} className="text-xl font-semibold tracking-tight">
+          <Link href={card.href} className="hover:text-accent">
+            {card.title}
+          </Link>
         </h3>
-        <p className="mt-1 font-mono text-xs text-muted">{card.kicker}</p>
-        <p className="mt-4 text-base leading-relaxed">{card.summary}</p>
-        {card.points.length > 0 && (
-          <ul className="mt-3 space-y-1.5 text-sm leading-relaxed text-muted">
-            {card.points.map((p) => (
-              <li key={p} className="grid grid-cols-[1rem_1fr]">
-                <span aria-hidden className="font-mono text-accent">
-                  —
-                </span>
-                <span>{p}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-        {card.quote && (
-          <p className="mt-5 border-l-2 border-accent pl-3 font-serif text-lg leading-snug">{card.quote}</p>
-        )}
+        <p className="mt-1.5 text-sm leading-relaxed text-muted">{card.blurb}</p>
+        <p className="mt-3">
+          <Chip tone={card.proof.tone}>{card.proof.label}</Chip>
+        </p>
       </div>
-      <footer className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line px-5 py-3 sm:px-6">
-        <span className="font-mono text-xs text-muted">{card.stack ?? ''}</span>
-        <span className="flex flex-wrap gap-x-5">
-          {card.external && (
-            <a
-              href={card.external.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent"
-            >
-              {card.external.label} ↗<span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          )}
-          {card.href && (
-            <Link href={card.href} className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent">
-              Case study →
-            </Link>
-          )}
-        </span>
-      </footer>
+      <p className="mt-2 flex flex-wrap gap-x-5">
+        <Link href={card.href} aria-label={`${card.title} case study`} className={linkClass}>
+          Case study →
+        </Link>
+        {card.external && (
+          <a
+            href={card.external.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${card.title} ${card.external.label} (opens in a new tab)`}
+            className={linkClass}
+          >
+            {card.external.label} ↗
+          </a>
+        )}
+      </p>
     </article>
   );
 }

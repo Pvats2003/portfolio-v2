@@ -2,7 +2,8 @@ import type { CaseStudy } from '../types';
 
 // Flagship: Instawork → City Ops OS, written as a decision log.
 // Tags after each line name the resume line it comes from (PLAN.md, Appendix A).
-// Anything the resume doesn't say is a visible TODO, never a guess.
+// Anything the resume doesn't say is a TODO (hidden on the live site), never a guess.
+// Screenshots: public/work/city-ops-os/ (demo data; names replaced with demo text).
 
 export const cityOpsOs: CaseStudy = {
   slug: 'city-ops-os',
@@ -28,71 +29,35 @@ export const cityOpsOs: CaseStudy = {
     { label: 'How it was made', value: 'AI-assisted development — I directed the build through Claude Code' }, // R-S4 + Priyanshu (confirmed)
     { label: 'Where', value: 'Andhra Pradesh (Rajampet, Kadapa) & Karnataka' }, // R-E1.0, R-E1.1
   ],
+  hero: {
+    type: 'devicePair',
+    desktop: 'cityOpsDesktop',
+    phone: 'cityOpsPhone',
+    desktopLabel: 'Manager · command center',
+    phoneLabel: 'Field officer · cockpit',
+  },
+  // Visual-first: every chapter pairs its text (under ~80 words) with a screenshot, diagram or table.
   chapters: [
     {
       id: 'context',
       section: 'Problem',
-      heading: 'Context: robots learn from people doing real work',
+      heading: 'No single view of a city',
       blocks: [
-        {
-          type: 'p',
-          text: 'Robots learn physical tasks from examples. Egocentric vision-language-action (VLA) data is first-person recording of people doing real work, which robotics models learn from.',
-        },
-        {
-          type: 'p',
-          text: 'At Instawork Robotics Labs I run day-to-day field execution for that data collection across Andhra Pradesh — primarily Rajampet and Kadapa — and Karnataka. I coordinate Field Officers, Data Captains, and Data Collectors, and own the task and activity libraries and SOD / MOD / EOD reporting.', // R-E1.0, R-E1.1
-        },
         {
           type: 'facts',
           items: [
             { value: '50+', label: 'field staff coordinated' }, // R-E1.1
             { value: '10,000+', label: 'recording hours logged' }, // R-E1.1
-            { value: 'SOD · MOD · EOD', label: 'daily reporting I own' }, // R-E1.1
+            { value: '116', label: 'businesses in my field recording guide' }, // R-E1.2
           ],
         },
-      ],
-    },
-    {
-      id: 'site-sourcing',
-      section: 'Problem',
-      heading: 'Finding places to record',
-      blocks: [
         {
           type: 'p',
-          text: 'Recording happens in walk-in, fixed-premises sites, so part of the job is sourcing and validating them.', // R-E1.2
+          text: 'Robots learn physical tasks from first-person recordings of people doing real work. I run day-to-day field execution for that data collection in Andhra Pradesh — mainly Rajampet and Kadapa — and Karnataka.', // R-E1.0, R-E1.1
         },
-        {
-          type: 'list',
-          items: [
-            'Authored the South India VLA Field Recording Guide: 116 businesses across 19 categories.', // R-E1.2
-            'Built cluster-wise lead directories with two-shift daily field plans for the Rajampet–Kadapa corridor.', // R-E1.2
-            'Compiled high-dexterity business directories — tailors, cobblers, goldsmiths, repair shops — across 10 Bengaluru neighbourhoods.', // R-E1.2
-          ],
-        },
-      ],
-    },
-    {
-      id: 'real-problem',
-      section: 'Problem',
-      heading: 'The real problem: no single view of a city',
-      blocks: [
         {
           type: 'p',
           text: 'Field updates lived in unstructured WhatsApp threads and scattered Sheets. Nobody could see one city’s operation in one place.', // R-E1.3
-        },
-      ],
-    },
-    {
-      id: 'constraints',
-      section: 'Constraints',
-      heading: 'What any fix had to respect',
-      blocks: [
-        {
-          type: 'list',
-          items: [
-            'Updates arrive the way the field already works: WhatsApp messages and Sheets.', // R-E1.3
-            'I wanted the tool to need no accounts, no infra budget, and no setup.', // R-P1.2
-          ],
         },
         {
           type: 'todo',
@@ -101,52 +66,24 @@ export const cityOpsOs: CaseStudy = {
       ],
     },
     {
-      id: 'prototype-1',
+      id: 'prototypes',
       section: 'Decision',
-      heading: 'Prototype 1 — a live command center',
+      heading: 'Three prototypes, one per symptom',
       blocks: [
         {
-          type: 'p',
-          text: 'My first attempt was a live command center to centralise tracking: a 10-sheet workbook, an Apps Script JSON API with automated Slack and email alerts, and a dashboard refreshing every 30 seconds.', // R-E1.3
-        },
-        {
-          type: 'facts',
-          items: [
-            { value: '10', label: 'sheets in the workbook' }, // R-E1.3
-            { value: '30 s', label: 'dashboard refresh' }, // R-E1.3
+          type: 'pipeline',
+          caption: 'What I tried first, in order',
+          steps: [
+            { label: 'Live command center', detail: '10-sheet workbook · Apps Script JSON API · Slack/email alerts · 30 s dashboard' }, // R-E1.3
+            { label: 'OCR form', detail: 'React + Claude Vision reads recording metadata from phone screenshots' }, // R-E1.4
+            { label: 'OpsIntel', detail: 'WhatsApp parser feeding a Node.js / WebSocket dashboard' }, // R-E1.4
           ],
         },
+        {
+          type: 'p',
+          text: 'The OCR form taught me the most. Reading metadata off small phone screenshots was unreliable, so I iterated on compression, on cropping to the relevant region, and on parsing replies wrapped in code fences. Accuracy improved, but the form wasn’t adopted.', // Priyanshu
+        },
         { type: 'todo', text: 'What the command center solved, and where it fell short.' },
-      ],
-    },
-    {
-      id: 'prototype-2',
-      section: 'Decision',
-      heading: 'Prototype 2 — an OCR form for recording metadata',
-      blocks: [
-        {
-          type: 'p',
-          text: 'Next I prototyped a React form that uses Claude Vision to read recording metadata straight from phone screenshots.', // R-E1.4
-        },
-        {
-          type: 'p',
-          text: 'Reading metadata off small phone screenshots was unreliable. I iterated on image compression, on parsing model responses that came back wrapped in markdown code fences, and on cropping to the relevant region of the screen.', // Priyanshu
-        },
-        {
-          type: 'p',
-          text: 'That improved accuracy, but the form wasn’t adopted — and testing it alongside the other two tools is what showed me where this was heading.', // Priyanshu
-        },
-      ],
-    },
-    {
-      id: 'prototype-3',
-      section: 'Decision',
-      heading: 'Prototype 3 — OpsIntel',
-      blocks: [
-        {
-          type: 'p',
-          text: 'To attack the WhatsApp problem directly, I prototyped OpsIntel: a parser for WhatsApp updates feeding a Node.js / WebSocket dashboard.', // R-E1.4
-        },
       ],
     },
     {
@@ -157,19 +94,15 @@ export const cityOpsOs: CaseStudy = {
         { type: 'diagram', name: 'sprawl' },
         {
           type: 'p',
-          text: 'Together, the three prototypes meant Sheets, Apps Script, a standalone OCR form, and a Node.js backend — for a single city. That realisation led directly to City Ops OS.', // R-P1.1, R-E1.4
+          text: 'Sheets, Apps Script, a standalone OCR form and a Node.js backend — for a single city. That led directly to City Ops OS.', // R-P1.1, R-E1.4
         },
       ],
     },
     {
       id: 'decision',
       section: 'Decision',
-      heading: 'The decision: one local-first view per city',
+      heading: 'One local-first view per city',
       blocks: [
-        {
-          type: 'p',
-          text: 'I consolidated everything into a single per-city operating view, and chose a local-first, zero-cost architecture: all state lives in the browser, with no backend, servers, or paid APIs.', // R-P1.1, R-P1.2
-        },
         {
           type: 'tradeoff',
           caption: 'What local-first gave, and what it cost',
@@ -181,26 +114,56 @@ export const cityOpsOs: CaseStudy = {
             { dimension: 'Cross-device sync', result: 'Deliberately traded away', kind: 'given-up' }, // R-P1.2
           ],
         },
-        { type: 'quote', text: 'I deliberately traded away cross-device sync so the tool would need no accounts, no budget, and no setup.' }, // R-P1.2
+        {
+          type: 'p',
+          text: 'All state lives in the browser, so the tool needs no accounts, no infra budget and no setup. I deliberately gave up cross-device sync to get there.', // R-P1.2
+        },
       ],
     },
     {
-      id: 'built',
+      id: 'manager',
       section: 'What I built',
-      heading: 'Four systems became one',
+      heading: 'The manager’s view: the whole city on one screen',
       blocks: [
-        { type: 'diagram', name: 'converge' },
+        {
+          type: 'shot',
+          media: 'cityOpsDesktop',
+          callouts: [
+            { x: 52.5, y: 13.5, label: 'Plan the day, assign field officers, start sessions, report issues' },
+            { x: 20.5, y: 31, label: 'Recording hours against the day’s target' },
+            { x: 43, y: 31, label: 'Businesses, field officers, live sessions, issues and fleet at a glance' },
+            { x: 19.5, y: 76.5, label: 'Field execution checks: evidence, location mismatches, prechecks' },
+            { x: 19.5, y: 92, label: 'A “What needs my attention?” feed' },
+          ],
+        },
         {
           type: 'p',
-          text: 'City Ops OS is a React app with Zustand state persisted to localStorage, hosted on Firebase Hosting.', // R-P1
+          text: 'I designed City Ops OS and directed the build through Claude Code: a React app with Zustand state persisted to localStorage, hosted on Firebase Hosting.', // R-P1, R-S4, Priyanshu
+        },
+      ],
+    },
+    {
+      id: 'field-officer',
+      section: 'What I built',
+      heading: 'The field officer’s view: today, on a phone',
+      blocks: [
+        {
+          type: 'shot',
+          media: 'cityOpsPhone',
+          callouts: [
+            { x: 8, y: 11.5, label: 'Today’s visits, in order, with their status' },
+            { x: 92, y: 15.2, label: 'Navigate to each visit' },
+            { x: 13, y: 96, label: 'Today, Sessions, Issues and Profile tabs' },
+          ],
         },
       ],
     },
     {
       id: 'outcome',
       section: 'Outcome',
-      heading: 'Being integrated into Instawork’s internal ops tool',
+      heading: 'Four systems became one — now being integrated',
       blocks: [
+        { type: 'diagram', name: 'converge' },
         { type: 'p', text: 'City Ops OS is live, and its design is now being integrated into Instawork’s internal ops tool.' }, // R-P1, R-P1.1
         { type: 'todo', text: 'Confirm the live app (city-ops-cf81f.web.app) is safe to link publicly, and your role in the integration.' },
       ],

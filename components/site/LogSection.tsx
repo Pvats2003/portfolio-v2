@@ -11,6 +11,7 @@ export function LogSection({
   heading,
   children,
   className = '',
+  hideHeading = false,
 }: {
   id?: string;
   marker: string;
@@ -19,6 +20,8 @@ export function LogSection({
   heading?: string;
   children: ReactNode;
   className?: string;
+  /** Heading kept for screen readers and the outline, but not shown (when it would only repeat the label). */
+  hideHeading?: boolean;
 }) {
   const headingId = id ? `${id}-h` : undefined;
   return (
@@ -36,7 +39,7 @@ export function LogSection({
       </p>
       <div className="min-w-0">
         {heading && (
-          <h2 id={headingId} className="mb-8 max-w-2xl text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
+          <h2 id={headingId} className={hideHeading ? 'sr-only' : 'mb-8 max-w-2xl text-2xl font-semibold leading-tight tracking-tight sm:text-3xl'}>
             {heading}
           </h2>
         )}

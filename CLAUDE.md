@@ -22,6 +22,7 @@
 - `content/site.ts` (hero, proof, how I work, contact, about, record) · `content/work.ts` (homepage cards) · `content/projects/*.ts` (case studies).
 - `DESIGN.md` — the Field Log identity: tokens, type, layout, motifs, motion. Follow it for any new UI.
 - `components/site/LogSection.tsx` — the timestamp-column section every page is built from.
+- `content/media.ts` — every screenshot (files in `public/work/<slug>/`) with alt text, frame type and demo flag. `components/visual/` holds the frames, `AnnotatedScreenshot`, `Gallery`, `DevicePair`, `FlowDiagram`. Rules in DESIGN.md §5b.
 - `content/palette.ts` — what the ⌘K palette offers (`components/palette/`; cmdk inside a native `<dialog>`, lazy-loaded on first open).
 - `lib/seo.ts` — `pageMetadata()` gives every page its title, description, canonical URL and OG/X tags. Every new page must call it.
 - `lib/og.tsx` + `opengraph-image.tsx` files — sharing images rendered with `next/og` from content; fonts in `assets/fonts/` (OFL).
