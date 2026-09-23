@@ -19,6 +19,11 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | Direction | **A · Field Log** is the site identity (shift markers, status chips, timestamp column, IBM Plex Sans + Mono). `/work` case studies use C's long-form reading treatment (serif body, pull-quotes, generous measure) inside A's frame. A hybrid case-study page must be approved before DESIGN.md is written. |
 | Serif | IBM Plex Serif for case-study reading (confirmed). |
 | Headline | **Option C**: “Field operations lived in WhatsApp threads. I scoped, designed, and shipped the fix.” The proof strip directly below carries 10,000+ hours and 50+ field staff. |
+| 9 | Answered by the Career OS README (github.com/Pvats2003/career_ops_intel): only **Greenhouse and Lever** adapters exist, so the old site's five named sources are cut. The README confirms 350 passing tests, clean ruff/mypy and no ORM–migration drift. |
+| 10 | Answered by the Audit AI Copilot PRD v1.0: real personas (stretched finance controller, compliance-driven startup founder, internal audit professional) and user stories ranked P0–P2. |
+| 12 | OCR form lessons answered by Priyanshu (see the City Ops OS case study). |
+| 19 | Career OS repo is public; linked from its case study. |
+| ANPR | Case study sourced from Priyanshu's B.Tech report (May 2026). Guide contact details and registration number are deliberately not published. |
 | 16 | Agreed: no "built" in the headline, and never imply City Ops OS ran all 10,000+ hours. Headlines keep scale (what he ran) separate from the tool (what he designed and shipped). |
 
 ---
