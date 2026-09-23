@@ -1,5 +1,5 @@
 // Work cards on the homepage. Case-study pages live in content/projects/.
-// `href` is set only when the case-study page exists; the rest show as "case study in progress".
+// `href` links a card to its case study in content/projects/.
 import type { Chip } from './types';
 
 export type WorkCard = {
@@ -38,13 +38,14 @@ export const selectedWork: WorkCard[] = [
     kicker: 'Autonomous job discovery & application agent', // R-P2
     chips: [{ label: 'Ongoing' }], // R-P2
     summary:
-      'A modular system: multi-source discovery with cross-source dedup, deterministic + AI-assisted matching, resume and cover-letter generation, an application assistant, and a dashboard.', // R-P2.1
+      'A job-search agent built so it can’t make things up: discovery with cross-source dedup, deterministic + AI-assisted matching, and an application engine that drafts only answers it can prove.', // R-P2.1, README
     points: [
       'Every candidate fact carries source, confidence, and verified metadata.', // R-P2.2
       'Salary, visa, CAPTCHA and MFA hard-stop to a human; nothing auto-submits.', // R-P2.2
       '350+ passing automated tests.', // R-P2.2
     ],
     quote: 'Automate the work. Never automate trust.', // brief (kept from old site)
+    href: '/work/career-os',
   },
   {
     slug: 'karavali',
@@ -58,17 +59,19 @@ export const selectedWork: WorkCard[] = [
       'Live MVP shipped in one week.', // R-P4.1
     ],
     stack: 'Built on Base44', // Priyanshu (decision 6)
-    external: { label: 'karavali.base44.app', href: 'https://karavali.base44.app' }, // Priyanshu (decision 5)
+    href: '/work/karavali',
+    external: { label: 'Live MVP', href: 'https://karavali.base44.app' }, // Priyanshu (decision 5)
   },
   {
     slug: 'audit-ai-copilot',
     title: 'Audit AI Copilot',
-    kicker: 'AI document review for auditors', // R-P3
+    kicker: 'AI-powered internal audit risk review', // R-P3, PRD
     chips: [{ label: 'Ongoing' }], // R-P3
     summary:
       'Auditors upload documents and query anomalies in natural language. I directed the build: a deterministic rule engine, an LLM review layer, and PDF reports.', // R-P3.1
-    points: ['Scoped across three personas with MoSCoW, a full PRD, and a Y Combinator application.'], // R-P3.1
+    points: ['Wrote the PRD: three personas, prioritised user stories, roadmap and pricing.'], // R-P3.1, PRD
     stack: 'FastAPI · Next.js · Groq', // R-P3
+    href: '/work/audit-ai-copilot',
   },
 ];
 
@@ -80,6 +83,7 @@ export const archive: WorkCard[] = [
     chips: [{ label: 'Jan – May 2026' }], // R-P5
     summary: 'A real-time licence plate detection and reading pipeline.', // R-P5.1
     points: ['YOLOv8n at 89.1% mAP@50, with OpenCV and Tesseract OCR.'], // R-P5.1
+    href: '/work/anpr',
   },
   {
     slug: 'itc-powerhouse',
@@ -88,5 +92,6 @@ export const archive: WorkCard[] = [
     chips: [{ label: 'Jun – Jul 2024' }], // R-E2
     summary: 'Mapped power distribution across 15+ sub-distribution boards (RUPS, bypass, DG supply).', // R-E2.1
     points: ['Analysed switchover logic and single points of failure; documented findings for operator training.'], // R-E2.1
+    href: '/work/itc-powerhouse',
   },
 ];

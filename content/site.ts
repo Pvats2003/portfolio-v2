@@ -36,7 +36,7 @@ export const howIWork = [
   {
     step: 'Structure',
     line: 'Turn ambiguity into something that can be scoped.',
-    example: 'Scoped Audit AI Copilot across three personas with MoSCoW, a full PRD, and a YC application.', // R-P3.1
+    example: 'Wrote the Audit AI Copilot PRD: three personas, user stories ranked P0–P2, a roadmap and pricing.', // R-P3.1, PRD
   },
   {
     step: 'Build',

@@ -61,7 +61,7 @@ export function FlagshipCard() {
   );
 }
 
-/** Selected-work card. Links to a case study only when that page exists. */
+/** Work card: links to its case study, plus an optional external link (e.g. a live product). */
 export function WorkCardView({ card, compact = false }: { card: WorkCard; compact?: boolean }) {
   return (
     <article aria-labelledby={`${card.slug}-title`} className="flex flex-col border border-line bg-surface">
@@ -96,24 +96,23 @@ export function WorkCardView({ card, compact = false }: { card: WorkCard; compac
       </div>
       <footer className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line px-5 py-3 sm:px-6">
         <span className="font-mono text-xs text-muted">{card.stack ?? ''}</span>
-        {card.href ? (
-          <Link href={card.href} className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent">
-            Case study →
-          </Link>
-        ) : card.external ? (
-          <a
-            href={card.external.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent"
-          >
-            {card.external.label} ↗<span className="sr-only"> (opens in a new tab)</span>
-          </a>
-        ) : (
-          <span className="inline-flex min-h-11 items-center font-mono text-xs uppercase tracking-wider text-muted">
-            Case study in progress
-          </span>
-        )}
+        <span className="flex flex-wrap gap-x-5">
+          {card.external && (
+            <a
+              href={card.external.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent"
+            >
+              {card.external.label} ↗<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          )}
+          {card.href && (
+            <Link href={card.href} className="inline-flex min-h-11 items-center font-mono text-sm underline decoration-line underline-offset-4 hover:decoration-accent">
+              Case study →
+            </Link>
+          )}
+        </span>
       </footer>
     </article>
   );
