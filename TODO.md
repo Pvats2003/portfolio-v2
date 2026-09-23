@@ -6,7 +6,7 @@ Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown o
 - [x] Career OS bullet now matches the README (updated resume, Sep 2026).
 - [x] Audit AI Copilot now says P0–P2, matching the PRD; the board shows P0 / P1 / P2.
 - [x] Karavali URL fixed in the PDF; `public/resume/Priyanshu_Vats_Resume_PV.pdf` replaced.
-- [x] Y Combinator: the updated resume no longer mentions it, so neither does the site. **(you)** Your answer came back as the unfilled placeholder; if it was submitted and you want it shown, say so.
+- [x] Y Combinator: not shown anywhere on the site (your decision).
 - [ ] Note, no action needed: the resume calls ANPR "real-time". Detection is (~32 ms per frame on a CPU); OCR takes ~1.2 s per plate. The case study states both numbers.
 
 ## Waiting on you — shown on the site as visible TODOs (must be filled before "go live")
@@ -41,13 +41,13 @@ Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown o
 ## Still-open questions (PLAN.md §4)
 - [ ] **(you)** Q11 — Show your phone number on the site? Default: no (PDF only).
 - [ ] **(you)** Q13 — City Ops OS start and ship months (the case says "2026 – Present").
-- [ ] **(you)** Q14 — Approve the resume sync approach (PDF canonical + build-time drift check).
 - [ ] **(you)** Q15 — Number of cities you're happy to state (default: name Rajampet and Kadapa, no count).
 - [ ] **(you)** Q17 — Photo on About? Default: none.
 - [ ] **(you)** Q18 — Start month for Career OS (Audit AI now shows the PRD date, May 2026).
 
 ## Next build steps
 - [x] Phase 4: ⌘K palette (`cmdk`), per-page OG images, JSON-LD `Person`, `sitemap.xml` / `robots.txt`, canonical URLs, Vercel Analytics events, README "how to update" guide.
-- [ ] Phase 5: **(you)** switch on Vercel Web Analytics for the project. Until then its script 404s on the preview, which shows up as a console error. Then check the Analytics tab shows the custom events (`resume_download`, `contact_click`, `case_study_read`). Vercel has limited custom events to paid plans in the past; if they're missing on Hobby, page views still work.
-- [ ] Phase 5: run PageSpeed Insights on the live preview (this session can't reach vercel.app). Local simulated mobile LCP varies 1.9–2.6 s and is the same with every client component removed, so it's the React/Next runtime rather than site code. With real throttling (Lighthouse devtools mode) LCP is 1.7 s.
+- [x] Resume drift check (Q14): runs before every build; see CLAUDE.md.
+- [x] Vercel Web Analytics enabled (Hobby). Custom events stay in the code but nothing relies on them; page views are the signal.
+- [ ] **(you)** Phase 5: paste the PageSpeed Insights mobile score and LCP for the live preview (this session can't reach vercel.app; the last reply had the placeholder, not the numbers). Local simulated mobile LCP varies 1.9–2.6 s and is the same with every client component removed, so it's the React/Next runtime rather than site code. With real throttling (Lighthouse devtools mode) LCP is 1.7 s.
 - [ ] Go live: fill every visible TODO above, flip `INDEXABLE` to `true` in `content/site.ts`, and swap `SITE_URL` if a domain is added.

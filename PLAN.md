@@ -42,7 +42,7 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | Diagrams | **Hand-built SVG React components** | Your requirement. They use theme colors and have a mobile layout that switches to vertical at 375 px. |
 | OG images | **`next/og`** (per-page generated images) | Your requirement. Built into Next, so no extra dependency. |
 | Analytics | **`@vercel/analytics`** (cookieless) | Your requirement. It needs Analytics switched on in the Vercel project, which **you** have to do (Q4). |
-| Resume sync | **Your PDF stays canonical, and the build checks for drift** — *my proposal* | The HTML resume is generated from `content/resume.ts`. At build time a script reads the text out of your PDF and fails the build if any line in `resume.ts` isn't in the PDF, so the two can't silently drift. (The old site already drifted: it had the wrong city and a missing product.) See Q14. |
+| Resume sync | **Your PDF stays canonical, and the build checks for drift** — *approved (Q14)* | The HTML resume is generated from `content/resume.ts`. Before every build, `scripts/check-resume.mjs` reads the text out of your PDF and fails the build if `resume.ts` has a line the PDF doesn't, or the PDF has text `resume.ts` doesn't, so the two can't silently drift. (The old site already drifted: it had the wrong city and a missing product.) |
 | Hosting | **A new Vercel project**, previews on every push | Your requirement. It's blocked right now; see Q3. |
 | Quality gates | ESLint, `tsc --noEmit`, a build-time content check (no leftover `TODO` in production strings unless intentionally shown), Lighthouse CI on preview | These enforce the Phase 4 bar automatically instead of by memory. |
 
@@ -125,7 +125,7 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | "AI Document Review Tool" · FastAPI · Next.js · Groq · Ongoing | R-P3 |
 | Directed the build; auditors upload documents and query anomalies in natural language | R-P3.1 |
 | Deterministic rule engine + LLM review layer + PDF reports | R-P3.1 |
-| Scoped across three personas with MoSCoW, a full PRD and a Y Combinator application | R-P3.1 |
+| Scoped across three personas with P0–P2 prioritised user stories and a full PRD (YC: never shown, Priyanshu's decision) | R-P3.1 |
 | Persona names (Auditor / Reviewer / Compliance Lead) and MoSCoW contents (ingestion, AI Q&A, flagging engine, exportable report) | **O** (for the persona cards and MoSCoW board you asked for, I need the real contents, Q10) |
 
 ### ANPR · ITC · education · leadership · skills

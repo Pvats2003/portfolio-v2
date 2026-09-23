@@ -5,6 +5,8 @@
 ## Source of truth
 - `public/resume/Priyanshu_Vats_Resume_PV.pdf` is canonical. Every fact on the site must trace to a resume line (IDs in `PLAN.md`, Appendix A) or to an explicit answer from Priyanshu recorded in `PLAN.md`.
 - If the site and the resume disagree, the resume wins. List the conflict for Priyanshu instead of guessing.
+- `scripts/check-resume.mjs` runs before every build (`prebuild`) and fails it if `content/resume.ts` and the PDF differ in either direction, or their links differ. Run it alone with `npm run check:resume`. Deliberate omissions go in its `DELIBERATELY_OMITTED` list, each with a reason.
+- Y Combinator is never mentioned anywhere on the site (Priyanshu's decision).
 
 ## Non-negotiables
 1. **Zero fabrication.** No invented metrics, testimonials, logos, users, quotes or outcomes. Missing data → a visible `TODO(priyanshu): …` in the UI **and** an entry in `TODO.md`.
@@ -24,7 +26,7 @@
 - `lib/seo.ts` — `pageMetadata()` gives every page its title, description, canonical URL and OG/X tags. Every new page must call it.
 - `lib/og.tsx` + `opengraph-image.tsx` files — sharing images rendered with `next/og` from content; fonts in `assets/fonts/` (OFL).
 - `app/sitemap.ts`, `app/robots.ts`; JSON-LD `Person` lives on the homepage (`app/page.tsx`).
-- `lib/analytics.ts` — the only custom events: `resume_download`, `contact_click`, `case_study_read`. `ClickTracker` recognises resume/contact links by href, so plain links are tracked automatically.
+- `lib/analytics.ts` — the only custom events: `resume_download`, `contact_click`, `case_study_read`. `ClickTracker` recognises resume/contact links by href, so plain links are tracked automatically. The project is on Vercel Hobby, where custom events may not be recorded: keep the code, but don't build anything that depends on the event data (page views are the reliable signal).
 
 ## Build rules
 - Next.js 16 App Router, TypeScript strict, Tailwind v4, `next/font` (self-hosted, free-licence faces).
