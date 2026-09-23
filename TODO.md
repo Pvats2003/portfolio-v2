@@ -43,11 +43,11 @@ These questions need your own words, so they were hidden rather than filled with
 - [x] Homepage and City Ops OS approved; the other five case studies done the same way.
 - [x] Names in the field officer screenshot are real, so they stay replaced with demo text.
 - [x] Karavali: Discover only for now; Plans and Events skipped (Events screenshot deleted).
-- [ ] **(you)** These screenshots didn't reach me — images pasted into chat don't land as files. Please upload them as files (like the resume PDFs) or add them to `public/work/<slug>/` on GitHub:
+- [ ] **(you)** These screenshots still haven't reached me. They're not on GitHub (`origin/visual-first` had no new commits, Sep 23), and images pasted into chat don't save as files. Upload them as files (like the resume PDFs), or commit them to `public/work/<slug>/` on GitHub and check the commit shows up:
   - new City Ops manager screenshot with demo data (the old one, with 0.0h and a test item, stays until then — on this branch only);
   - Karavali Explore;
   - Audit AI results screen after running the sample (it slots into "What I built", where a hidden TODO marks the spot).
-- [ ] **(you)** Audit AI model: your message still had the "[Groq / GPT-4o-mini]" placeholder. Sources disagree: resume PDF, Word resume and PRD say Groq (LLaMA 3.1 8B, "OpenAI fallback if needed"); the app header says GPT-4o-mini; the PM resume says "OpenAI API". The case study now just says "an LLM layer" until you confirm. If it's GPT-4o-mini, the resume line "FastAPI · Next.js · Groq" needs changing.
+- [x] Audit AI model: GPT-4o-mini (OpenAI) — the case study says so. **(you)** Your resume PDF still says “FastAPI · Next.js · Groq”; the /resume page mirrors the PDF, so it keeps saying Groq until you replace the PDF. After that, update `content/resume.ts` to match (the build's drift check will list the exact line).
 - [x] Career OS, ANPR, ITC keep diagrams for now.
 
 ## Still-open questions (PLAN.md §4)

@@ -2,6 +2,7 @@ import type { CaseStudy } from '../types';
 
 // Sources: resume (R-P3, R-P3.1) and Priyanshu's PRD, "Audit AI Copilot — PRD v1.0, May 2026" ("PRD" below).
 // PRD targets are labelled as targets; no results are claimed.
+// The PRD names Groq; the shipped app uses OpenAI GPT-4o-mini (Priyanshu, Sep 2026), so the site says GPT-4o-mini.
 
 export const auditAiCopilot: CaseStudy = {
   slug: 'audit-ai-copilot',
@@ -13,12 +14,12 @@ export const auditAiCopilot: CaseStudy = {
   tldr: [
     'An audit-risk copilot for mid-market finance teams that can’t justify a full consultancy engagement.', // PRD §1–2
     'A deterministic rule engine produces reproducible findings; an LLM rewrites and enriches them — it never adds findings of its own.', // PRD §6.1, R-P3.1
-    'I wrote the PRD — three personas, prioritised user stories, roadmap and pricing — and directed the build: FastAPI, an LLM layer, and PDF reports.', // PRD, R-P3.1
+    'I wrote the PRD — three personas, prioritised user stories, roadmap and pricing — and directed the build: FastAPI, OpenAI’s GPT-4o-mini, and PDF reports.', // PRD, R-P3.1; model: Priyanshu
   ],
   meta: [
     { label: 'Role', value: 'Founder & product manager — wrote the PRD, directed the build' }, // PRD cover, R-P3.1
     { label: 'Timeline', value: 'PRD v1.0 and MVP · May 2026 · ongoing' }, // PRD, R-P3
-    { label: 'Stack', value: 'FastAPI · Next.js · ReportLab · pypdf · python-docx · LLM API', todo: 'Which LLM provider: Groq (resume, PRD) or GPT-4o-mini (app header)?' }, // PRD §7, R-P3
+    { label: 'Stack', value: 'FastAPI · Next.js · OpenAI GPT-4o-mini · ReportLab · pypdf · python-docx' }, // PRD §7, R-P3; model: Priyanshu (Sep 2026)
     { label: 'Scope', value: '3 personas · 10 user stories · 10-rule engine · 7 API endpoints' }, // PRD §4, §5, §6.1, §7.4
   ],
   hero: { type: 'shot', media: 'auditInput' },
@@ -97,7 +98,6 @@ export const auditAiCopilot: CaseStudy = {
           rows: [
             ['Reproducible, even without AI', 'The rule engine always runs; the LLM is optional'], // PRD §3.1, US-08
             ['Use the documents auditors have', 'PDF and DOCX uploads up to 10 MB'], // PRD §6.2, US-02
-            ['Zero infrastructure cost', 'A free-tier LLM API and free-tier hosting'], // PRD §7.2
             ['Not legal advice', 'Every report says so'], // PRD §9
           ],
         },
@@ -114,7 +114,7 @@ export const auditAiCopilot: CaseStudy = {
           steps: [
             { label: 'Input', detail: 'Process text, or a PDF/DOCX' },
             { label: 'Rule engine', detail: '10 rules · always runs', accent: true },
-            { label: 'LLM enhancement', detail: 'If available' },
+            { label: 'LLM enhancement', detail: 'GPT-4o-mini · if available' }, // Priyanshu
             { label: 'Structured findings', detail: 'Risks, gaps, controls, severity' },
             { label: 'Report', detail: 'Web view · branded PDF' },
           ],
