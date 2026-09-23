@@ -52,7 +52,7 @@ export default function CommandPalette({
         () => setStatus(`Copied ${a.text}`),
         () => setStatus(`Couldn’t copy. The address is ${a.text}`),
       );
-      trackEvent({ name: 'contact_click', channel: 'email', from: 'palette' });
+      trackEvent({ name: 'contact_click', channel: a.text.includes('@') ? 'email' : 'phone', from: 'palette' });
       return;
     }
     if (a.kind === 'go') router.push(a.href);

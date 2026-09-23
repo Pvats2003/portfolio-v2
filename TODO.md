@@ -9,7 +9,8 @@ Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown o
 - [x] Y Combinator: not shown anywhere on the site (your decision).
 - [ ] Note, no action needed: the resume calls ANPR "real-time". Detection is (~32 ms per frame on a CPU); OCR takes ~1.2 s per plate. The case study states both numbers.
 
-## Waiting on you — shown on the site as visible TODOs (must be filled before "go live")
+## Waiting on you — hidden on the live site until you answer
+These questions need your own words, so they were hidden rather than filled with invented text. A chapter with nothing else in it (e.g. "What I learned" on City Ops OS, Career OS, Karavali and ITC; "Outside the resume" on About) is hidden too. Each one reappears as soon as you replace its TODO with your answer.
 **City Ops OS**
 - [ ] What the command center actually changed. If there's no number, say "qualitative only" and describe it.
 - [ ] Other real constraints (budget, connectivity, devices, engineering support).
@@ -39,7 +40,7 @@ Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown o
 - [ ] A personal paragraph in your own words.
 
 ## Still-open questions (PLAN.md §4)
-- [ ] **(you)** Q11 — Show your phone number on the site? Default: no (PDF only).
+- [x] Q11: phone number shown (contact section, footer, resume page, ⌘K, structured data).
 - [ ] **(you)** Q13 — City Ops OS start and ship months (the case says "2026 – Present").
 - [ ] **(you)** Q15 — Number of cities you're happy to state (default: name Rajampet and Kadapa, no count).
 - [ ] **(you)** Q17 — Photo on About? Default: none.
@@ -50,4 +51,5 @@ Items waiting on Priyanshu are marked **(you)**. Every `TODO(priyanshu)` shown o
 - [x] Resume drift check (Q14): runs before every build; see CLAUDE.md.
 - [x] Vercel Web Analytics enabled (Hobby). Custom events stay in the code but nothing relies on them; page views are the signal.
 - [ ] **(you)** Phase 5: paste the PageSpeed Insights mobile score and LCP for the live preview (this session can't reach vercel.app; the last reply had the placeholder, not the numbers). Local simulated mobile LCP varies 1.9–2.6 s and is the same with every client component removed, so it's the React/Next runtime rather than site code. With real throttling (Lighthouse devtools mode) LCP is 1.7 s.
-- [ ] Go live: fill every visible TODO above, flip `INDEXABLE` to `true` in `content/site.ts`, and swap `SITE_URL` if a domain is added.
+- [x] Go live: `INDEXABLE` is `true`; unanswered TODOs hidden on the live site. Still on the Vercel URL (no domain).
+- [ ] **(you)** The old portfolio (repo `Pvats2003/portfolio` and its Vercel project/URL) is untouched. Say if you want it redirected to the new site or taken down.

@@ -47,6 +47,14 @@ export function paletteItems(): PaletteItem[] {
       action: { kind: 'copy', text: identity.email },
     },
     {
+      id: 'act-copy-phone',
+      group: 'Actions',
+      label: 'Copy phone number',
+      hint: identity.phone,
+      keywords: ['contact', 'call', 'mobile'],
+      action: { kind: 'copy', text: identity.phone },
+    },
+    {
       id: 'act-linkedin',
       group: 'Actions',
       label: 'Open LinkedIn',

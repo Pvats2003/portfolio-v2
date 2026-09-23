@@ -4,6 +4,7 @@ import type { Block, CaseStudy, Chapter } from '@/content/types';
 import { Chip } from '@/components/site/Chip';
 import { ReadTracker } from '@/components/analytics/ReadTracker';
 import { nextCaseStudy } from '@/content/projects';
+import { SHOW_TODOS } from '@/content/site';
 import { ConvergeDiagram, SprawlDiagram } from './Diagrams';
 import { BeforeAfter, Board, DataTable, Personas, Pipeline } from './Blocks';
 
@@ -145,6 +146,11 @@ function ChapterEntry({ chapter, n }: { chapter: Chapter; n: number }) {
 }
 
 export function CaseStudyView({ study }: { study: CaseStudy }) {
+  const chapters = SHOW_TODOS
+    ? study.chapters
+    : study.chapters
+        .map((ch) => ({ ...ch, blocks: ch.blocks.filter((b) => b.type !== 'todo') }))
+        .filter((ch) => ch.blocks.length > 0);
   const next = nextCaseStudy(study.slug);
   return (
     <article>
@@ -213,7 +219,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 <dt className="font-mono text-xs uppercase tracking-wider text-muted">{m.label}</dt>
                 <dd className="mt-1 text-sm leading-snug">
                   {m.value}
-                  {m.todo && (
+                  {SHOW_TODOS && m.todo && (
                     <span className="mt-1 block font-mono text-xs text-accent">TODO(priyanshu): {m.todo}</span>
                   )}
                 </dd>
@@ -222,7 +228,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
           </dl>
         </section>
 
-        {study.chapters.map((ch, i) => (
+        {chapters.map((ch, i) => (
           <ChapterEntry key={ch.id} chapter={ch} n={i + 1} />
         ))}
         <ReadTracker slug={study.slug} />

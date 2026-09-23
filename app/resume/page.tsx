@@ -27,6 +27,9 @@ export default function ResumePage() {
           <p className="mt-2 max-w-xl text-sm text-muted">{identity.title}</p>
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-muted">
             <span>{identity.location}</span>
+            <a href={`tel:${identity.phone.replace(/[^+\d]/g, '')}`} className="underline decoration-line underline-offset-4 hover:text-ink">
+              {identity.phone}
+            </a>
             <a href={`mailto:${identity.email}`} className="underline decoration-line underline-offset-4 hover:text-ink">
               {identity.email}
             </a>

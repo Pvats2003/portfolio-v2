@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { pageMetadata } from '@/lib/seo';
 import { LogSection } from '@/components/site/LogSection';
-import { about, contact } from '@/content/site';
+import { about, contact, SHOW_TODOS } from '@/content/site';
 import { education } from '@/content/resume';
 
 export const metadata: Metadata = pageMetadata({
@@ -41,14 +41,16 @@ export default function AboutPage() {
           <p className="reading">{about.aiBuilding}</p>
         </LogSection>
 
-        <LogSection marker="03" label="In my words" heading="Outside the resume">
-          <p className="max-w-[38rem] border border-dashed border-accent px-4 py-3 text-sm leading-relaxed">
-            <span className="mr-2 font-mono text-xs font-medium uppercase tracking-wider text-accent">TODO(priyanshu)</span>
-            {about.personalTodo}
-          </p>
-        </LogSection>
+        {SHOW_TODOS && (
+          <LogSection marker="03" label="In my words" heading="Outside the resume">
+            <p className="max-w-[38rem] border border-dashed border-accent px-4 py-3 text-sm leading-relaxed">
+              <span className="mr-2 font-mono text-xs font-medium uppercase tracking-wider text-accent">TODO(priyanshu)</span>
+              {about.personalTodo}
+            </p>
+          </LogSection>
+        )}
 
-        <LogSection marker="04" label="Credentials" heading="Education & certifications">
+        <LogSection marker={SHOW_TODOS ? '04' : '03'} label="Credentials" heading="Education & certifications">
           <p className="font-semibold">
             {education.degree} <span className="font-normal text-muted">· {education.school} · {education.period}</span>
           </p>
@@ -61,7 +63,7 @@ export default function AboutPage() {
           </ul>
         </LogSection>
 
-        <LogSection marker="05" label="Contact" heading={contact.line}>
+        <LogSection marker={SHOW_TODOS ? '05' : '04'} label="Contact" heading={contact.line}>
           <p className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
             {contact.links.map((l) => (
               <a

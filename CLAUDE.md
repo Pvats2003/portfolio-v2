@@ -9,7 +9,7 @@
 - Y Combinator is never mentioned anywhere on the site (Priyanshu's decision).
 
 ## Non-negotiables
-1. **Zero fabrication.** No invented metrics, testimonials, logos, users, quotes or outcomes. Missing data → a visible `TODO(priyanshu): …` in the UI **and** an entry in `TODO.md`.
+1. **Zero fabrication.** No invented metrics, testimonials, logos, users, quotes or outcomes. Missing data → a `{ type: 'todo' }` block **and** an entry in `TODO.md`. The site is live, so `SHOW_TODOS` (content/site.ts) hides those boxes, and a chapter left empty disappears; they reappear on any build with `INDEXABLE = false`. Never replace a TODO with invented text, only with Priyanshu's answer.
 2. **Confidentiality.** No real field-worker names, faces, phone numbers, WhatsApp screenshots, internal Instawork dashboards, client names or addresses. Recreate internal tools with synthetic data, labelled "Illustrative — synthetic data".
 3. **Honest AI-assisted framing.** Use "designed", "directed the build", "scoped", "shipped". Never claim hand-written code. Present Claude Code as a deliberate choice.
 4. Use "Instawork Robotics Labs" (never "Instawork AI Labs").
@@ -33,7 +33,7 @@
 - Motion: CSS only, always gated by `prefers-reduced-motion: no-preference`. Never animate the headline or delay reading.
 - Every text/background pair must pass WCAG AA (4.5:1 body, 3:1 large text) in **both** themes.
 - Fonts load in the root layout. Plex Serif has `preload: false` there; `app/work/layout.tsx` loads it again with preload on, so case studies (serif above the fold) get no font shift. No italic faces. Keep new faces out unless DESIGN.md changes.
-- Indexing: `INDEXABLE` in `content/site.ts` stays `false` until Priyanshu says "go live".
+- Indexing: `INDEXABLE` in `content/site.ts` is `true` (Priyanshu said "go live"). Canonical URL is still the Vercel URL; swap `SITE_URL` if a domain is bought.
 - Vercel Analytics renders only when `process.env.VERCEL` is set, so local builds have no 404ing script.
 - Before committing: `npm run lint && npm run typecheck && npm run build`.
 

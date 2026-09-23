@@ -22,6 +22,7 @@ const person = {
   name: identity.name,
   url: SITE_URL,
   email: `mailto:${identity.email}`,
+  telephone: identity.phone,
   jobTitle: experience[0].title,
   worksFor: { '@type': 'Organization', name: experience[0].org },
   alumniOf: { '@type': 'CollegeOrUniversity', name: education.school },
@@ -155,7 +156,7 @@ export default function Home() {
         <LogSection id="contact" marker="EOD" label="End of day" heading={contact.line}>
           <ul className="grid max-w-3xl border-l border-t border-line sm:grid-cols-2">
             {contact.links.map((l) => (
-              <li key={l.label} className="border-b border-r border-line bg-surface">
+              <li key={l.label} className="border-b border-r border-line bg-surface sm:last:odd:col-span-2">
                 <a
                   href={l.href}
                   className="block min-h-11 p-5 hover:bg-bg"

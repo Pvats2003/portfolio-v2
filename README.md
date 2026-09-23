@@ -2,7 +2,7 @@
 
 A new portfolio built from scratch with Next.js, TypeScript and Tailwind CSS. It's in progress: see `PLAN.md` for the plan and `TODO.md` for what's open.
 
-**Current phase: 4 (engineering) done.** Home, About, Resume, 404, six case studies, the ⌘K / Ctrl+K palette, sharing images, sitemap, structured data and analytics events are in. Next: Phase 5 (verify and launch). Design rules are in `DESIGN.md`.
+**Live.** Home, About, Resume, 404, six case studies, the ⌘K / Ctrl+K palette, sharing images, sitemap, structured data and analytics are in, and search engines may index it. Design rules are in `DESIGN.md`.
 
 ## Run it on your computer
 
@@ -36,7 +36,7 @@ npm run build      # production build
 3. Each case study is one file in `content/projects/`. Change the words between the quote marks `'…'` and keep the commas.
 4. New case study: copy an existing file in `content/projects/`, rename it, change `slug`, then add it to the list in `content/projects/index.ts`. Its page, sharing image, sitemap entry and ⌘K entry appear automatically.
 5. New resume: replace `public/resume/Priyanshu_Vats_Resume_PV.pdf` (keep the name) and update `content/resume.ts` to match it. The build stops and prints the exact lines that differ until the two agree (`npm run check:resume` runs just that check).
-6. A line starting with `{ type: 'todo'` shows as a visible TODO box. Replace it with `{ type: 'p', text: '…' }` once you have the real answer, and tick it off in `TODO.md`.
+6. A line starting with `{ type: 'todo'` is a question waiting on you. It's hidden on the live site (so is a chapter with nothing else in it). Replace it with `{ type: 'p', text: '…' }` once you have the real answer, and tick it off in `TODO.md`.
 7. Apostrophes inside text: use ’ (curly) instead of ' so the quote marks don't break.
 8. Check your edit: `npm run dev`, then open http://localhost:3000. If something's wrong, the terminal says which file and line.
 9. Before pushing, run `npm run lint && npm run typecheck && npm run build`. All three must finish without errors.
