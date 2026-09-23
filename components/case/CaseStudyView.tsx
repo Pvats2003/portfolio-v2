@@ -7,6 +7,10 @@ import { nextCaseStudy } from '@/content/projects';
 import { SHOW_TODOS } from '@/content/site';
 import { ConvergeDiagram, SprawlDiagram } from './Diagrams';
 import { BeforeAfter, Board, DataTable, Personas, Pipeline } from './Blocks';
+import { AnnotatedScreenshot } from '@/components/visual/AnnotatedScreenshot';
+import { DevicePair } from '@/components/visual/DevicePair';
+import { Gallery } from '@/components/visual/Gallery';
+import { Shot } from '@/components/visual/Shot';
 
 // The case-study template: Field Log frame (timestamp column, shift-style markers, chips)
 // around a long-form reading column (serif body, pull-quotes, generous measure).
@@ -29,8 +33,33 @@ function PullQuote({ children }: { children: ReactNode }) {
   );
 }
 
-function renderBlock(block: Block, i: number) {
+// Widths the chapter column renders at, so next/image picks the right file.
+const CHAPTER_SIZES = '(min-width: 1152px) 900px, (min-width: 640px) 80vw, 100vw';
+
+function renderBlock(block: Block, i: number, preload = false) {
   switch (block.type) {
+    case 'shot':
+      return block.callouts ? (
+        <AnnotatedScreenshot key={i} id={block.media} callouts={block.callouts} caption={block.caption} sizes={CHAPTER_SIZES} preload={preload} />
+      ) : (
+        <figure key={i}>
+          <Shot id={block.media} sizes={CHAPTER_SIZES} preload={preload} />
+          {block.caption && <figcaption className="mt-2 font-mono text-xs text-muted">{block.caption}</figcaption>}
+        </figure>
+      );
+    case 'gallery':
+      return <Gallery key={i} items={block.items.map((it) => ({ id: it.media, caption: it.caption }))} />;
+    case 'devicePair':
+      return (
+        <DevicePair
+          key={i}
+          desktop={block.desktop}
+          phone={block.phone}
+          desktopLabel={block.desktopLabel}
+          phoneLabel={block.phoneLabel}
+          preload={preload}
+        />
+      );
     case 'p':
       return (
         <p key={i} className="reading">
@@ -139,7 +168,7 @@ function ChapterEntry({ chapter, n }: { chapter: Chapter; n: number }) {
         >
           {chapter.heading}
         </h2>
-        {chapter.blocks.map(renderBlock)}
+        {chapter.blocks.map((b, i) => renderBlock(b, i))}
       </div>
     </section>
   );
@@ -160,7 +189,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
           <Link href="/" className="font-mono text-xs text-muted hover:text-accent">
             ← All work
           </Link>
-          <div className="mt-8 grid gap-4 sm:grid-cols-[7rem_1fr] sm:gap-8">
+          <div className="mt-6 grid gap-4 sm:grid-cols-[7rem_1fr] sm:gap-8">
             <p className="font-mono text-xs text-muted sm:pt-3">
               <span className="font-medium text-accent">CASE {study.index}</span>
               <span className="mx-1.5 sm:hidden">·</span>
@@ -174,7 +203,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                   </Chip>
                 ))}
               </div>
-              <h1 className="mt-5 font-sans text-5xl font-semibold tracking-tight sm:text-6xl">{study.title}</h1>
+              <h1 className="mt-4 font-sans text-4xl font-semibold tracking-tight sm:text-5xl">{study.title}</h1>
               <p className="mt-2 font-mono text-sm text-muted">{study.kicker}</p>
               {study.links && (
                 <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1">
@@ -194,6 +223,8 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
               )}
             </div>
           </div>
+
+          {study.hero && <div className="mt-8 max-w-4xl sm:mt-10">{renderBlock(study.hero, 0, true)}</div>}
 
           <div className="mt-10 grid gap-4 sm:grid-cols-[7rem_1fr] sm:gap-8">
             <p className="font-mono text-xs uppercase tracking-wider text-muted sm:pt-2">TL;DR</p>

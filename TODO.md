@@ -39,6 +39,13 @@ These questions need your own words, so they were hidden rather than filled with
 **About**
 - [ ] A personal paragraph in your own words.
 
+## Visual-first redesign (in review on branch `visual-first`)
+- [ ] **(you)** Review the new homepage and City Ops OS page, then I'll do the other five case studies.
+- [ ] **(you)** Re-attach three screenshots that didn't reach me: Karavali Explore, Karavali Plans, and Audit AI with the sample loaded.
+- [ ] **(you)** The field officer screenshot showed "Iliyas", "Shakthi Welding Shop" and "Balaji Dhaba". I replaced them with demo text (no real field-worker names, rule 2). If they're fictional, say so and I'll restore them.
+- [ ] **(you)** Audit AI's header says "Rule Engine + GPT-4o-mini"; your resume and the site say Groq. Which is right?
+- [ ] **(you)** Career OS, ANPR and ITC have no screenshots, so their cards show small flow diagrams. Send screenshots (e.g. Career OS CLI output, ANPR detection frames without readable private plates) if you have them.
+
 ## Still-open questions (PLAN.md §4)
 - [x] Q11: phone number shown (contact section, footer, resume page, ⌘K, structured data).
 - [ ] **(you)** Q13 — City Ops OS start and ship months (the case says "2026 – Present").
