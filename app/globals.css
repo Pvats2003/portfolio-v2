@@ -21,6 +21,7 @@
   --font-display: var(--display);
   --font-text: var(--text);
   --font-mono: var(--mono);
+  --font-serif: var(--serif);
 }
 
 /* ---------- Neutral chrome (the Phase 1 lab bar and index page) ---------- */
@@ -77,6 +78,7 @@
   --display: var(--font-plex-sans), ui-sans-serif, sans-serif;
   --text: var(--font-plex-sans), ui-sans-serif, sans-serif;
   --mono: var(--font-plex-mono), ui-monospace, monospace;
+  --serif: var(--font-plex-serif), ui-serif, Georgia, serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -280,5 +282,19 @@ body {
   .c-underline:hover,
   .c-underline:focus-visible {
     text-decoration: underline;
+  }
+}
+
+/* Case-study reading column: C's long-form treatment inside A's frame.
+   Plex Serif keeps the reading face in the same superfamily as A's Plex Sans + Mono. */
+.reading {
+  font-family: var(--serif);
+  font-size: 1.1875rem;
+  line-height: 1.7;
+  max-width: 38rem;
+}
+@media (min-width: 640px) {
+  .reading {
+    font-size: 1.25rem;
   }
 }
