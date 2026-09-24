@@ -1,6 +1,7 @@
 // Everything the ⌘K command palette can do. Case studies are added automatically from content/projects.
 import { caseStudies } from './projects';
 import { identity, RESUME_PDF } from './resume';
+import { SHOW_PHONE } from './site';
 
 export type PaletteAction =
   | { kind: 'go'; href: string }
@@ -46,14 +47,18 @@ export function paletteItems(): PaletteItem[] {
       keywords: ['contact', 'mail'],
       action: { kind: 'copy', text: identity.email },
     },
-    {
-      id: 'act-copy-phone',
-      group: 'Actions',
-      label: 'Copy phone number',
-      hint: identity.phone,
-      keywords: ['contact', 'call', 'mobile'],
-      action: { kind: 'copy', text: identity.phone },
-    },
+    ...(SHOW_PHONE
+      ? [
+          {
+            id: 'act-copy-phone',
+            group: 'Actions',
+            label: 'Copy phone number',
+            hint: identity.phone,
+            keywords: ['contact', 'call', 'mobile'],
+            action: { kind: 'copy', text: identity.phone },
+          } satisfies PaletteItem,
+        ]
+      : []),
     {
       id: 'act-linkedin',
       group: 'Actions',

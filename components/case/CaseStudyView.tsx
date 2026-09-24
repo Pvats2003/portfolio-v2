@@ -10,8 +10,9 @@ import { BeforeAfter, Board, DataTable, Personas, Pipeline } from './Blocks';
 import { AnnotatedScreenshot } from '@/components/visual/AnnotatedScreenshot';
 import { DevicePair } from '@/components/visual/DevicePair';
 import { Gallery } from '@/components/visual/Gallery';
-import { Shot } from '@/components/visual/Shot';
-import { DiagramSheet } from '@/components/visual/Frames';
+import { demoTag, Shot } from '@/components/visual/Shot';
+import { Plate } from '@/components/visual/Frames';
+import { illustrations } from '@/components/visual/Illustrations';
 
 // The case-study template: Field Log frame (timestamp column, shift-style markers, chips)
 // around a long-form reading column (serif body, pull-quotes, generous measure).
@@ -46,10 +47,22 @@ function renderBlock(block: Block, i: number, preload = false) {
         <AnnotatedScreenshot key={i} id={block.media} callouts={block.callouts} caption={block.caption} sizes={CHAPTER_SIZES} preload={preload} />
       ) : (
         <figure key={i}>
-          <Shot id={block.media} sizes={CHAPTER_SIZES} preload={preload} />
+          <Plate tag={demoTag(block.media)} pad="p-3 pt-10 sm:p-8 sm:pt-12">
+            <Shot id={block.media} sizes={CHAPTER_SIZES} preload={preload} />
+          </Plate>
           {block.caption && <figcaption className="mt-2 font-mono text-xs text-muted">{block.caption}</figcaption>}
         </figure>
       );
+    case 'illustration': {
+      const Illustration = illustrations[block.name];
+      return (
+        <Plate key={i} tag="Illustration" pad="px-5 pb-8 pt-12 sm:px-10 sm:pb-10 sm:pt-14" className="flex justify-center">
+          <div className="flex w-full max-w-xl justify-center">
+            <Illustration />
+          </div>
+        </Plate>
+      );
+    }
     case 'gallery':
       return <Gallery key={i} items={block.items.map((it) => ({ id: it.media, caption: it.caption }))} />;
     case 'devicePair':
@@ -61,6 +74,7 @@ function renderBlock(block: Block, i: number, preload = false) {
           desktopLabel={block.desktopLabel}
           phoneLabel={block.phoneLabel}
           preload={preload}
+          sizes="(min-width: 1152px) 770px, 80vw"
         />
       );
     case 'p':
@@ -238,13 +252,7 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
 
           {study.hero && (
             <div data-visual="" className="mt-8 max-w-4xl sm:mt-10">
-              {study.hero.type === 'pipeline' ? (
-                <DiagramSheet label="Diagram" fit>
-                  {renderBlock(study.hero, 0)}
-                </DiagramSheet>
-              ) : (
-                renderBlock(study.hero, 0, true)
-              )}
+              {renderBlock(study.hero, 0, true)}
             </div>
           )}
 

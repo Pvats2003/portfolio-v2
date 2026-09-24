@@ -24,13 +24,13 @@ export const media = {
     frame: 'browser',
     bar: 'City Ops OS · Command Center',
     demo: true,
-    alt: 'City Ops OS command center for Rajampet: quick actions to add a business, plan the day, assign a field officer, start a session or report an issue; recording hours against a 20-hour target; counts of businesses, active field officers, live sessions, open critical issues and ready fleet; today’s field execution checks; and a “What needs my attention?” feed.',
+    alt: 'City Ops OS command center for Rajampet with demo data: 18.6 of 20 recording hours (93%), one of three businesses completed, one field officer and one session active, no critical issues, fleet 3 of 3 ready, today’s field execution checks with no location mismatches or precheck failures, an empty “What needs my attention?” feed and a City Pulse health score of 100.',
   },
   cityOpsPhone: {
     src: cityOpsPhone,
     frame: 'phone',
     demo: true,
-    alt: 'City Ops OS field officer cockpit on a phone: two visits for today with their times, business names and a Pending status, a navigate button beside each, and tabs for Today, Sessions, Issues and Profile.',
+    alt: 'City Ops OS field officer cockpit on a phone, with demo data: three visits for today — a completed 7:45 AM visit to a tailor, an active 8:30 AM recording at a dhaba and a pending 6:00 PM visit to a welding works — each with a navigate button, and tabs for Today, Sessions, Issues and Profile.',
   },
   karavaliDiscover: {
     src: karavaliDiscover,

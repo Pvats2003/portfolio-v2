@@ -50,6 +50,12 @@ These questions need your own words, so they were hidden rather than filled with
 - [x] Audit AI model: GPT-4o-mini (OpenAI) — the case study says so. **(you)** Your resume PDF still says “FastAPI · Next.js · Groq”; the /resume page mirrors the PDF, so it keeps saying Groq until you replace the PDF. After that, update `content/resume.ts` to match (the build's drift check will list the exact line).
 - [x] Career OS, ANPR, ITC keep diagrams for now.
 
+## Visual upgrade v3 (branch `visual-v3`, waiting for approval)
+- [ ] **(you)** Vercel: the live URL still serves Phase 2. Pushes reach Vercel, and `main` builds cleanly from a fresh clone, so check Deployments (see the chat for exactly what to look for).
+- [x] City Ops screenshots replaced (Sep 24): the real app's production build, run locally in demo mode (no Firebase) with a made-up Rajampet dataset, clock frozen at 5:45 PM IST — 18.6h / 20h (93%), fleet 3/3, completed / active / pending visits. Tagged "Demo data". Generator: made-up names only, no phone numbers.
+- [ ] **(you)** Audit AI: still an empty input screen; the results screen after running the sample would be much stronger.
+- [ ] **(you)** Send screenshots as files (paperclip) in a message on their own — pasted images don't arrive.
+
 ## Still-open questions (PLAN.md §4)
 - [x] Q11: phone number shown (contact section, footer, resume page, ⌘K, structured data).
 - [ ] **(you)** Q13 — City Ops OS start and ship months (the case says "2026 – Present").
@@ -62,5 +68,6 @@ These questions need your own words, so they were hidden rather than filled with
 - [x] Resume drift check (Q14): runs before every build; see CLAUDE.md.
 - [x] Vercel Web Analytics enabled (Hobby). Custom events stay in the code but nothing relies on them; page views are the signal.
 - [ ] **(you)** Phase 5: paste the PageSpeed Insights mobile score and LCP for the live preview (this session can't reach vercel.app; the last reply had the placeholder, not the numbers). Local simulated mobile LCP varies 1.9–2.6 s and is the same with every client component removed, so it's the React/Next runtime rather than site code. With real throttling (Lighthouse devtools mode) LCP is 1.7 s.
-- [x] Go live: `INDEXABLE` is `true`; unanswered TODOs hidden on the live site. Still on the Vercel URL (no domain).
+- [ ] Go live: paused on Sep 24. `LIVE = false` in `content/site.ts` keeps indexing off and the phone hidden; flip it to `true` when Priyanshu says go live. Unanswered TODOs stay hidden either way (`SHOW_TODOS = false`). Still on the Vercel URL (no domain).
+- [ ] Resume PDF (`public/resume/Priyanshu_Vats_Resume_PV.pdf`) still prints the phone number: Priyanshu to decide whether to upload a version without it while the site isn't live.
 - [ ] **(you)** The old portfolio (repo `Pvats2003/portfolio` and its Vercel project/URL) is untouched. Say if you want it redirected to the new site or taken down.

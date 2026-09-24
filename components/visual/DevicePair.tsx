@@ -1,10 +1,10 @@
 import type { MediaKey } from '@/content/media';
-import { DemoTag } from './Frames';
-import { Shot } from './Shot';
+import { Plate } from './Frames';
+import { demoTag, Shot } from './Shot';
 
 /**
- * A desktop screenshot with a phone screenshot of the same product overlapping its corner:
- * one system, two roles. Scales as one unit, so it reads the same at 375px and 1440px.
+ * One system, two roles: a desktop screenshot with the phone screenshot overlapping its corner.
+ * The phone runs past the plate's bottom edge and is clipped — a partial view, on purpose.
  */
 export function DevicePair({
   desktop,
@@ -12,27 +12,33 @@ export function DevicePair({
   desktopLabel,
   phoneLabel,
   preload = false,
+  eager = false,
+  sizes = '(min-width: 1152px) 620px, 80vw',
 }: {
   desktop: MediaKey;
   phone: MediaKey;
   desktopLabel: string;
   phoneLabel: string;
   preload?: boolean;
+  eager?: boolean;
+  /** Rendered width of the desktop screenshot. */
+  sizes?: string;
 }) {
   return (
     <figure>
-      <div className="relative pb-[7%] pr-[13%]">
-        <Shot id={desktop} preload={preload} sizes="(min-width: 1152px) 800px, 87vw" />
-        <div className="absolute bottom-0 right-0 w-[21%]">
-          <Shot id={phone} sizes="(min-width: 1152px) 200px, 21vw" hideDemo />
+      <Plate tag={demoTag(desktop, phone)} pad="px-4 pt-10 sm:px-8 sm:pt-12">
+        <div className="relative pb-[13%]">
+          <div className="w-[87%]">
+            <Shot id={desktop} preload={preload} eager={eager} sizes={sizes} />
+          </div>
+          <div className="absolute right-0 top-[20%] w-[25%]">
+            <Shot id={phone} aspect="9 / 16" focus="center top" eager={preload || eager} sizes="(min-width: 1152px) 190px, 25vw" />
+          </div>
         </div>
-      </div>
-      <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 font-mono text-xs uppercase tracking-wider text-muted">
+      </Plate>
+      <figcaption className="mt-3 flex flex-wrap justify-between gap-x-6 gap-y-1 font-mono text-[0.6875rem] uppercase tracking-wider text-muted">
         <span>{desktopLabel}</span>
-        <span className="flex items-center gap-3">
-          {phoneLabel}
-          <DemoTag />
-        </span>
+        <span>{phoneLabel}</span>
       </figcaption>
     </figure>
   );

@@ -25,7 +25,7 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | 19 | Career OS repo is public; linked from its case study. |
 | ANPR | Case study sourced from Priyanshu's B.Tech report (May 2026). Guide contact details and registration number are deliberately not published. |
 | 16 | Agreed: no "built" in the headline, and never imply City Ops OS ran all 10,000+ hours. Headlines keep scale (what he ran) separate from the tool (what he designed and shipped). |
-| Go live | **Sep 2026:** indexing on, phone shown (Q11), unanswered TODOs hidden rather than invented. Old site untouched until he says what to do with it. |
+| Go live | **Sep 23:** indexing on, phone shown (Q11), unanswered TODOs hidden rather than invented. **Sep 24:** paused: `LIVE = false` turns indexing off and hides the phone until he says go live again. Old site untouched until he says what to do with it. |
 
 ---
 

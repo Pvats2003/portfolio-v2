@@ -7,12 +7,15 @@ export { identity, RESUME_PDF };
 // Canonical URL: the Vercel preview until a domain is bought (PLAN.md, decision 8).
 export const SITE_URL = 'https://portfolio-v2-chi-two-55.vercel.app';
 
-// Search engines are kept out until "go live". Flip to true then (it controls the robots meta tag and robots.txt).
-export const INDEXABLE = true;
+// Off until Priyanshu says "go live". Flipping it turns on search indexing (robots meta tag, robots.txt
+// sitemap) and shows the phone number (contact, resume page, ⌘K, structured data).
+export const LIVE = false;
+export const INDEXABLE = LIVE;
+export const SHOW_PHONE = LIVE;
 
-// Visible TODO(priyanshu) boxes are for the preview. On the live site they're hidden (a case-study chapter
-// with nothing else in it disappears too); they stay in the content files and TODO.md until filled.
-export const SHOW_TODOS = !INDEXABLE;
+// Visible TODO(priyanshu) boxes stay hidden on the deployed site (a case-study chapter with nothing else in it
+// disappears too); they stay in the content files and TODO.md until filled.
+export const SHOW_TODOS = false;
 
 export const SITE_DESCRIPTION =
   'I run robotics data-collection operations in the field and ship the tools that fix them. Open to APM, Product Ops, and Founder’s Office roles in Bengaluru.';
@@ -29,9 +32,9 @@ export const hero = {
 export type ProofStat = { key: string; value: string; label: string };
 
 export const proof: ProofStat[] = [
-  { key: 'HRS', value: '10,000+', label: 'recording hours logged' }, // R-E1.1
-  { key: 'CREW', value: '50+', label: 'field staff coordinated' }, // R-E1.1
-  { key: 'SITES', value: '116', label: 'recording businesses mapped' }, // R-E1.2
+  { key: 'HRS', value: '10,000+', label: 'recording hours' }, // R-E1.1
+  { key: 'CREW', value: '50+', label: 'field staff' }, // R-E1.1
+  { key: 'SITES', value: '116', label: 'sites mapped' }, // R-E1.2
 ];
 
 /** How I work: five one-line steps. */
@@ -49,7 +52,9 @@ export const contact = {
   short: 'Let’s talk.',
   links: [
     { label: 'Email', value: identity.email, href: `mailto:${identity.email}` },
-    { label: 'Phone', value: identity.phone, href: `tel:${identity.phone.replace(/[^+\d]/g, '')}` }, // R-H3 (Q11: show it)
+    ...(SHOW_PHONE
+      ? [{ label: 'Phone', value: identity.phone, href: `tel:${identity.phone.replace(/[^+\d]/g, '')}` }] // R-H3 (Q11)
+      : []),
     { label: 'LinkedIn', value: identity.linkedin.label, href: identity.linkedin.href },
     { label: 'GitHub', value: identity.github.label, href: identity.github.href },
     { label: 'Resume', value: 'PDF', href: RESUME_PDF },

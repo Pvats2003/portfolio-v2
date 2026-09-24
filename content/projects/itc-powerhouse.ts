@@ -20,16 +20,7 @@ export const itcPowerhouse: CaseStudy = {
     { label: 'When', value: 'June – July 2024' }, // R-E2
     { label: 'Scope', value: '15+ sub-distribution boards' }, // R-E2.1
   ],
-  hero: {
-    type: 'pipeline',
-    caption: 'What the internship covered, end to end.',
-    steps: [
-      { label: 'Three supply paths', detail: 'RUPS · bypass · DG supply' }, // R-E2.1
-      { label: 'Switchover logic', detail: 'Analysed', accent: true }, // R-E2.1
-      { label: '15+ sub-distribution boards', detail: 'Mapped' }, // R-E2.1
-      { label: 'Findings', detail: 'Operator training · stakeholder presentations' }, // R-E2.1
-    ],
-  },
+  hero: { type: 'illustration', name: 'itc' },
   chapters: [
     {
       id: 'work',

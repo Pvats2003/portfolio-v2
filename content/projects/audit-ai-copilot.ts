@@ -230,12 +230,14 @@ export const auditAiCopilot: CaseStudy = {
       heading: 'Open questions I’m still working through',
       blocks: [
         {
-          type: 'list',
-          items: [
-            'Tool or service: does the user do the work, or do we?', // PRD §11
-            'Solo controller or a team? It decides when collaboration matters.', // PRD §11
-            'What is the retention hook? Session-based history doesn’t create stickiness.', // PRD §11
-            'Should the rule engine be configurable per industry?', // PRD §11
+          type: 'table',
+          caption: 'Open questions from the PRD',
+          head: ['Question', 'Why it matters'],
+          rows: [
+            ['Tool or service?', 'Does the user do the work, or do we produce the report?'], // PRD §11
+            ['Solo or team?', 'It decides how soon collaboration matters'], // PRD §11
+            ['Retention hook?', 'Session-based history doesn’t create stickiness'], // PRD §11
+            ['Configurable rules?', 'Should the rule engine be set per industry?'], // PRD §11
           ],
         },
         { type: 'todo', text: 'Any lessons from building it so far, in your own words.' },
