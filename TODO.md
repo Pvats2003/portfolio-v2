@@ -52,10 +52,8 @@ These questions need your own words, so they were hidden rather than filled with
 
 ## Visual upgrade v3 (branch `visual-v3`, waiting for approval)
 - [ ] **(you)** Vercel: the live URL still serves Phase 2. Pushes reach Vercel, and `main` builds cleanly from a fresh clone, so check Deployments (see the chat for exactly what to look for).
-- [ ] **(you)** Replace these screenshots — they read as empty or test data:
-  - City Ops command center: "0.0h / 20h" in red and zero counts; the "CITY-OPS-PERSISTENCE-TEST" item is cropped out for now.
-  - City Ops field officer phone: "RIG-PERSISTENCE-TEST-01", "NA" location, mostly empty list.
-  - Audit AI: an empty input screen; the results screen after running the sample would be much stronger.
+- [x] City Ops screenshots replaced (Sep 24): the real app's production build, run locally in demo mode (no Firebase) with a made-up Rajampet dataset, clock frozen at 5:45 PM IST — 18.6h / 20h (93%), fleet 3/3, completed / active / pending visits. Tagged "Demo data". Generator: made-up names only, no phone numbers.
+- [ ] **(you)** Audit AI: still an empty input screen; the results screen after running the sample would be much stronger.
 - [ ] **(you)** Send screenshots as files (paperclip) in a message on their own — pasted images don't arrive.
 
 ## Still-open questions (PLAN.md §4)

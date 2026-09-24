@@ -3,7 +3,7 @@ import type { CaseStudy } from '../types';
 // Flagship: Instawork → City Ops OS, written as a decision log.
 // Tags after each line name the resume line it comes from (PLAN.md, Appendix A).
 // Anything the resume doesn't say is a TODO (hidden on the live site), never a guess.
-// Screenshots: public/work/city-ops-os/ (demo data; names replaced with demo text).
+// Screenshots: public/work/city-ops-os/ — the real app (production build, local demo mode) with a made-up demo dataset.
 
 export const cityOpsOs: CaseStudy = {
   slug: 'city-ops-os',
@@ -129,10 +129,12 @@ export const cityOpsOs: CaseStudy = {
           type: 'shot',
           media: 'cityOpsDesktop',
           callouts: [
-            { x: 52.5, y: 15.9, label: 'Plan the day, assign field officers, start sessions, report issues' },
-            { x: 20.5, y: 36.6, label: 'Recording hours against the day’s target' },
-            { x: 43, y: 36.6, label: 'Businesses, field officers, live sessions, issues and fleet at a glance' },
-            { x: 19.5, y: 90.3, label: 'Field execution checks: evidence, location mismatches, prechecks' },
+            { x: 49.8, y: 13.6, label: 'Plan the day, assign field officers, start sessions, report issues' },
+            { x: 35.5, y: 34.1, label: 'Recording hours against the day’s target (rigs × 10h)' },
+            { x: 46.1, y: 43.9, label: 'Businesses, field officers, live sessions, issues and fleet at a glance' },
+            { x: 38.8, y: 64.2, label: 'Field execution checks: evidence, location mismatches, prechecks' },
+            { x: 43.3, y: 90.6, label: 'A “What needs my attention?” feed — empty when the day is on track' },
+            { x: 91.4, y: 83.4, label: 'City Pulse: one operational health score' },
           ],
         },
         {
@@ -150,9 +152,10 @@ export const cityOpsOs: CaseStudy = {
           type: 'shot',
           media: 'cityOpsPhone',
           callouts: [
-            { x: 8, y: 11.5, label: 'Today’s visits, in order, with their status' },
-            { x: 92, y: 15.2, label: 'Navigate to each visit' },
-            { x: 13, y: 96, label: 'Today, Sessions, Issues and Profile tabs' },
+            { x: 41.4, y: 8.9, label: 'Today’s visits, in order' },
+            { x: 46, y: 25, label: 'Status per visit: completed, active, pending' },
+            { x: 91.4, y: 53.7, label: 'Navigate to each visit' },
+            { x: 50.1, y: 88.3, label: 'Today, Sessions, Issues and Profile tabs' },
           ],
         },
       ],

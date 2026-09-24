@@ -75,7 +75,7 @@ Inside the Field Log frame:
 - **Hero = night-shift panel** (`.night` scopes the dark tokens) in both themes; in the dark theme it sits one step deeper than the page. First screen on 390px and 1440px: headline, proof tiles (10,000+ / 50+ / 116, counting up once), and the City Ops OS desktop + phone pair.
 - **Every visual sits on a Plate** (`.plate`: `--plate` tint + a soft `--plate-glow` from the top, `rounded-plate` 16px). Frames inside: `BrowserFrame` (three dots, optional address) or `PhoneFrame` (simple bezel), both `rounded-frame` 10px, `border-line`, `.frame-shadow`. No realistic mockups or reflections.
 - **Tags on the plate, top right:** "Demo data" for made-up data, "Illustration" for drawn visuals. Nothing else.
-- **Crops:** `Shot aspect=… focus=…` crops in CSS to the strongest region. The City Ops desktop file itself is cropped to hide a test item until a clean screenshot arrives.
+- **Crops:** `Shot aspect=… focus=…` crops in CSS to the strongest region. City Ops screenshots come from the real production build running a made-up demo dataset (see TODO.md).
 - **Illustrations** (Career OS pipeline card, ANPR detection frame with an "XX 00 XX 0000" placeholder plate, ITC single-line diagram) are built only from sourced facts and always tagged.
 - **Cards:** the visual is the card (plate 5:4), then title, one line, one chip. Hover/focus: lift 4px, image zoom 3% — motion-safe only.
 - **Rhythm:** no phone screen is text-only for more than one screen (checked with a script: longest text-only stretch < 844px).
