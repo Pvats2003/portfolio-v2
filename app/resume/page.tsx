@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
 import { education, experience, identity, products, RESUME_PDF, skills, summary } from '@/content/resume';
+import { SHOW_PHONE } from '@/content/site';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Resume',
@@ -27,9 +28,11 @@ export default function ResumePage() {
           <p className="mt-2 max-w-xl text-sm text-muted">{identity.title}</p>
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-muted">
             <span>{identity.location}</span>
-            <a href={`tel:${identity.phone.replace(/[^+\d]/g, '')}`} className="underline decoration-line underline-offset-4 hover:text-ink">
-              {identity.phone}
-            </a>
+            {SHOW_PHONE && (
+              <a href={`tel:${identity.phone.replace(/[^+\d]/g, '')}`} className="underline decoration-line underline-offset-4 hover:text-ink">
+                {identity.phone}
+              </a>
+            )}
             <a href={`mailto:${identity.email}`} className="underline decoration-line underline-offset-4 hover:text-ink">
               {identity.email}
             </a>

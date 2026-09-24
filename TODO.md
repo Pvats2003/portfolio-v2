@@ -68,5 +68,6 @@ These questions need your own words, so they were hidden rather than filled with
 - [x] Resume drift check (Q14): runs before every build; see CLAUDE.md.
 - [x] Vercel Web Analytics enabled (Hobby). Custom events stay in the code but nothing relies on them; page views are the signal.
 - [ ] **(you)** Phase 5: paste the PageSpeed Insights mobile score and LCP for the live preview (this session can't reach vercel.app; the last reply had the placeholder, not the numbers). Local simulated mobile LCP varies 1.9–2.6 s and is the same with every client component removed, so it's the React/Next runtime rather than site code. With real throttling (Lighthouse devtools mode) LCP is 1.7 s.
-- [x] Go live: `INDEXABLE` is `true`; unanswered TODOs hidden on the live site. Still on the Vercel URL (no domain).
+- [ ] Go live: paused on Sep 24. `LIVE = false` in `content/site.ts` keeps indexing off and the phone hidden; flip it to `true` when Priyanshu says go live. Unanswered TODOs stay hidden either way (`SHOW_TODOS = false`). Still on the Vercel URL (no domain).
+- [ ] Resume PDF (`public/resume/Priyanshu_Vats_Resume_PV.pdf`) still prints the phone number: Priyanshu to decide whether to upload a version without it while the site isn't live.
 - [ ] **(you)** The old portfolio (repo `Pvats2003/portfolio` and its Vercel project/URL) is untouched. Say if you want it redirected to the new site or taken down.

@@ -5,7 +5,7 @@ import { FlagshipCard, WorkCardView } from '@/components/home/WorkCards';
 import { CountUp } from '@/components/motion/CountUp';
 import { DevicePair } from '@/components/visual/DevicePair';
 import { Plate } from '@/components/visual/Frames';
-import { contact, hero, howIWork, proof, record, SITE_DESCRIPTION, SITE_URL } from '@/content/site';
+import { contact, hero, howIWork, proof, record, SHOW_PHONE, SITE_DESCRIPTION, SITE_URL } from '@/content/site';
 import { education, experience, identity } from '@/content/resume';
 import { pageMetadata } from '@/lib/seo';
 import { archive, selectedWork } from '@/content/work';
@@ -25,7 +25,7 @@ const person = {
   name: identity.name,
   url: SITE_URL,
   email: `mailto:${identity.email}`,
-  telephone: identity.phone,
+  ...(SHOW_PHONE ? { telephone: identity.phone } : {}),
   jobTitle: experience[0].title,
   worksFor: { '@type': 'Organization', name: experience[0].org },
   alumniOf: { '@type': 'CollegeOrUniversity', name: education.school },
