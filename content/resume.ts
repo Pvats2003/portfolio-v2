@@ -10,7 +10,8 @@ export const identity = {
   location: 'Bengaluru, KA',
   phone: '+91-6206624775',
   email: 'priyanshu.vats03@gmail.com',
-  linkedin: { label: 'linkedin.com/in/priyanshuvats-5a68aa292', href: 'https://linkedin.com/in/priyanshuvats-5a68aa292' },
+  // Corrected by Priyanshu (Sep 25): the PDF's link is missing the hyphen. check-resume.mjs maps the PDF's version to this.
+  linkedin: { label: 'linkedin.com/in/priyanshu-vats-5a68aa292', href: 'https://www.linkedin.com/in/priyanshu-vats-5a68aa292' },
   github: { label: 'github.com/Pvats2003', href: 'https://github.com/Pvats2003' },
 };
 

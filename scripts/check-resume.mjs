@@ -28,6 +28,15 @@ const DELIBERATELY_OMITTED = [
   'ibm program manager',
 ];
 
+// Where the PDF is wrong and resume.ts has the fix: PDF text or link → what resume.ts says.
+// Remove an entry once a corrected PDF is uploaded (TODO.md).
+const TEXT_CORRECTIONS = [
+  ['linkedin.com/in/priyanshuvats-5a68aa292', 'linkedin.com/in/priyanshu-vats-5a68aa292'], // Priyanshu, Sep 25
+];
+const LINK_CORRECTIONS = [
+  ['https://linkedin.com/in/priyanshuvats-5a68aa292', 'https://www.linkedin.com/in/priyanshu-vats-5a68aa292'],
+];
+
 /** Lower-case, straight quotes, one kind of dash, single spaces. */
 function normalize(s) {
   return s
@@ -86,7 +95,9 @@ async function resumeStrings() {
   }
 }
 
-const { text, links } = await pdfText();
+const pdf = await pdfText();
+const text = TEXT_CORRECTIONS.reduce((t, [from, to]) => t.split(from).join(to), pdf.text);
+const links = pdf.links.map((u) => LINK_CORRECTIONS.find(([from]) => from === u.replace(/\/$/, ''))?.[1] ?? u);
 const { strings, hrefs } = await resumeStrings();
 const problems = [];
 

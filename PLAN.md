@@ -59,7 +59,7 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | Priyanshu Vats | R-H1 |
 | Title: "Product & Operations Builder · AI/Robotics Field Operations · 0→1 Internal Tools" | R-H2 |
 | Based in Bengaluru, KA | R-H3 |
-| Email priyanshu.vats03@gmail.com · LinkedIn `linkedin.com/in/priyanshuvats-5a68aa292` · GitHub `github.com/Pvats2003` | R-H3 |
+| Email priyanshu.vats03@gmail.com · LinkedIn `linkedin.com/in/priyanshu-vats-5a68aa292` (corrected Sep 25; the PDF drops the hyphen) · GitHub `github.com/Pvats2003` | R-H3 |
 | Phone +91-6206624775 (**shown on the site? Q11**) | R-H3 |
 | Ships products end-to-end through AI-assisted development (Claude Code) | R-S4 |
 | Target roles: APM / Product Associate / Product Ops / AI Product → Founder's Office / Strategy & Ops / BizOps → AI/robotics ops | B |
