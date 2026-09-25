@@ -25,6 +25,7 @@ export function WorldView({ places, overview }: { places: Place[]; overview: Pla
   const reducedMotion = useReducedMotion();
   const [phase, setPhase] = useState<Phase>('poster');
   const [canTry, setCanTry] = useState(false);
+  const [why, setWhy] = useState<{ reason: string; details: string } | null>(null);
   const [test, setTest] = useState<{ force: boolean; shot: Mood | null; open: string | null; hero: boolean }>({
     force: false,
     shot: null,
@@ -49,9 +50,19 @@ export function WorldView({ places, overview }: { places: Place[]; overview: Pla
     const start = () => {
       setTest(t);
       if (force) return setPhase('loading');
+      // Phones always start on the still picture (battery, data, and a fast first screen); one tap loads the 3D.
+      const phone = window.matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768;
+      if (phone) {
+        setCanTry(true);
+        setWhy({ reason: 'on phones the town starts as a still picture to save battery and data', details: '' });
+        setPhase('fallback');
+        setListOpen(true);
+        return;
+      }
       const probe = probeDevice();
-      if (probe === 'ok') return setPhase('loading');
-      setCanTry(probe === 'weak');
+      if (probe.verdict === 'ok') return setPhase('loading');
+      setCanTry(probe.verdict === 'weak');
+      setWhy({ reason: probe.reason ?? '', details: probe.details });
       setPhase('fallback');
       setListOpen(true);
     };
@@ -169,8 +180,9 @@ export function WorldView({ places, overview }: { places: Place[]; overview: Pla
             controlsRef={controls}
             pinRefs={pinRefs}
             onReady={() => setPhase('live')}
-            onFail={() => {
-              setCanTry(false);
+            onFail={(reason) => {
+              setCanTry(reason !== 'context-lost');
+              setWhy({ reason: reason === 'context-lost' ? 'the graphics card reset the 3D view' : reason, details: '' });
               setPhase('fallback');
               setListOpen(true);
             }}
@@ -209,7 +221,16 @@ export function WorldView({ places, overview }: { places: Place[]; overview: Pla
           )}
           {phase === 'fallback' && (
             <div role="status" className="world-status absolute bottom-3 left-3 right-3 z-20 flex flex-wrap items-center gap-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-md">
-              <span>{copy.fallback}</span>
+              <span>
+                {copy.fallback}
+                {why?.reason && <> Why: {why.reason}.</>}
+              </span>
+              {why?.details && (
+                <details className="w-full text-xs text-muted">
+                  <summary className="cursor-pointer">What the browser reported</summary>
+                  <p className="mt-1 break-words font-mono">{why.details}</p>
+                </details>
+              )}
               {canTry && (
                 <button
                   type="button"
@@ -262,7 +283,7 @@ export function WorldView({ places, overview }: { places: Place[]; overview: Pla
   );
 }
 
-function PlaceBody({ place, dialog, onBack, headingLevel }: { place: Place; dialog?: boolean; onBack?: () => void; headingLevel?: 3 }) {
+export function PlaceBody({ place, dialog, onBack, headingLevel }: { place: Place; dialog?: boolean; onBack?: () => void; headingLevel?: 3 }) {
   return (
     <div>
       {headingLevel && <h3 className="mb-2 font-semibold">{place.name}</h3>}

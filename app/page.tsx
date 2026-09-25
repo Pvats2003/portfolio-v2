@@ -44,9 +44,7 @@ export default function Home() {
       {/* Hero: night-shift panel in both themes. First screen = headline + proof + real product. */}
       <section aria-labelledby="hero-h" className="night relative overflow-hidden">
         <div aria-hidden className="dot-grid absolute inset-0" />
-        {/* The town from /world at dusk, as a strip under the content: never behind text or the product. */}
-        <div aria-hidden className="hero-town absolute inset-x-0 bottom-0 h-40 sm:h-52 lg:h-60" />
-        <div className="relative mx-auto grid max-w-6xl gap-5 px-4 pb-32 pt-5 sm:px-6 sm:pb-36 sm:pt-10 lg:grid-cols-[0.92fr_1.25fr] lg:gap-x-12 lg:gap-y-6 lg:pb-40 lg:pt-14">
+        <div className="relative mx-auto grid max-w-6xl gap-5 px-4 pb-10 pt-5 sm:px-6 sm:pb-14 sm:pt-10 lg:grid-cols-[0.92fr_1.25fr] lg:gap-x-12 lg:gap-y-6 lg:pb-16 lg:pt-14">
           <div className="lg:col-start-1 lg:row-start-1">
             <p className="font-mono text-xs text-muted">
               <span className="font-medium text-accent">SOD</span>

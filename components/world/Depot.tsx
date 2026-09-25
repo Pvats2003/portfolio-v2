@@ -8,7 +8,7 @@ import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Batch, Box, Cyl, Gable } from './kit';
 import { Figure, Gulmohar, Palm } from './props';
-import type { Mood } from './palette';
+import { palettes, type Mood } from './palette';
 
 const W = 10; // hall width (x)
 const D = 6; // hall depth (z)
@@ -76,7 +76,8 @@ function Screen() {
     <group position={[8.6, 0, 1.2]} rotation={[0, 0.32, 0]}>
       <mesh position={[0, 1.7 + h / 2, 0.1]}>
         <planeGeometry args={[w, h]} />
-        <meshBasicMaterial map={tex} toneMapped={false} />
+        {/* A touch under full white so the dashboard never blooms into an unreadable glow. */}
+        <meshBasicMaterial map={tex} color="#ececec" toneMapped={false} />
       </mesh>
     </group>
   );
@@ -141,7 +142,7 @@ function Lamps({ mood }: { mood: Mood }) {
     [-5.6, 3.9],
     [4.2, 4.0],
   ];
-  const opacity = mood === 'day' ? 0 : mood === 'night' ? 0.5 : 0.4;
+  const opacity = palettes[mood].lamps;
   return (
     <>
       {spots.map(([x, z]) => (

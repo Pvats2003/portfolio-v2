@@ -42,10 +42,10 @@ const outlineFragment = /* glsl */ `
   }
 `;
 
-function makeGradient() {
-  // Three hard steps: shadow, mid, lit — the cel look.
-  const data = new Uint8Array([110, 110, 110, 255, 185, 185, 185, 255, 255, 255, 255, 255]);
-  const tex = new THREE.DataTexture(data, 3, 1, THREE.RGBAFormat);
+function makeGradient(steps: number[]) {
+  // Hard steps sampled by N·L: three even bands (Phase 2), or a big shadow/lit split with a thin mid (style A).
+  const data = new Uint8Array(steps.flatMap((v) => [v, v, v, 255]));
+  const tex = new THREE.DataTexture(data, steps.length, 1, THREE.RGBAFormat);
   tex.minFilter = THREE.NearestFilter;
   tex.magFilter = THREE.NearestFilter;
   tex.generateMipmaps = false;
@@ -72,8 +72,25 @@ function stripes(size: number, bands: number, dark: number) {
 }
 
 /** One per canvas: materials by role, the outline material and the unit primitives. Colours follow the mood. */
+export type KitStyle = {
+  /** 'soft': three even bands. 'anime': shadow/lit with a thin mid band and hard edges. */
+  bands: 'soft' | 'anime';
+  /** Ink line width in CSS pixels. */
+  line: number;
+  /** Warm rim light on silhouettes facing the key light. */
+  rim: boolean;
+};
+
+const SOFT: KitStyle = { bands: 'soft', line: 2, rim: false };
+
 export class Kit {
-  gradient = makeGradient();
+  style: KitStyle;
+  gradient: THREE.DataTexture;
+  rim = {
+    uRimColor: { value: new THREE.Color() },
+    uRimDir: { value: new THREE.Vector3(0, 1, 0) },
+    uRimStrength: { value: 0 },
+  };
   materials = new Map<string, THREE.MeshToonMaterial>();
   tileTex = stripes(64, 4, 0.22);
   outline = new THREE.ShaderMaterial({
@@ -94,9 +111,15 @@ export class Kit {
     sphere: new THREE.SphereGeometry(0.5, 18, 12),
     capsule: new THREE.CapsuleGeometry(0.5, 1, 6, 12),
     prism: makePrism(),
+    hip: makeHip(),
   };
   private hulls = new WeakMap<THREE.BufferGeometry, THREE.BufferGeometry>();
   mood: Mood = 'day';
+
+  constructor(style: KitStyle = SOFT) {
+    this.style = style;
+    this.gradient = makeGradient(style.bands === 'anime' ? [92, 92, 92, 150, 255, 255, 255, 255] : [110, 185, 255]);
+  }
 
   mat(role: Role, variant: 'plain' | 'tiles' | 'glow' = 'plain') {
     const key = `${role}:${variant}`;
@@ -106,6 +129,7 @@ export class Kit {
       if (variant === 'tiles') {
         m.map = this.tileTex;
       }
+      if (this.style.rim) addRim(m, this.rim);
       m.userData = { role, variant };
       this.materials.set(key, m);
       this.paint(m);
@@ -135,13 +159,15 @@ export class Kit {
 
   setOutlineSize(width: number, height: number, dpr: number) {
     this.outline.uniforms.resolution.value.set(width * dpr, height * dpr);
-    this.outline.uniforms.thickness.value = 2 * dpr;
+    this.outline.uniforms.thickness.value = this.style.line * dpr;
   }
 
   setMood(mood: Mood) {
     this.mood = mood;
     this.materials.forEach((m) => this.paint(m));
     this.outline.uniforms.color.value.set(palettes[mood].outline);
+    this.rim.uRimColor.value.set(palettes[mood].rim.color);
+    this.rim.uRimStrength.value = palettes[mood].rim.strength;
   }
 
   dispose() {
@@ -151,6 +177,42 @@ export class Kit {
     this.tileTex.dispose();
     Object.values(this.geo).forEach((g) => g.dispose());
   }
+}
+
+/**
+ * Rim light for the toon material: a hard band along silhouettes on the side facing the key light
+ * (uRimDir, in view space, updated every frame). Added to the lit colour before output.
+ */
+function addRim(m: THREE.MeshToonMaterial, uniforms: Kit['rim']) {
+  m.customProgramCacheKey = () => 'toon-rim';
+  m.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, uniforms);
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform vec3 uRimColor;\nuniform vec3 uRimDir;\nuniform float uRimStrength;')
+      .replace(
+        '#include <opaque_fragment>',
+        `{
+          vec3 rimView = normalize(vViewPosition);
+          float fres = 1.0 - clamp(dot(normal, rimView), 0.0, 1.0);
+          float facing = dot(normal, uRimDir);
+          // Only true silhouettes (surfaces almost edge-on to the camera), so big grazing roofs don't wash out.
+          float band = smoothstep(0.84, 0.9, fres) * smoothstep(0.05, 0.3, facing);
+          // Never on upward-facing surfaces (ground, roofs): seen from eye level they are nearly edge-on too.
+          vec3 upView = normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz);
+          band *= 1.0 - smoothstep(0.5, 0.8, dot(normal, upView));
+          outgoingLight += uRimColor * band * uRimStrength;
+        }
+        #include <opaque_fragment>`,
+      );
+  };
+}
+
+/** A hip roof block: rectangular base 1 × 1 at y = −0.5, sloping in to a flat top about half as big. Flat-shaded. */
+function makeHip() {
+  const g = new THREE.CylinderGeometry(0.38, 0.7071, 1, 4, 1).toNonIndexed();
+  g.rotateY(Math.PI / 4);
+  g.computeVertexNormals();
+  return g;
 }
 
 /** A gable: triangular prism along x, base 1 wide (z) at y = 0, apex at y = 1. Flat-shaded. */
@@ -213,6 +275,7 @@ export const Taper = (p: PartProps) => <Part geo="taper" {...p} />;
 export const Ball = (p: PartProps) => <Part geo="sphere" {...p} />;
 export const Pill = (p: PartProps) => <Part geo="capsule" {...p} />;
 export const Gable = (p: PartProps) => <Part geo="prism" {...p} />;
+export const Hip = (p: PartProps) => <Part geo="hip" {...p} />;
 
 /** A shape extruded upward (e.g. the rounded diorama tile). Shape is drawn in x/z. */
 export function Slab({ shape, depth, role, y = 0, outline = true }: { shape: THREE.Shape; depth: number; role: Role; y?: number; outline?: boolean }) {

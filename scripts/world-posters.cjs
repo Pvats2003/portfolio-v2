@@ -4,6 +4,8 @@
 // Needs a running build (npm run build && npm start) and Playwright:
 //   NODE_PATH=$(npm root -g) node scripts/world-posters.cjs [http://localhost:3100]
 // Uses the test-only ?shot= override, so run it against a local or preview build, never production.
+// CommonJS on purpose: require() honours NODE_PATH, which is how the globally installed Playwright is found.
+/* eslint-disable @typescript-eslint/no-require-imports */
 const path = require('node:path');
 const { chromium } = require('playwright');
 const sharp = require('sharp');
@@ -17,7 +19,6 @@ const jobs = [
   { name: 'poster-night', q: 'shot=night', w: 1600, h: 1049, dsf: 1 },
   { name: 'poster-day-tall', q: 'shot=day', w: 400, h: 910, dsf: 2 },
   { name: 'poster-night-tall', q: 'shot=night', w: 400, h: 910, dsf: 2 },
-  { name: 'hero-dusk', q: 'shot=dusk&mode=hero', w: 1200, h: 599, dsf: 2 },
 ];
 
 (async () => {

@@ -48,5 +48,5 @@ export const worldCopy = {
   listView: 'List view',
   loading: 'Loading the town…',
   tryAnyway: 'Try the 3D anyway',
-  fallback: 'Showing a still picture of the town: this device or browser can’t run the 3D smoothly.',
+  fallback: 'Showing a still picture of the town.',
 };

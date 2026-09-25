@@ -52,11 +52,12 @@ function paintSky(material: THREE.ShaderMaterial, mood: Mood) {
   u.horizon.value.set(p.horizon);
   u.glow.value.set(p.glow);
   u.sun.value.set(p.sun);
-  // Sun low in the west by day, moon high in the north-east at night, sun just set behind the town at dusk.
-  // At dusk the sun sits right of centre: behind the product plate on desktop, clear of any text on phones.
-  u.sunDir.value.set(...((mood === 'day' ? [-0.8, 0.12, -0.35] : mood === 'night' ? [0.45, 0.55, -0.7] : [0.3, 0.025, -1]) as V3));
-  u.sunSize.value = mood === 'day' ? 0.9975 : 0.9986;
-  u.stars.value = mood === 'day' ? 0 : 1;
+  // Sun low in the west by day, moon high in the north-east at night; at dusk the sun sits right of centre
+  // (behind the product plate on desktop, clear of any text on phones).
+  const pal = palettes[mood];
+  u.sunDir.value.set(...pal.sunDir);
+  u.sunSize.value = pal.sunSize;
+  u.stars.value = pal.stars ? 1 : 0;
 }
 
 export function Sky({ mood }: { mood: Mood }) {
@@ -118,8 +119,7 @@ function cloudTexture() {
 export function Clouds({ mood, animate }: { mood: Mood; animate: boolean }) {
   const tex = useMemo(() => cloudTexture(), []);
   const group = useRef<THREE.Group>(null);
-  const tint = mood === 'day' ? '#fff4e6' : mood === 'night' ? '#39405a' : '#6a4a52';
-  const opacity = mood === 'day' ? 0.95 : 0.7;
+  const { tint, opacity } = palettes[mood].cloud;
   const spots = useMemo(
     () =>
       [

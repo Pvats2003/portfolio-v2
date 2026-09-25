@@ -13,6 +13,21 @@ Branch `anime-world`. Nothing here is built yet; this is the plan to approve bef
   - **Place pins are plain DOM buttons.** They're projected from 3D each frame, not drei `Html`, which fails to render with React 19. They sit outside the hidden canvas, so keyboard and screen readers get them directly.
   - **The homepage town is a horizon strip.** It runs along the bottom of the hero, in its own space below the proof tiles and the product plate, rather than a background behind them. No text or product sits on top of it. On phones it sits below the buttons, so the first screen is unchanged apart from the "Enter my world" link.
 
+- **Direction change (Sep 26):** the world is now a Japanese countryside village. The inn is the projects hub. It lives at `/world` behind the homepage's "Enter my world →" link, and the homepage first screen is unchanged (the coastal-town dusk strip was removed). The Phase 2 Depot scene is kept only as the current `/world` placeholder.
+- **Device check fixed:**
+  - The CPU-thread rule is gone. Many laptops report 4 threads, and privacy modes fake low numbers.
+  - drei's `PerformanceMonitor` is gone. It read on-demand rendering's idle time as "slow".
+  - The frame rate is now measured once, over 1.5 s.
+  - The still picture now says why it was shown, with a "What the browser reported" line.
+  - Phones always start on the still picture, and one tap loads the 3D.
+- **Look-dev round (village with the inn, golden hour and night):** `/world/lookdev` has the three frames:
+  - **A:** pushed 3D.
+  - **B:** 2.5D painted SVG.
+  - **C:** 3D in front of painted layers.
+
+  Each has a frame-rate meter and a device-check readout.
+- **Next:** a walkable vertical slice (village square + inn + City Ops OS), waiting on the choice of art source.
+
 ## 0. Decisions (Phase 1, approved)
 
 | # | Question | My recommendation |

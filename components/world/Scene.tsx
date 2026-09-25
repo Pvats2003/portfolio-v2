@@ -1,7 +1,7 @@
 'use client';
 
 // The 3D scene. Loaded lazily by WorldView, only after the device checks pass (WORLD.md §5).
-import { CameraControls, CameraControlsImpl, PerformanceMonitor } from '@react-three/drei';
+import { CameraControls, CameraControlsImpl } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import * as THREE from 'three';
@@ -69,15 +69,8 @@ export default function Scene(props: SceneProps) {
       onPointerMissed={() => props.onClose()}
     >
       <KitProvider kit={kit}>
-        <PerformanceMonitor
-          bounds={() => [15, 24]}
-          flipflops={3}
-          onDecline={() => setDpr(1)}
-          onFallback={() => {
-            if (!force) onFail('slow');
-          }}
-        />
         <World {...props} />
+        {!force && !props.shot && <FrameCheck onSlow={() => setDpr(1)} dpr={dpr} onFail={onFail} />}
       </KitProvider>
     </Canvas>
   );
@@ -317,6 +310,44 @@ function Ambient() {
       window.removeEventListener('keydown', onInput);
     };
   }, [el, invalidate]);
+  return null;
+}
+
+/**
+ * Measures the real frame rate once, for 1.5 s after the scene appears (the scene normally draws only on change,
+ * so a continuous monitor would read idle time as "slow"). Under ~20 fps: drop to 1× resolution and measure again;
+ * still slow: fall back to the poster.
+ */
+function FrameCheck({ dpr, onSlow, onFail }: { dpr: number; onSlow: () => void; onFail: (reason: string) => void }) {
+  const invalidate = useThree((s) => s.invalidate);
+  const round = useRef(0);
+  const cb = useRef({ onSlow, onFail });
+  useLayoutEffect(() => {
+    cb.current = { onSlow, onFail };
+  });
+  useEffect(() => {
+    let raf = 0;
+    const stamps: number[] = [];
+    const start = performance.now() + 400; // let shaders and textures settle first
+    const tick = (now: number) => {
+      invalidate();
+      if (document.hidden) return; // a background tab isn't a slow device
+      if (now >= start) stamps.push(now);
+      if (now - start < 1500) raf = requestAnimationFrame(tick);
+      else {
+        const gaps = stamps.slice(1).map((t, i) => t - stamps[i]).sort((a, b) => a - b);
+        const median = gaps[Math.floor(gaps.length / 2)] ?? 0;
+        if (median > 50) {
+          if (round.current === 0 && dpr > 1) {
+            round.current = 1;
+            cb.current.onSlow();
+          } else cb.current.onFail(`it was drawing about ${Math.round(1000 / median)} frames a second here, too slow to be pleasant`);
+        }
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [dpr, invalidate]);
   return null;
 }
 
