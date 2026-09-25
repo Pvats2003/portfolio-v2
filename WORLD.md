@@ -6,7 +6,14 @@ Branch `anime-world`. Nothing here is built yet; this is the plan to approve bef
 
 ---
 
-## 0. Decisions I need from you
+## Status
+
+- **Phase 1 (concept):** approved as recommended, all five decisions (Sep 25).
+- **Phase 2 (prototype):** built on `anime-world`. It has `/world` with the Field Ops Depot, camera, one dialogue box, day/night, posters, fallback, list view and skip button, plus the homepage dusk strip preview. Two changes from the plan:
+  - **Place pins are plain DOM buttons.** They're projected from 3D each frame, not drei `Html`, which fails to render with React 19. They sit outside the hidden canvas, so keyboard and screen readers get them directly.
+  - **The homepage town is a horizon strip.** It runs along the bottom of the hero, in its own space below the proof tiles and the product plate, rather than a background behind them. No text or product sits on top of it. On phones it sits below the buttons, so the first screen is unchanged apart from the "Enter my world" link.
+
+## 0. Decisions (Phase 1, approved)
 
 | # | Question | My recommendation |
 |---|---|---|

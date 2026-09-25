@@ -27,6 +27,7 @@ export const hero = {
   subline: 'Operations Management Intern at Instawork Robotics Labs. Open to APM, Product Ops and Founder’s Office roles.', // R-E1, brief
   primaryCta: { label: 'See City Ops OS', href: '/work/city-ops-os' },
   secondaryCta: { label: 'Resume (PDF)', href: RESUME_PDF },
+  worldCta: 'Enter my world', // WORLD.md §8 (optional layer)
 };
 
 export type ProofStat = { key: string; value: string; label: string };

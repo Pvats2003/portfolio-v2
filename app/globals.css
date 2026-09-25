@@ -232,3 +232,169 @@ body {
     }
   }
 }
+
+/* ---------- /world (WORLD.md): posters, pins and anime-style panels in Field Log tokens ---------- */
+:root {
+  --poster-land: image-set(url('/world/poster-day.avif') type('image/avif'), url('/world/poster-day.webp') type('image/webp'));
+  --poster-tall: image-set(url('/world/poster-day-tall.avif') type('image/avif'), url('/world/poster-day-tall.webp') type('image/webp'));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --poster-land: image-set(url('/world/poster-night.avif') type('image/avif'), url('/world/poster-night.webp') type('image/webp'));
+    --poster-tall: image-set(url('/world/poster-night-tall.avif') type('image/avif'), url('/world/poster-night-tall.webp') type('image/webp'));
+  }
+}
+:root[data-theme='dark'] {
+  --poster-land: image-set(url('/world/poster-night.avif') type('image/avif'), url('/world/poster-night.webp') type('image/webp'));
+  --poster-tall: image-set(url('/world/poster-night-tall.avif') type('image/avif'), url('/world/poster-night-tall.webp') type('image/webp'));
+}
+.world {
+  background: var(--plate);
+}
+/* Homepage: the town at dusk as a horizon strip along the bottom of the hero, fading up into the panel. */
+.hero-town {
+  background: image-set(url('/world/hero-dusk.avif') type('image/avif'), url('/world/hero-dusk.webp') type('image/webp')) bottom center / cover
+    no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 45%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 45%);
+}
+@media (max-width: 1023px) {
+  .hero-town {
+    background-size: 200% auto;
+  }
+}
+.world-poster {
+  background: var(--poster-land) center / cover no-repeat;
+}
+@media (max-aspect-ratio: 4/5) {
+  .world-poster {
+    background-image: var(--poster-tall);
+  }
+}
+.world-btn,
+.world-cta,
+.world-pin,
+.world-status {
+  font: 500 0.75rem/1.2 var(--font-plex-mono), ui-monospace, monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.world-btn,
+.world-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0 0.85rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.world-cta {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.world-btn:hover,
+.world-cta:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.world-btn:active,
+.world-cta:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.world-status {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-plex-sans), ui-sans-serif, sans-serif;
+  font-size: 0.8125rem;
+}
+.world-panel,
+.world-dialog {
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.world-dialog {
+  padding: 1.6rem 1.25rem 1.1rem;
+}
+@media (min-width: 640px) {
+  .world-dialog {
+    padding: 1.75rem 1.6rem 1.35rem;
+  }
+}
+.world-speaker {
+  position: absolute;
+  top: -0.95rem;
+  left: 1rem;
+  padding: 0.3rem 0.65rem;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 500 0.75rem/1.2 var(--font-plex-mono), ui-monospace, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.world-dialog::after {
+  /* the little "next" marker every dialogue box has */
+  content: '';
+  position: absolute;
+  right: 1rem;
+  bottom: 0.7rem;
+  border: 6px solid transparent;
+  border-top: 8px solid var(--accent);
+  border-bottom: 0;
+}
+.world-pin {
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0.45rem 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+}
+.world-pin::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  margin-left: -7px;
+  border: 7px solid transparent;
+  border-top: 8px solid var(--ink);
+  border-bottom: 0;
+}
+.world-pin:hover,
+.world-pin:focus-visible,
+.world-pin[data-active] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.world-pin:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .world-dialog {
+    animation: world-rise 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes world-rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+}
