@@ -14,37 +14,15 @@ An anime-film background gets its look from things code can't produce by hand: p
 - painted background layers (from an artist or an image generator), used in a 2.5D parallax scene, or
 - a proper stylised 3D kit (hand-painted textures, a real toon character with animations), used in a 3D scene.
 
-## Path 1 — 2.5D painted layers (fits the "look-dev first, no walking" override)
+## Decision (Sep 26): Path 1, painted 2.5D; Priyanshu generates the plates
 
-**Layers**, one scene, 3840 × 2160, each with a transparent background (or a flat green one I can key out):
+**The working checklist is [`art/plates/CHECKLIST.md`](art/plates/CHECKLIST.md):** one prompt per plate, with exact file names, sizes and backgrounds.
 
-1. **Sky:** gradient and big clouds, no ground.
-2. **Far mountains:** the big mountain and the far ridge, with haze at the base.
-3. **Mid village:** the forest band, the inn (centre), the neighbour's house with laundry and a bicycle, the vending machine, the utility pole and wires, the rice paddies.
-4. **Stream and bridge:** the water band, the stone banks and the arched stone bridge.
-5. **Foreground:** a cherry tree framing the left, a wooden fence, grass tufts, stepping stones.
-6. **Separate cut-outs** for things that move or light up: the two paper lanterns, the shoji windows (as a mask), chimney smoke, the vending-machine panel, and the inn on its own (so hovering or tapping it can highlight it).
+It uses **three plates** (sky, land, foreground) rather than the five layers first listed here. Layers generated separately rarely line up: horizons, perspective and light drift between generations. Keeping the mountains, village, inn and stream in one painting (`land`) guarantees they match. The sky behind it and the foreground framing in front still give the parallax depth.
 
-**Night:** either generate the same scene again as a night version (image-to-image from the day plate, so the layout matches), or colour-grade the day plates in code and add the light layers. The night-lit windows and lanterns look much better painted.
+**Cut-out step:** `npm run world:plates` (`scripts/world-plates.mjs`). It keys out flat magenta with soft edges and removes the pink fringe, then writes responsive AVIF and WebP files and `content/world-plates.json`.
 
-**Code on top** (already built in frame B): parallax, drifting clouds, flickering lanterns, rising smoke, water shimmer, falling petals, fireflies, the day/night switch, hotspots, keyboard access and a quick view.
-
-**Size:** about 6 AVIF layers of 150–400 KB each, plus about 10 KB of code. That's no problem on phones.
-
-### Image prompts
-
-Use the same settings for every layer: **16:9, 3840 × 2160, eye-level camera at about head height, 35 mm lens, the inn in the centre, a low golden sun from the right, shadows falling to the left.** No text, no logos, no people's faces, and no named studios, films or artists.
-
-- **Sky:** "Hand-painted anime background art, original style. Late-afternoon golden-hour sky over the Japanese countryside: deep blue at the top fading to warm peach and amber at the horizon, towering cumulus clouds with soft pink-lavender shadows and bright cream tops lit from the right, thin wispy streaks high up. Painterly brushwork, soft gradients, gentle film grain. Sky only, no ground, no buildings, no text."
-- **Far mountains:** "Hand-painted anime background art, original style. A single large green-blue mountain centre-left and a lower ridge to the right, in a Japanese rural valley at golden hour. The sun-side slopes on the right are warm and lit; the left sides are cool blue-grey shadow, with soft gullies and forest texture. Atmospheric haze at the base fades into warm light. Transparent (or flat green) background above and below, no sky, no text."
-- **Mid village:** "Hand-painted anime background art, original style. A quiet Japanese countryside village at golden hour, eye-level view. In the centre, a two-storey traditional wooden inn: dark blue-grey clay tile roof with a small gable, white plaster and dark timber on the upper floor, glowing paper shoji screens, an indigo curtain over the entrance, two red paper lanterns, a thin line of chimney smoke. To the left, a smaller wooden house with laundry drying on a bamboo pole and a bicycle leaning on the wall. To the right, a glowing drink vending machine, a wooden utility pole with sagging power lines, and terraced rice paddies reflecting the sky. A band of rounded green forest behind. Warm light from the right, long soft shadows to the left, lived-in details, painterly texture. Transparent (or flat green) background, no sky, no mountains, no people, no text or signage lettering."
-- **Stream and bridge:** "Hand-painted anime background art, original style. A clear shallow stream crossing the frame from left to right, reflecting a golden sky, with smooth river stones along both banks and a small arched stone footbridge in the centre. Sparkles of warm light on the water, painterly texture. Eye level, 35 mm. Transparent (or flat green) background, no sky, no text."
-- **Foreground:** "Hand-painted anime background art, original style. Foreground framing elements for a countryside scene: a cherry blossom tree on the left edge with a dark trunk and branches of pale pink blossom reaching over the top-left corner, an old wooden fence at the lower left, tall grass tufts in the bottom corners, and flat stepping stones leading into the scene at the bottom centre. Golden-hour rim light from the right. Transparent (or flat green) background, no text."
-- **Night variant (image-to-image from each day layer, low strength):** "Same scene at night: rich deep-blue moonlit sky with stars and a bright full moon upper right; the buildings in cool blue moonlight; warm orange light glowing from the shoji screens, the paper lanterns and the vending machine; no purple cast."
-
-**Which image generator:** the licence depends on the tool and the plan. Check that the plan gives commercial rights, and that you're comfortable with how the tool was trained. I haven't generated anything; you would, and send me the files.
-
-## Path 2 — walkable 3D slice (the "vertical slice" brief)
+## Path 2 — walkable 3D slice (not chosen; kept for reference)
 
 **Art needed:**
 

@@ -26,7 +26,12 @@ Branch `anime-world`. Nothing here is built yet; this is the plan to approve bef
   - **C:** 3D in front of painted layers.
 
   Each has a frame-rate meter and a device-check readout.
-- **Next:** a walkable vertical slice (village square + inn + City Ops OS), waiting on the choice of art source.
+- **Decision (Sep 26): painted 2.5D wins**, built on frame B's code. There is no walking, no character controller and no WebGL: the three.js packages and the 3D scenes were removed (in git history up to `a606acb`).
+  - `/world` shows the painted village.
+  - It uses Priyanshu's painted plates (`art/plates/CHECKLIST.md`, then `npm run world:plates`) once they exist, and the code-drawn village until then.
+  - The inn is a button that opens the projects, and the list view has the same content.
+  - Phones start still, with an "Animate" button.
+- **Next:** wire in the plates when they arrive (mark the inn, lanterns and chimney in `content/world-scene.ts`), then send screenshots. No more locations until then.
 
 ## 0. Decisions (Phase 1, approved)
 

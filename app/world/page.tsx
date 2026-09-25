@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/lib/seo';
 import { WorldView } from '@/components/world/WorldView';
-import { overview, places } from '@/content/world';
+import { innProjects } from '@/content/world';
 
 export const metadata: Metadata = pageMetadata({
   title: 'My world',
-  description: 'An illustrated town where each of Priyanshu’s projects is a place you can visit.',
+  description: 'A painted countryside village; the inn holds Priyanshu’s projects.',
   path: '/world',
 });
 
 export default function WorldPage() {
-  return <WorldView places={places} overview={overview} />;
+  return <WorldView projects={innProjects} />;
 }
