@@ -136,7 +136,7 @@ _Written 2026-09-23. No code yet. The source of truth is `public/resume/Priyansh
 | ITC Limited, Munger, Bihar: Electrical / Powerhouse Intern, Jun – Jul 2024 | R-E2 |
 | Mapped power distribution across 15+ sub-distribution boards (RUPS, bypass, DG supply); switchover logic and single points of failure; documented for operator training and stakeholder presentations | R-E2.1 |
 | B.Tech ECE, MIT Manipal, May 2026 | R-ED1 |
-| Certifications: Google UX Design (Coursera), IBM Business Analyst, IBM Program Manager | R-ED1.1 |
+| Certification: Google UX Design (Coursera). IBM Business Analyst and IBM Program Manager removed (not completed, Sep 25). | R-ED1.1 |
 | Revels (Painting & Publicity): led a 10-member core team (2025) and 30 volunteers (2024) | R-ED1.2 |
 | Skills, as four groups: Product · Operations · AI/Product Development (Claude Code, LLM/OCR integrations, React web apps, Apps Script automations) · Tools | R-K1–K4 |
 
@@ -244,5 +244,5 @@ Once questions 1–8 are answered: **Phase 1**. I scaffold the new repo and buil
 | R-P5.1 | Real-time plate detection/reading: YOLOv8n (89.1% mAP@50), OpenCV, Tesseract OCR |
 | R-K1–K4 | Skills: Product / Operations / AI/Product Development / Tools |
 | R-ED1 | B.Tech ECE · MIT Manipal · May 2026 |
-| R-ED1.1 | Google UX Design (Coursera), IBM Business Analyst, IBM Program Manager |
+| R-ED1.1 | Google UX Design (Coursera), IBM Business Analyst, IBM Program Manager (PDF text; the two IBM ones are not shown on the site: not completed) |
 | R-ED1.2 | Revels (Painting & Publicity): 10-member core team (2025), 30 volunteers (2024) |

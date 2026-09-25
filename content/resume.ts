@@ -121,7 +121,8 @@ export const education = {
   degree: 'B.Tech, Electronics & Communication Engineering',
   school: 'MIT Manipal',
   period: 'May 2026',
-  certifications: ['Google UX Design (Coursera)', 'IBM Business Analyst', 'IBM Program Manager'],
+  // IBM Business Analyst and IBM Program Manager removed: not completed (Priyanshu, Sep 25). Still on the PDF.
+  certifications: ['Google UX Design (Coursera)'],
   leadership:
     'Revels, MIT Manipal’s cultural fest (Painting & Publicity): led a 10-member core team (2025) and 30 volunteers (2024).',
 };

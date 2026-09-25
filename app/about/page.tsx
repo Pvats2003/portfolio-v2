@@ -50,7 +50,7 @@ export default function AboutPage() {
           </LogSection>
         )}
 
-        <LogSection marker={SHOW_TODOS ? '04' : '03'} label="Credentials" heading="Education & certifications">
+        <LogSection marker={SHOW_TODOS ? '04' : '03'} label="Credentials" heading="Education & certification">
           <p className="font-semibold">
             {education.degree} <span className="font-normal text-muted">· {education.school} · {education.period}</span>
           </p>

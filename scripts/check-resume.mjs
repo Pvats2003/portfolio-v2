@@ -24,6 +24,8 @@ const LABELS = [
 ];
 const DELIBERATELY_OMITTED = [
   'city-ops-cf81f.web.app', // not linked on the site until Priyanshu confirms it's public (TODO.md)
+  'ibm business analyst', // certificates Priyanshu didn't complete (Sep 25): off the site, still on the PDF (TODO.md)
+  'ibm program manager',
 ];
 
 /** Lower-case, straight quotes, one kind of dash, single spaces. */

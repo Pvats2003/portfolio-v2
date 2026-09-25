@@ -143,7 +143,9 @@ export default function ResumePage() {
             <span aria-hidden className="text-accent">
               •
             </span>
-            <span>Certifications: {education.certifications.join(', ')}.</span>
+            <span>
+              Certification{education.certifications.length > 1 ? 's' : ''}: {education.certifications.join(', ')}.
+            </span>
           </li>
           <li className="grid grid-cols-[1rem_1fr]">
             <span aria-hidden className="text-accent">
