@@ -5,7 +5,7 @@
 //
 // For each viewpoint in content/world-pano-spots.json:
 //   - if art/pano/<spot>.(jpg|png|webp) exists, it's treated as an equirectangular 360° image (2:1, e.g. 8192 × 4096)
-//     and cut into cube faces;
+//     and cut into cube faces (turned by the viewpoint's optional `rotate`, in degrees, so the inn is straight ahead);
 //   - otherwise a STAND-IN is painted from the land plate (public/world/plates/land-day-3840.webp): the painting
 //     wrapped around you four times (mirrored every other quarter so the edges meet), a gradient sky with soft clouds
 //     above it and the grass extended below. Obviously fake; it's there so the viewer can be judged before the art.
@@ -175,7 +175,9 @@ for (const [spot, cfg] of Object.entries(SPOTS)) {
     const img = await rgba(join(ROOT, 'art/pano', src));
     if (Math.abs(img.w / img.h - 2) > 0.02) console.warn(`⚠ ${src}: ${img.w} × ${img.h} isn't 2:1 — is it an equirectangular 360° image?`);
     if (img.w < 4096) console.warn(`⚠ ${src}: only ${img.w} px wide; 360° images need about 8192 × 4096 to look sharp.`);
-    bytes = await build(spot, (lon, lat) => equirectColour(img, lon, lat));
+    // `rotate` (degrees, optional): turns the panorama so the inn sits straight ahead; + turns the view right.
+    const turn = ((cfg.rotate ?? 0) * PI) / 180;
+    bytes = await build(spot, (lon, lat) => equirectColour(img, lon + turn, lat));
     manifest.spots[spot] = { source: src };
   } else {
     if (!plate) {

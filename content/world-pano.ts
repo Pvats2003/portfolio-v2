@@ -2,7 +2,7 @@
 // A hotspot is a direction: yaw = degrees to the right of straight ahead, pitch = degrees up.
 // While the panoramas are stand-ins painted from the land plate (scripts/world-pano.mjs), hotspot directions are
 // worked out from points on that plate, so they land on the inn, the houses and the paths. When a real 360° image
-// arrives for a viewpoint, replace its `onPlate(...)` calls with measured { yaw, pitch } values.
+// arrives for a viewpoint, its hotspots switch to `onImage(...)`: positions measured on the panorama image itself.
 import spotsJson from './world-pano-spots.json';
 import manifest from './world-pano.json';
 
@@ -21,6 +21,16 @@ function onPlate(spot: SpotId, x: number, y: number) {
   const v = (y - cy) * 1.125 * zoom;
   const yaw = Math.atan(u);
   return { yaw: yaw * DEG, pitch: Math.atan(-v * Math.cos(yaw)) * DEG };
+}
+
+/**
+ * The direction of a point on a real 360° panorama, from its position in the source image (x, y as fractions 0–1 of
+ * the equirectangular image's width and height), allowing for the viewpoint's `rotate`.
+ */
+export function onImage(spot: SpotId, x: number, y: number) {
+  const rotate = (spotsJson[spot] as { rotate?: number }).rotate ?? 0;
+  const yaw = (((x - 0.5) * 360 - rotate + 540) % 360) - 180;
+  return { yaw, pitch: (0.5 - y) * 180 };
 }
 
 const spot = (id: SpotId, start: Spot['start'], hotspots: Hotspot[]): Spot => ({
