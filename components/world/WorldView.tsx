@@ -1,65 +1,58 @@
 'use client';
 
-// /world: the painted village. Uses the painted plates when they exist (content/world-plates.json), otherwise the
-// code-drawn village (frame B). No WebGL. Everything you can do in the scene is also plain HTML: the inn is a
-// button, its projects open in a dialog with real links, and the list view shows the same content.
+// /world and /world/depth: the scene fills the screen, with "Quick view" and the list view always on top. Everything
+// you can reach in the scene is also plain HTML: hotspots are buttons, their panels hold real links, and the list
+// view shows the same content. Two scenes are being compared (WORLD.md): the 360° panorama and the 3D photo test.
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { Chip } from '@/components/site/Chip';
+import { RESUME_PDF } from '@/content/resume';
+import { contact } from '@/content/site';
 import { worldCopy as copy, type InnProject } from '@/content/world';
-import { hasPlates } from './village/PlateScene';
-import { useReducedMotion, useSiteMood } from './useEnv';
+import type { PlaceId } from '@/content/world-pano';
+import { useReducedMotion } from './useEnv';
 
-const PlateScene = dynamic(() => import('./village/PlateScene'), { ssr: false });
-const VillageSvg = dynamic(() => import('./village/VillageSvg'), { ssr: false });
+const PanoViewer = dynamic(() => import('./pano/PanoViewer'), { ssr: false });
+const DepthPhoto = dynamic(() => import('./depth/DepthPhoto'), { ssr: false });
 
-// Test override (?shot=day|night: fixed mood, no motion) outside production only.
+// Test override (?shot: fixed view, no input) outside production only.
 const TEST_OK = process.env.NEXT_PUBLIC_WORLD_TEST === '1';
+const SPEAKER: Record<PlaceId, string> = { inn: `${copy.inn} · ${copy.innLabel}`, resume: copy.resume, contact: copy.contact };
 
-export function WorldView({ projects }: { projects: InnProject[] }) {
-  const siteMood = useSiteMood();
+export function WorldView({ projects, scene }: { projects: InnProject[]; scene: 'pano' | 'depth' }) {
   const reducedMotion = useReducedMotion();
-  const [shot, setShot] = useState<'day' | 'night' | null>(null);
-  const [phone, setPhone] = useState(false);
-  const [animate, setAnimate] = useState(false);
-  const [innOpen, setInnOpen] = useState(false);
+  const [shot, setShot] = useState(false);
+  const [panel, setPanel] = useState<PlaceId | null>(null);
   const [listOpen, setListOpen] = useState(false);
   const opener = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    const s = q.get('shot');
-    // One-time read of the URL and the device (unavailable during server render).
+    // One-time read of the URL (unavailable during server render).
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (TEST_OK && (s === 'day' || s === 'night')) setShot(s);
-    // Phones start on the still picture (no parallax or ambient motion); "Animate" turns it on.
-    setPhone(window.matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768);
+    if (TEST_OK && new URLSearchParams(window.location.search).has('shot')) setShot(true);
   }, []);
 
-  const open = useCallback(() => {
+  const open = useCallback((id: PlaceId) => {
     opener.current = document.activeElement as HTMLElement | null;
     setListOpen(false);
-    setInnOpen(true);
+    setPanel(id);
   }, []);
   const close = useCallback(() => {
-    setInnOpen(false);
+    setPanel(null);
     const back = opener.current;
     requestAnimationFrame(() => back?.focus());
   }, []);
   useEffect(() => {
-    if (innOpen) dialogRef.current?.focus();
-  }, [innOpen]);
+    if (panel) dialogRef.current?.focus();
+  }, [panel]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key !== 'Escape') return;
-    if (innOpen) close();
+    if (panel) close();
     else if (listOpen) setListOpen(false);
   };
-
-  const night = (shot ?? siteMood) === 'night';
-  const calm = shot !== null || reducedMotion || (phone && !animate);
 
   return (
     <section
@@ -70,7 +63,19 @@ export function WorldView({ projects }: { projects: InnProject[] }) {
       <h1 id="world-title" className="sr-only">
         {copy.title}
       </h1>
-      <p className="sr-only">A painted village with a small guide robot you can walk along the paths. The inn holds the projects: its button opens them, and the same content is in the list view and on the rest of the site.</p>
+      <p className="sr-only">
+        {scene === 'pano'
+          ? 'A 360° view of a painted village. Signs in the scene are buttons: the inn holds the projects, and there are signs for the resume and contact details. The same content is in the list view.'
+          : 'A painted village that shifts slightly in 3D as you move. The inn is a button that opens the projects; the same content is in the list view.'}
+      </p>
+
+      <div className="absolute inset-0">
+        {scene === 'pano' ? (
+          <PanoViewer interactive={!shot} reduced={reducedMotion} paused={!!panel || listOpen} onPlace={open} />
+        ) : (
+          <DepthPhoto interactive={!shot} reduced={reducedMotion} onOpen={() => open('inn')} />
+        )}
+      </div>
 
       {!shot && (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 p-3 sm:p-4">
@@ -78,41 +83,34 @@ export function WorldView({ projects }: { projects: InnProject[] }) {
             <span aria-hidden>←</span> <span className="sm:hidden">Quick view</span>
             <span className="hidden sm:inline">{copy.skip}</span>
           </Link>
-          <div className="pointer-events-auto flex gap-2">
-            {phone && !reducedMotion && (
-              <button type="button" className="world-btn" aria-pressed={animate} onClick={() => setAnimate((a) => !a)}>
-                {animate ? 'Still' : 'Animate'}
-              </button>
-            )}
-            <button type="button" className="world-btn" aria-expanded={listOpen} aria-controls="world-list" onClick={() => setListOpen((o) => !o)}>
-              {copy.listView}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="world-btn pointer-events-auto"
+            aria-expanded={listOpen}
+            aria-controls="world-list"
+            onClick={() => setListOpen((o) => !o)}
+          >
+            {copy.listView}
+          </button>
         </div>
       )}
-
-      <div className="absolute inset-0">
-        {hasPlates ? (
-          <PlateScene night={night} calm={calm} reduced={reducedMotion} interactive={!shot} paused={innOpen || listOpen} onOpen={open} />
-        ) : (
-          <VillageSvg night={night} still={calm} onOpen={open} />
-        )}
-      </div>
 
       {!shot && listOpen && (
         <div
           id="world-list"
           className="world-panel absolute inset-x-3 top-16 z-30 max-h-[calc(100%-5rem)] overflow-y-auto p-5 sm:inset-x-auto sm:right-4 sm:max-h-[calc(100%-6rem)] sm:w-[26rem]"
         >
-          <h2 className="font-mono text-xs uppercase tracking-wider text-muted">Places in the village</h2>
-          <h3 className="mt-4 font-semibold">
-            {copy.inn} · {copy.innLabel}
-          </h3>
+          <h2 className="font-mono text-xs uppercase tracking-wider text-muted">{copy.places}</h2>
+          <h3 className="mt-4 font-semibold">{SPEAKER.inn}</h3>
           <ProjectList projects={projects} />
+          <h3 className="mt-5 font-semibold">{copy.resume}</h3>
+          <ResumeLinks />
+          <h3 className="mt-5 font-semibold">{copy.contact}</h3>
+          <ContactLinks />
         </div>
       )}
 
-      {!shot && innOpen && (
+      {!shot && panel && (
         <div
           ref={dialogRef}
           role="dialog"
@@ -122,11 +120,13 @@ export function WorldView({ projects }: { projects: InnProject[] }) {
           className="world-dialog absolute inset-x-3 bottom-3 z-40 flex max-h-[calc(100%-6.5rem)] flex-col outline-none sm:left-1/2 sm:right-auto sm:bottom-6 sm:w-[38rem] sm:-translate-x-1/2"
         >
           <p id="world-dialog-title" className="world-speaker">
-            {copy.inn} · {copy.innLabel}
+            {SPEAKER[panel]}
           </p>
           {/* Scrolls inside, so the speaker tab above the box is never clipped. */}
           <div className="min-h-0 overflow-y-auto">
-            <ProjectList projects={projects} />
+            {panel === 'inn' && <ProjectList projects={projects} />}
+            {panel === 'resume' && <ResumeLinks />}
+            {panel === 'contact' && <ContactLinks />}
             <div className="mt-4">
               <button type="button" className="world-btn" onClick={close}>
                 {copy.back}
@@ -158,5 +158,41 @@ function ProjectList({ projects }: { projects: InnProject[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function ResumeLinks() {
+  return (
+    <ul className="mt-3 space-y-2">
+      <li>
+        <Link href="/resume" className="font-semibold hover:text-accent">
+          {copy.resumePage} <span aria-hidden className="text-accent">→</span>
+        </Link>
+      </li>
+      <li>
+        <a href={RESUME_PDF} className="font-semibold hover:text-accent">
+          {copy.resumePdf} <span aria-hidden className="text-accent">↓</span>
+        </a>
+      </li>
+    </ul>
+  );
+}
+
+function ContactLinks() {
+  return (
+    <>
+      <p className="mt-3 text-sm text-muted">{contact.line}</p>
+      <ul className="mt-2 space-y-2">
+        {contact.links
+          .filter((l) => l.label !== 'Resume')
+          .map((l) => (
+            <li key={l.label}>
+              <a href={l.href} className="hover:text-accent" {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}>
+                <span className="font-mono text-xs uppercase tracking-wider text-muted">{l.label}</span> <span className="font-semibold">{l.value}</span>
+              </a>
+            </li>
+          ))}
+      </ul>
+    </>
   );
 }

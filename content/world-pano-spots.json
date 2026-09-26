@@ -1,0 +1,5 @@
+{
+  "square": { "label": "Village square", "standIn": { "cx": 0.5, "cy": 0.38, "zoom": 1 } },
+  "doorstep": { "label": "Inn doorstep", "standIn": { "cx": 0.5, "cy": 0.47, "zoom": 1.7 } },
+  "footbridge": { "label": "Footbridge", "standIn": { "cx": 0.72, "cy": 0.5, "zoom": 1.6 } }
+}

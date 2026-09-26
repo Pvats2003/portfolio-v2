@@ -1,0 +1,17 @@
+{
+  "sizes": [
+    2048,
+    1536
+  ],
+  "spots": {
+    "square": {
+      "source": "stand-in"
+    },
+    "doorstep": {
+      "source": "stand-in"
+    },
+    "footbridge": {
+      "source": "stand-in"
+    }
+  }
+}

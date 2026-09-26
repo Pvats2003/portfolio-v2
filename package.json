@@ -10,7 +10,9 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "check:resume": "node scripts/check-resume.mjs",
-    "world:plates": "node scripts/world-plates.mjs"
+    "world:plates": "node scripts/world-plates.mjs",
+    "world:pano": "node scripts/world-pano.mjs",
+    "world:depth": "python3 scripts/world-depth.py"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

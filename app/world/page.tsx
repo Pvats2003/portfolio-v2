@@ -5,10 +5,10 @@ import { innProjects } from '@/content/world';
 
 export const metadata: Metadata = pageMetadata({
   title: 'My world',
-  description: 'A painted countryside village; the inn holds Priyanshu’s projects.',
+  description: 'A painted countryside village you can look around in 360°; the inn holds Priyanshu’s projects.',
   path: '/world',
 });
 
 export default function WorldPage() {
-  return <WorldView projects={innProjects} />;
+  return <WorldView projects={innProjects} scene="pano" />;
 }

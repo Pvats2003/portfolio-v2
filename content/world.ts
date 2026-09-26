@@ -24,4 +24,10 @@ export const worldCopy = {
   inn: 'The inn',
   innLabel: 'Projects',
   openCase: 'Open the case study',
+  resume: 'Resume',
+  resumePage: 'Resume page',
+  resumePdf: 'Download the PDF',
+  contact: 'Contact',
+  goTo: 'Go to the',
+  places: 'Places in the village',
 };
