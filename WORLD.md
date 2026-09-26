@@ -32,6 +32,7 @@ Branch `anime-world`. Nothing here is built yet; this is the plan to approve bef
   - The inn is a button that opens the projects, and the list view has the same content.
   - Phones start still, with an "Animate" button.
 - **Now (Sep 26):** a **temporary** `land-day` is in: the Gemini draft as pasted into chat (1376 × 768, sparkle watermark in the bottom-right corner), processed with `node scripts/world-plates.mjs --allow-small`. It looks soft on large screens. With no sky plate, a plain gradient sky stands in. The inn, window glows and fireflies are placed for this layout (`content/world-scene.ts`).
+- **Roaming prototype (Sep 26):** a code-drawn guide robot (§2.4) walks the painted paths to wherever you click or tap (a small network of path points in `content/world-scene.ts` → `walk`; routing in `components/world/village/roam.ts`), and walking to the inn opens the projects. On wide screens the painting is drawn 25% wider than the view; drag, swipe or ← → to look around, with the sky moving at half the speed of the land. The camera follows the robot. Reduced motion: the robot steps straight to the spot and the view doesn't glide. Keyboard: the inn button opens the projects directly. Quick view and the list view are unchanged.
 - **Next:** replace it with the watermark-free, 2× Upscayl PNGs (land, sky, foreground) and rerun `npm run world:plates` (no flag), then send screenshots. No more locations until then.
 
 ## 0. Decisions (Phase 1, approved)

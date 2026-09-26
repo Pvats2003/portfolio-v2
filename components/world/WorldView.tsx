@@ -70,7 +70,7 @@ export function WorldView({ projects }: { projects: InnProject[] }) {
       <h1 id="world-title" className="sr-only">
         {copy.title}
       </h1>
-      <p className="sr-only">A painted village. The inn holds the projects; the same content is in the list view and on the rest of the site.</p>
+      <p className="sr-only">A painted village with a small guide robot you can walk along the paths. The inn holds the projects: its button opens them, and the same content is in the list view and on the rest of the site.</p>
 
       {!shot && (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-3 p-3 sm:p-4">
@@ -92,7 +92,11 @@ export function WorldView({ projects }: { projects: InnProject[] }) {
       )}
 
       <div className="absolute inset-0">
-        {hasPlates ? <PlateScene night={night} calm={calm} onOpen={open} /> : <VillageSvg night={night} still={calm} onOpen={open} />}
+        {hasPlates ? (
+          <PlateScene night={night} calm={calm} reduced={reducedMotion} interactive={!shot} paused={innOpen || listOpen} onOpen={open} />
+        ) : (
+          <VillageSvg night={night} still={calm} onOpen={open} />
+        )}
       </div>
 
       {!shot && listOpen && (
