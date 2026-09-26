@@ -1,5 +1,48 @@
 # 360° panoramas for /world
 
+There are two ways to make a viewpoint. The **free route** uses four square Gemini pictures that the script stitches into a panorama. The **360° generator route** uses one equirectangular image from Blockade Labs Skybox AI or similar. Each viewpoint can use either.
+
+## Free route: four Gemini views per viewpoint
+
+Four **square (1:1)** pictures from where you stand: facing the inn, then turning **90° right** each time. Each one is a 90° slice of the view, so together they wrap all the way round. `npm run world:pano` stitches them: it matches colours across the seams, softens the joins, paints the sky overhead and grows the grass underfoot.
+
+| ✓ | File name (exact) | You're facing |
+|---|---|---|
+| ☐ | `square-front.png` | The inn |
+| ☐ | `square-right.png` | 90° right: stream, footbridge, paddies, post box |
+| ☐ | `square-back.png` | Behind you: the path out of the village |
+| ☐ | `square-left.png` | 90° left: houses, garden, notice board |
+
+For the other viewpoints use the same names with `doorstep-` or `footbridge-` in front, and the viewpoint lines from the 360° prompts below.
+
+**Rules:**
+- **1:1, then upscale 2× in Upscayl** (1024 × 1024 → 2048 × 2048), PNG, **no watermark**. Use the same Upscayl model for all four.
+- **Attach `art/plates/land-day.png` as the reference image every time,** so the style, light and buildings match.
+- **For each picture after the first, also attach the previous one** and keep the line about its edge: turning right, a picture's **left edge continues the previous picture's right edge**. For the last one (left), attach the back and front pictures.
+- **Keep the horizon exactly across the middle** of every picture, with the camera level: that's what makes the seams line up.
+- **Order:** front, right, back, left.
+
+**Shared lines (start every prompt with these):**
+> Square 1:1 image: one side of a 360° view, a 90-degree field of view, camera level at eye height (about 1.6 m), horizon exactly across the middle of the image, no tilt, no fisheye. The same place, light and style as the attached reference image: premium cinematic 3D anime game environment, original style, soft cel shading, painterly textures, dark painted outlines, late-afternoon golden hour, low warm sun over the rice paddies, long soft shadows, lavender haze on distant mountains, natural greens and warm wood. The top third is soft painted sky with a few gentle clouds; the bottom edge is the ground at your feet. No people, animals, cars, text, readable signs, logos or watermark.
+
+**`square-front.png`: facing the inn**
+> Straight ahead, centred: the two-storey wooden inn from the reference, seen across the dirt village square, with flat stepping stones leading to its door, firewood and potted plants by the entrance, forested mountains behind it. The dirt path runs from the bottom of the picture toward the inn. A wooden utility pole stands to the right of the inn.
+
+**`square-right.png`: turned 90° to the right (attach the front picture)**
+> Turned 90 degrees to the right of the attached picture; this picture's left edge continues its right edge. The low warm sun is ahead in the sky, with a soft glow. A clear shallow stream with a small wooden footbridge in the middle distance, rice paddies reflecting the sky, a small farm shed, and in the foreground beside the path a round red post box. Grass and the edge of the path at the bottom.
+
+**`square-back.png`: facing away from the inn (attach the right picture)**
+> Turned 90 degrees to the right of the attached picture; this picture's left edge continues its right edge. Facing away from the inn: the dirt path leading out of the village between green fields and low wooden fences, gentle hills and distant mountains. Sunlight comes from the left, with long shadows across the path.
+
+**`square-left.png`: turned 90° to the left of the inn (attach the back and front pictures)**
+> Turned 90 degrees to the right of the first attached picture (so its left edge continues that picture's right edge, and its right edge leads into the second attached picture's left edge). Small wooden houses with flower boxes and laundry, a vegetable garden with a low fence, and in the foreground a blank wooden notice board on two posts, with no writing on it. Warm sunlight falls on the houses from behind the viewer.
+
+**What the stitching can and can't fix:** colour differences at the joins are matched and the joins are softened. Shapes that don't line up (a ridgeline at a different height, a fence that stops) stay slightly visible where two pictures meet, so the horizon rule matters most. If one join looks bad, regenerate just that picture.
+
+---
+
+## 360° generator route: one image per viewpoint
+
 Three viewpoints, one panorama each. Upload them to this folder (`art/pano/`) on the `anime-world` branch: open the folder on GitHub, then **Add file → Upload files**. Then I run `npm run world:pano`, place the hotspots, and send screenshots.
 
 | ✓ | File name (exact) | Viewpoint | Straight ahead (centre of the image) |

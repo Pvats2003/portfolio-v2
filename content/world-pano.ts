@@ -33,6 +33,17 @@ export function onImage(spot: SpotId, x: number, y: number) {
   return { yaw, pitch: (0.5 - y) * 180 };
 }
 
+/**
+ * The direction of a point on one of the four stitched views (art/pano/<spot>-front/right/back/left), from its
+ * position in that square picture (x, y as fractions 0–1). Each view is a 90° cube face, turning right from the inn.
+ */
+export function onView(view: 'front' | 'right' | 'back' | 'left', x: number, y: number) {
+  const u = x * 2 - 1;
+  const v = y * 2 - 1;
+  const d = { front: [u, -v, -1], right: [1, -v, u], back: [-u, -v, 1], left: [-1, -v, -u] }[view];
+  return { yaw: Math.atan2(d[0], -d[2]) * DEG, pitch: Math.atan2(d[1], Math.hypot(d[0], d[2])) * DEG };
+}
+
 const spot = (id: SpotId, start: Spot['start'], hotspots: Hotspot[]): Spot => ({
   id,
   label: spotsJson[id].label,

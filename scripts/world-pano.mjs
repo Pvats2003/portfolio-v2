@@ -6,6 +6,9 @@
 // For each viewpoint in content/world-pano-spots.json:
 //   - if art/pano/<spot>.(jpg|png|webp) exists, it's treated as an equirectangular 360° image (2:1, e.g. 8192 × 4096)
 //     and cut into cube faces (turned by the viewpoint's optional `rotate`, in degrees, so the inn is straight ahead);
+//   - if art/pano/<spot>-front/-right/-back/-left.(png|jpg|webp) exist (four square 90° views: facing the inn, then
+//     turning right each time), they're stitched into the cube with blended seams, a painted sky overhead and grass
+//     underfoot (scripts/pano-stitch.mjs; the free route with Gemini, see art/pano/README.md);
 //   - otherwise a STAND-IN is painted from the land plate (public/world/plates/land-day-3840.webp): the painting
 //     wrapped around you four times (mirrored every other quarter so the edges meet), a gradient sky with soft clouds
 //     above it and the grass extended below. Obviously fake; it's there so the viewer can be judged before the art.
@@ -14,6 +17,7 @@
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join, parse } from 'node:path';
 import sharp from 'sharp';
+import { stitchViews } from './pano-stitch.mjs';
 
 const ROOT = process.cwd();
 const SPOTS = JSON.parse(await readFile(join(ROOT, 'content/world-pano-spots.json'), 'utf8'));
@@ -23,6 +27,7 @@ const PLATE = join(ROOT, 'public/world/plates/land-day-3840.webp');
 const FACE = 2048;
 const SIZES = [2048, 1536];
 const FACES = ['f', 'r', 'b', 'l', 'u', 'd'];
+const VIEWS = ['front', 'right', 'back', 'left'];
 const { PI, atan2, asin, tan, cos, hypot, round, min, max, exp } = Math;
 
 /** Direction (X right, Y up, Z back; forward is −Z) for pixel (u, v) in −1…1 on each face, matching the CSS cube. */
@@ -140,10 +145,23 @@ function equirectColour(img, lon, lat) {
   return sample(img, ((x % img.w) + img.w) % img.w, y);
 }
 
-async function build(spot, colourAt) {
+async function writeFaces(spot, faces) {
   const dir = join(OUT, spot);
   await mkdir(dir, { recursive: true });
   let bytes = 0;
+  for (const face of FACES) {
+    for (const size of SIZES) {
+      const file = join(dir, `${face}-${size}.webp`);
+      await sharp(faces[face], { raw: { width: FACE, height: FACE, channels: 3 } }).resize(size, size).webp({ quality: 82, effort: 5 }).toFile(file);
+      if (size === SIZES[0]) bytes += (await stat(file)).size;
+    }
+  }
+  return bytes;
+}
+
+/** Renders all six faces from a colour-by-direction function (lon, lat in radians). */
+async function build(spot, colourAt) {
+  const faces = {};
   for (const face of FACES) {
     const buf = Buffer.alloc(FACE * FACE * 3);
     for (let j = 0; j < FACE; j++) {
@@ -156,22 +174,26 @@ async function build(spot, colourAt) {
         buf[o] = c[0]; buf[o + 1] = c[1]; buf[o + 2] = c[2];
       }
     }
-    for (const size of SIZES) {
-      const file = join(dir, `${face}-${size}.webp`);
-      await sharp(buf, { raw: { width: FACE, height: FACE, channels: 3 } }).resize(size, size).webp({ quality: 82, effort: 5 }).toFile(file);
-      if (size === SIZES[0]) bytes += (await stat(file)).size;
-    }
+    faces[face] = buf;
   }
-  return bytes;
+  return writeFaces(spot, faces);
 }
 
 const artFiles = await readdir(join(ROOT, 'art/pano')).catch(() => []);
 const manifest = { sizes: SIZES, spots: {} };
 let plate = null;
 for (const [spot, cfg] of Object.entries(SPOTS)) {
-  const src = artFiles.find((f) => parse(f).name.toLowerCase() === spot && /\.(jpe?g|png|webp)$/i.test(f));
+  const find = (name) => artFiles.find((f) => parse(f).name.toLowerCase() === name && /\.(jpe?g|png|webp)$/i.test(f));
+  const src = find(spot);
+  const views = Object.fromEntries(VIEWS.map((v) => [v, find(`${spot}-${v}`)]));
+  const haveViews = VIEWS.filter((v) => views[v]);
   let bytes;
-  if (src) {
+  if (!src && haveViews.length === 4) {
+    // Four square views (inn ahead, right, behind, left) stitched into a cube: scripts/pano-stitch.mjs.
+    const faces = await stitchViews(Object.fromEntries(VIEWS.map((v) => [v, join(ROOT, 'art/pano', views[v])])), FACE, (m) => console.warn(`⚠ ${m}`));
+    bytes = await writeFaces(spot, faces);
+    manifest.spots[spot] = { source: `4 views (${VIEWS.map((v) => views[v]).join(', ')})` };
+  } else if (src) {
     const img = await rgba(join(ROOT, 'art/pano', src));
     if (Math.abs(img.w / img.h - 2) > 0.02) console.warn(`⚠ ${src}: ${img.w} × ${img.h} isn't 2:1 — is it an equirectangular 360° image?`);
     if (img.w < 4096) console.warn(`⚠ ${src}: only ${img.w} px wide; 360° images need about 8192 × 4096 to look sharp.`);
@@ -180,6 +202,7 @@ for (const [spot, cfg] of Object.entries(SPOTS)) {
     bytes = await build(spot, (lon, lat) => equirectColour(img, lon + turn, lat));
     manifest.spots[spot] = { source: src };
   } else {
+    if (haveViews.length) console.warn(`⚠ ${spot}: only ${haveViews.join(', ')} of the four views (front, right, back, left); using the stand-in until all four are there.`);
     if (!plate) {
       plate = await rgba(PLATE);
       prepGround(plate);
