@@ -6,14 +6,17 @@ There are **three plates**, each a separate image. The day set is required; the 
 
 | ✓ | File name (exact) | Size | Aspect | Background | Format |
 |---|---|---|---|---|---|
-| ☐ | `sky-day.jpg` | 3840 × 2160 | 16:9 | normal (the sky itself) | JPG or PNG |
-| ☐ | `land-day.png` | 3840 × 2160 | 16:9 | **flat pure magenta `#FF00FF`** where the sky would be | **PNG** |
-| ☐ | `foreground-day.png` | 3840 × 2160 | 16:9 | **flat pure magenta `#FF00FF`** everywhere except the foreground objects | **PNG** |
-| ☐ | `sky-night.jpg` *(optional)* | 3840 × 2160 | 16:9 | normal | JPG or PNG |
-| ☐ | `land-night.png` *(optional)* | 3840 × 2160 | 16:9 | flat pure magenta `#FF00FF` | PNG |
-| ☐ | `foreground-night.png` *(optional)* | 3840 × 2160 | 16:9 | flat pure magenta `#FF00FF` | PNG |
+| ☐ | `sky-day.jpg` | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | normal (the sky itself) | JPG or PNG |
+| ☐ | `land-day.png` | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | **flat pure magenta `#FF00FF`** where the sky would be | **PNG** |
+| ☐ | `foreground-day.png` | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | **flat pure magenta `#FF00FF`** everywhere except the foreground objects | **PNG** |
+| ☐ | `sky-night.jpg` *(optional)* | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | normal | JPG or PNG |
+| ☐ | `land-night.png` *(optional)* | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | flat pure magenta `#FF00FF` | PNG |
+| ☐ | `foreground-night.png` *(optional)* | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | flat pure magenta `#FF00FF` | PNG |
 
-**Size:** use the tool's largest 16:9 output and upscale it inside the tool to 3840 × 2160. Don't stretch it. 2560 × 1440 is the minimum; smaller will look soft on large screens.
+**Size:** best is 3840 × 2160 (16:9), but any image **at least 1920 px wide** works, at any aspect ratio:
+- **Not 16:9?** It's cropped to 16:9 around the centre, which keeps the inn in frame if you followed the framing rules below. Give all three plates of a set the same size so they crop the same way and line up. The script warns if a crop is extreme enough to cut the inn, or if a set's shapes don't match.
+- **Smaller than 3840 wide?** It's upscaled to 3840 × 2160. Under 2560 px wide (after cropping), the script warns that it will look soft on large and high-resolution screens. For the sharpest result, upscale in your image tool to 3840 wide first.
+- **Under 1920 px wide:** skipped, with a message saying so.
 
 **Magenta rules:**
 - **Why magenta, not green:** the art is full of greens (fields, forest, grass) and blues (water, sky), but has no saturated magenta. The pale pink of cherry blossom is far enough away to stay.
@@ -60,6 +63,6 @@ Without night plates, night mode tints the day plates blue in code and adds the 
 
 ## What happens when you add them
 
-1. `npm run world:plates` checks each file (16:9, size, magenta background), cuts the magenta out with soft edges, removes any pink fringe, and writes AVIF and WebP files at 3840, 2560, 1600 and 960 wide to `public/world/plates/`. It warns about anything off.
+1. `npm run world:plates` checks each file (size, magenta background) and crops it to 16:9 around the centre. It cuts the magenta out with soft edges and removes any pink fringe, then scales the plate to 3840 × 2160 (upscaling only if smaller). Finally it writes AVIF and WebP files at 3840, 2560, 1600 and 960 wide to `public/world/plates/`. It warns about anything off, such as a plate that will look soft or a crop that may cut the inn.
 2. `/world` switches from the code-drawn village to your plates automatically. Until the plates exist, it keeps the code-drawn village.
 3. I mark the inn's clickable area, the lantern glows, the chimney and the firefly area on your plates (`content/world-scene.ts`) and send you screenshots at 390 px and 1440 px.

@@ -3,11 +3,12 @@
 //   npm run world:plates
 //
 // For each plate it:
-//   1. checks the size (16:9, at least 1920 wide; center-crops to 16:9 if slightly off),
+//   1. checks the size: any aspect, at least 1920 wide (narrower images are skipped); crops to 16:9 around the centre,
 //   2. for layers painted on flat magenta (#FF00FF): keys the magenta out with soft edges and removes
 //      the magenta fringe ("despill") so nothing pink halos around the art,
-//   3. writes AVIF + WebP at several widths to public/world/plates/,
-//   4. writes content/world-plates.json, which tells the page which plates exist.
+//   3. scales every plate to exactly 3840 × 2160 (upscaling only if smaller; warns if it will look soft),
+//   4. writes AVIF + WebP at several widths to public/world/plates/,
+//   5. writes content/world-plates.json, which tells the page which plates exist.
 // Missing plates are fine: the page falls back to the code-drawn village for anything not supplied.
 
 import { readdir, mkdir, writeFile, stat } from 'node:fs/promises';
@@ -29,6 +30,11 @@ const LAYERS = [
 const MOODS = ['day', 'night'];
 const WIDTHS = [3840, 2560, 1600, 960];
 const ASPECT = 16 / 9;
+const TARGET = [3840, 2160];
+/** Narrower images are skipped. */
+const MIN_WIDTH = 1920;
+/** Below this (after cropping), the upscale to 3840 visibly softens the painting: warn. */
+const SHARP_WIDTH = 2560;
 
 // Keying thresholds, as distance from magenta in the colour plane (Cb/Cr, 0–255 scale).
 // Under INNER: fully transparent. Over OUTER: fully opaque. In between: soft edge.
@@ -99,23 +105,47 @@ async function findSource(id, mood) {
   return hit ? join(SRC, hit) : null;
 }
 
+/**
+ * Crops any aspect to 16:9 around the centre. The checklist centres the inn horizontally, with its roof at about
+ * 38% and its base at about 78% of the height, so a centre crop keeps it unless the image is extremely wide or tall.
+ */
+function cropTo16x9(w, h) {
+  const aspect = w / h;
+  if (Math.abs(aspect - ASPECT) < 0.001) return { left: 0, top: 0, width: w, height: h };
+  const width = aspect > ASPECT ? Math.round(h * ASPECT) : w;
+  const height = aspect > ASPECT ? h : Math.round(w / ASPECT);
+  return { left: Math.round((w - width) / 2), top: Math.round((h - height) / 2), width, height };
+}
+
+// Where the checklist puts the inn, as fractions of the painted image: x range, then y range (with some margin).
+const INN_BAND = { x: [0.375, 0.625], y: [0.33, 0.82] };
+
 async function processPlate(layer, mood, file, warnings) {
+  const label = `${layer.id}-${mood}`;
   let img = sharp(file).rotate();
   const meta = await img.metadata();
-  let { width: w, height: h } = meta;
-  const label = `${layer.id}-${mood}`;
-  // Center-crop to exactly 16:9 if the tool gave something close.
-  const aspect = w / h;
-  if (Math.abs(aspect - ASPECT) / ASPECT > 0.12) warnings.push(`${label}: aspect ${aspect.toFixed(3)} is far from 16:9 — cropping, but the framing may suffer.`);
-  if (Math.abs(aspect - ASPECT) > 0.001) {
-    const cw = aspect > ASPECT ? Math.round(h * ASPECT) : w;
-    const ch = aspect > ASPECT ? h : Math.round(w / ASPECT);
-    img = img.extract({ left: Math.round((w - cw) / 2), top: Math.round((h - ch) / 2), width: cw, height: ch });
-    w = cw;
-    h = ch;
-  }
-  if (w < 1920) warnings.push(`${label}: only ${w}px wide — upscale to 3840 × 2160 in your image tool for a sharp result.`);
+  // EXIF rotation swaps the sides for portrait-tagged images.
+  const [w, h] = (meta.orientation ?? 1) >= 5 ? [meta.height, meta.width] : [meta.width, meta.height];
 
+  if (w < MIN_WIDTH) {
+    warnings.push(`${label}: SKIPPED — only ${w} × ${h} px. It needs to be at least ${MIN_WIDTH} px wide (best: ${TARGET[0]} × ${TARGET[1]}).`);
+    return null;
+  }
+
+  // 1. Crop to 16:9 around the centre.
+  const crop = cropTo16x9(w, h);
+  if (crop.width !== w || crop.height !== h) {
+    img = img.extract(crop);
+    const cut = crop.width < w ? `${Math.round((1 - crop.width / w) * 100)}% of the width` : `${Math.round((1 - crop.height / h) * 100)}% of the height`;
+    console.log(`  ${label}: ${w} × ${h} → cropped to 16:9 around the centre, ${crop.width} × ${crop.height} (removed ${cut})`);
+    const inX = crop.left / w <= INN_BAND.x[0] && (crop.left + crop.width) / w >= INN_BAND.x[1];
+    const inY = crop.top / h <= INN_BAND.y[0] && (crop.top + crop.height) / h >= INN_BAND.y[1];
+    if (layer.id === 'land' && !(inX && inY)) {
+      warnings.push(`${label}: the ${w} × ${h} image is so far from 16:9 that the centre crop may cut the inn's ${inX ? 'roof or base' : 'sides'}. Check the screenshots, or regenerate at 16:9.`);
+    }
+  }
+
+  // 2. Key out the magenta at the source resolution (before any upscaling, so edges are cut from real pixels).
   let pipeline;
   if (layer.key) {
     const { data, info } = await img.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -130,32 +160,59 @@ async function processPlate(layer, mood, file, warnings) {
     pipeline = () => sharp(buf);
   }
 
-  const widths = WIDTHS.filter((x) => x <= Math.max(w, 960));
+  // 3. Every plate ends up exactly 3840 × 2160, so all layers line up: upscaled only if smaller, scaled down if larger.
+  const factor = TARGET[0] / crop.width;
+  if (factor > 1) {
+    if (crop.width < SHARP_WIDTH) {
+      warnings.push(
+        `${label}: upscaled ${factor.toFixed(1)}× (from ${crop.width} px wide after cropping). It will look soft on large and high-resolution screens — upscale it in your image tool to ${TARGET[0]} × ${TARGET[1]} and add it again.`,
+      );
+    } else {
+      console.log(`  ${label}: upscaled ${factor.toFixed(2)}× to ${TARGET[0]} px wide (from ${crop.width})`);
+    }
+  }
+  // Kept as raw pixels (lossless) between steps.
+  const master = await pipeline().resize({ width: TARGET[0], height: TARGET[1], fit: 'fill', kernel: 'lanczos3' }).raw().toBuffer({ resolveWithObject: true });
+
+  // 4. Web files at each width.
   let bytes = 0;
-  for (const width of widths) {
+  for (const width of WIDTHS) {
     const base = join(OUT, `${label}-${width}`);
-    const resized = () => pipeline().resize({ width, withoutEnlargement: true });
+    const resized = () => sharp(master.data, { raw: master.info }).resize({ width });
     await resized().avif({ quality: layer.key ? 58 : 52, effort: 4 }).toFile(`${base}.avif`);
     await resized().webp({ quality: 80, alphaQuality: 90 }).toFile(`${base}.webp`);
     bytes += (await stat(`${base}.avif`)).size;
   }
-  console.log(`  ${label}: ${widths.join(', ')} px (AVIF total ${(bytes / 1024).toFixed(0)} KB)`);
-  return widths;
+  console.log(`  ${label}: ${WIDTHS.join(', ')} px (AVIF total ${(bytes / 1024).toFixed(0)} KB)`);
+  return { widths: WIDTHS, aspect: w / h };
 }
 
 async function main() {
   await mkdir(OUT, { recursive: true });
-  const manifest = { size: [3840, 2160], plates: {} };
+  const manifest = { size: TARGET, plates: {} };
   const warnings = [];
+  const aspects = { day: {}, night: {} };
   let found = 0;
+  let written = 0;
   for (const layer of LAYERS) {
     for (const mood of MOODS) {
       const file = await findSource(layer.id, mood);
       if (!file) continue;
       found++;
-      const widths = await processPlate(layer, mood, file, warnings);
+      const done = await processPlate(layer, mood, file, warnings);
+      if (!done) continue;
+      written++;
       manifest.plates[layer.id] ??= {};
-      manifest.plates[layer.id][mood] = widths;
+      manifest.plates[layer.id][mood] = done.widths;
+      aspects[mood][layer.id] = done.aspect;
+    }
+  }
+  // Plates of one mood are cropped independently, so they only line up if they started at the same shape.
+  for (const mood of MOODS) {
+    const list = Object.entries(aspects[mood]);
+    const [min, max] = [Math.min(...list.map((e) => e[1])), Math.max(...list.map((e) => e[1]))];
+    if (list.length > 1 && max / min > 1.01) {
+      warnings.push(`The ${mood} plates have different shapes (${list.map(([id, a]) => `${id} ${a.toFixed(2)}:1`).join(', ')}), so after cropping they may not line up. Generate them at the same size.`);
     }
   }
   await writeFile(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
@@ -166,7 +223,8 @@ async function main() {
   });
   if (found && missing.length) warnings.push(`Missing required plates: ${missing.join(', ')}. The page needs sky-day and land-day at least.`);
   for (const w of warnings) console.warn(`⚠ ${w}`);
-  console.log(`Wrote ${MANIFEST.replace(`${ROOT}/`, '')} (${found} plate${found === 1 ? '' : 's'}).`);
+  const skipped = found - written;
+  console.log(`Wrote ${MANIFEST.replace(`${ROOT}/`, '')} (${written} plate${written === 1 ? '' : 's'}${skipped ? `; ${skipped} skipped` : ''}).`);
 }
 
 main().catch((e) => {
