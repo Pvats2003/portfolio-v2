@@ -5,7 +5,7 @@
 // For each plate it:
 //   1. checks the size: any aspect, at least 1920 wide (narrower images are skipped); crops to 16:9 around the centre,
 //   2. for layers painted on flat magenta (#FF00FF): keys the magenta out with soft edges and removes
-//      the magenta fringe ("despill") so nothing pink halos around the art,
+//      the magenta fringe ("despill"), unmixing the pink band along the cut edges, so nothing pink halos around the art,
 //   3. scales every plate to exactly 3840 × 2160 (upscaling only if smaller; warns if it will look soft),
 //   4. writes AVIF + WebP at several widths to public/world/plates/,
 //   5. writes content/world-plates.json, which tells the page which plates exist.
@@ -52,7 +52,7 @@ const smooth = (a, b, x) => {
 };
 
 /** Magenta → alpha, with despill on everything near the key colour. Returns stats for warnings. */
-function chromaKey(data) {
+function chromaKey(data, w) {
   let clear = 0;
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i];
@@ -77,7 +77,82 @@ function chromaKey(data) {
     }
     data[i + 3] = Math.round(a * data[i + 3]);
   }
+  edgeDespill(data, w);
   return { clearShare: clear / (data.length / 4) };
+}
+
+/**
+ * Image tools antialias and compress the art against the magenta, which leaves a band of pink along every cut
+ * edge that is too far from pure magenta for the key to catch. For each pixel in that band, take the colour of the
+ * nearest clean pixel further inside the art and remove only the magenta that was mixed into it, keeping its
+ * brightness (unmixing in YCbCr). Pink things in the art, like blossom or flowers, keep their own pink.
+ */
+function edgeDespill(data, w) {
+  const n = data.length / 4;
+  const h = n / w;
+  const band = Math.max(6, Math.round(w / 300));
+  const FAR = 0xffff;
+  // Distance to the nearest fully transparent pixel (two-pass city-block chamfer), capped at the band width.
+  const dist = new Uint16Array(n).fill(band);
+  for (let p = 0; p < n; p++) if (data[p * 4 + 3] === 0) dist[p] = 0;
+  chamfer(dist, null, w, h);
+  // Nearest clean pixel (at least `band` from the edge) for every pixel, and how far away it is.
+  const dClean = new Uint16Array(n).fill(FAR);
+  const src = new Int32Array(n).fill(-1);
+  for (let p = 0; p < n; p++) {
+    if (dist[p] >= band) {
+      dClean[p] = 0;
+      src[p] = p;
+    }
+  }
+  chamfer(dClean, src, w, h);
+
+  const kx = KEY[0] - 128;
+  const ky = KEY[1] - 128;
+  for (let p = 0; p < n; p++) {
+    if (dist[p] === 0 || dist[p] >= band) continue;
+    // Thin details with no clean interior nearby (a twig, a few petals) are left alone.
+    if (src[p] < 0 || dClean[p] > band * 2) continue;
+    const i = p * 4;
+    const j = src[p] * 4;
+    const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
+    const y = 0.299 * r + 0.587 * g + 0.114 * b;
+    const [cb, cr] = rgbToCbCr(r, g, b);
+    const [fb, fr] = rgbToCbCr(data[j], data[j + 1], data[j + 2]);
+    // The pixel's chroma ≈ clean chroma + t × (magenta − clean chroma): solve for t, then take that part out.
+    const [ex, ey] = [kx - (fb - 128), ky - (fr - 128)];
+    const t = Math.min(1, Math.max(0, ((cb - fb) * ex + (cr - fr) * ey) / (ex * ex + ey * ey)));
+    if (t === 0) continue;
+    const cb2 = cb - 128 - t * ex;
+    const cr2 = cr - 128 - t * ey;
+    data[i] = y + 1.402 * cr2;
+    data[i + 1] = y - 0.344136 * cb2 - 0.714136 * cr2;
+    data[i + 2] = y + 1.772 * cb2;
+  }
+}
+
+/** Two-pass city-block distance transform in place; optionally carries along the index of the nearest seed. */
+function chamfer(dist, src, w, h) {
+  const step = (p, q) => {
+    if (dist[q] + 1 < dist[p]) {
+      dist[p] = dist[q] + 1;
+      if (src) src[p] = src[q];
+    }
+  };
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const p = y * w + x;
+      if (x > 0) step(p, p - 1);
+      if (y > 0) step(p, p - w);
+    }
+  }
+  for (let y = h - 1; y >= 0; y--) {
+    for (let x = w - 1; x >= 0; x--) {
+      const p = y * w + x;
+      if (x < w - 1) step(p, p + 1);
+      if (y < h - 1) step(p, p + w);
+    }
+  }
 }
 
 /** Are the corners magenta? (If not, the background probably isn't flat magenta.) */
@@ -151,7 +226,7 @@ async function processPlate(layer, mood, file, warnings) {
     const { data, info } = await img.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const corners = cornersLookKeyed(data, info.width);
     if (corners < 2) warnings.push(`${label}: the top corners aren't flat magenta — was it generated on #FF00FF?`);
-    const { clearShare } = chromaKey(data);
+    const { clearShare } = chromaKey(data, info.width);
     if (clearShare < 0.05) warnings.push(`${label}: almost nothing was keyed out (${(clearShare * 100).toFixed(1)}%).`);
     pipeline = () => sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } });
     console.log(`  ${label}: keyed, ${(clearShare * 100).toFixed(0)}% transparent`);

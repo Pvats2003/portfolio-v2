@@ -532,8 +532,10 @@ body {
   mix-blend-mode: screen;
 }
 .plate-window {
-  background: rgba(255, 200, 120, 0.85);
-  box-shadow: 0 0 18px 6px rgba(255, 180, 100, 0.45);
+  /* Screened over the painted window, so its lattice still shows through the glow. */
+  background: linear-gradient(rgba(255, 196, 120, 0.5), rgba(255, 176, 96, 0.4));
+  box-shadow: 0 0 14px 4px rgba(255, 176, 96, 0.3);
+  border-radius: 2px;
   mix-blend-mode: screen;
 }
 .plate-smoke {
