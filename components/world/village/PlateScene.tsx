@@ -13,8 +13,8 @@ type LayerId = 'sky' | 'land' | 'foreground';
 type Manifest = { plates: Partial<Record<LayerId, Partial<Record<'day' | 'night', number[]>>>> };
 const manifest = plates as Manifest;
 
-/** True when at least the sky and land day plates exist. */
-export const hasPlates = !!(manifest.plates.sky?.day && manifest.plates.land?.day);
+/** True when at least the land day plate exists (without a sky plate, a plain gradient sky stands in). */
+export const hasPlates = !!manifest.plates.land?.day;
 
 const DEPTH: Record<LayerId, number> = { sky: 8, land: 30, foreground: 96 };
 
@@ -91,6 +91,7 @@ export default function PlateScene({ night, calm, onOpen }: { night: boolean; ca
         }}
         className={`pointer-events-none absolute -inset-[6%] ${id === 'sky' && !calm ? 'plate-drift' : ''}`}
       >
+        {!widths && id === 'sky' && <div className="plate-sky-fallback absolute inset-0" />}
         {box && widths && (
           <div className="absolute" style={{ left: box.left, top: box.top, width: box.width, height: box.height }}>
             <picture>

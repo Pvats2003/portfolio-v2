@@ -7,7 +7,7 @@ There are **three plates**, each a separate image. The day set is required; the 
 | ✓ | File name (exact) | Size | Aspect | Background | Format |
 |---|---|---|---|---|---|
 | ☐ | `sky-day.jpg` | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | normal (the sky itself) | JPG or PNG |
-| ☐ | `land-day.png` | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | **flat pure magenta `#FF00FF`** where the sky would be | **PNG** |
+| ◐ *temporary: chat copy, 1376 × 768, watermarked; replace* | `land-day.png` | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | **flat pure magenta `#FF00FF`** where the sky would be | **PNG** |
 | ☐ | `foreground-day.png` | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | **flat pure magenta `#FF00FF`** everywhere except the foreground objects | **PNG** |
 | ☐ | `sky-night.jpg` *(optional)* | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | normal | JPG or PNG |
 | ☐ | `land-night.png` *(optional)* | 3840 × 2160 (≥ 1920 wide) | 16:9 (else auto-cropped) | flat pure magenta `#FF00FF` | PNG |

@@ -502,6 +502,13 @@ body {
 }
 
 /* ---------- /world painted plates ---------- */
+.plate-sky-fallback {
+  /* Stand-in sky until a sky plate exists: golden-hour blue into warm cream, deep blue at night. */
+  background: linear-gradient(#7fb0dc 0%, #b9d0e0 30%, #f3dcbc 55%, #f7e6c8 100%);
+}
+.plate-scene[data-mood='night'] .plate-sky-fallback {
+  background: linear-gradient(#0d1c48 0%, #1c3570 35%, #34518f 60%, #4a6199 100%);
+}
 .plate-night-grade {
   filter: brightness(0.9) saturate(0.9) contrast(1.05);
 }

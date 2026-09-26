@@ -1,6 +1,7 @@
 // Turns the painted plates in art/plates/ into web-ready layers for /world (see art/plates/CHECKLIST.md).
 //
 //   npm run world:plates
+//   node scripts/world-plates.mjs [srcDir] [--allow-small]   (--allow-small: use plates under 1920 wide, with a warning)
 //
 // For each plate it:
 //   1. checks the size: any aspect, at least 1920 wide (narrower images are skipped); crops to 16:9 around the centre,
@@ -16,8 +17,11 @@ import { join, parse, resolve } from 'node:path';
 import sharp from 'sharp';
 
 const ROOT = process.cwd();
+const ARGS = process.argv.slice(2);
 // Source folder: art/plates by default; another folder can be passed for testing.
-const SRC = resolve(ROOT, process.argv[2] ?? 'art/plates');
+const SRC = resolve(ROOT, ARGS.find((a) => !a.startsWith('--')) ?? 'art/plates');
+// Temporary plates below the minimum width (e.g. a draft) are used anyway, with a warning, instead of skipped.
+const ALLOW_SMALL = ARGS.includes('--allow-small');
 const OUT = join(ROOT, 'public/world/plates');
 const MANIFEST = join(ROOT, 'content/world-plates.json');
 
@@ -203,8 +207,11 @@ async function processPlate(layer, mood, file, warnings) {
   const [w, h] = (meta.orientation ?? 1) >= 5 ? [meta.height, meta.width] : [meta.width, meta.height];
 
   if (w < MIN_WIDTH) {
-    warnings.push(`${label}: SKIPPED — only ${w} × ${h} px. It needs to be at least ${MIN_WIDTH} px wide (best: ${TARGET[0]} × ${TARGET[1]}).`);
-    return null;
+    if (!ALLOW_SMALL) {
+      warnings.push(`${label}: SKIPPED — only ${w} × ${h} px. It needs to be at least ${MIN_WIDTH} px wide (best: ${TARGET[0]} × ${TARGET[1]}).`);
+      return null;
+    }
+    warnings.push(`${label}: only ${w} × ${h} px, under the ${MIN_WIDTH} px minimum; used anyway (--allow-small). Treat it as temporary.`);
   }
 
   // 1. Crop to 16:9 around the centre.
@@ -296,7 +303,7 @@ async function main() {
     const [id, mood] = n.split('-');
     return !manifest.plates[id]?.[mood];
   });
-  if (found && missing.length) warnings.push(`Missing required plates: ${missing.join(', ')}. The page needs sky-day and land-day at least.`);
+  if (found && missing.length) warnings.push(`Missing required plates: ${missing.join(', ')}. The page needs land-day at least (without sky-day it shows a plain gradient sky).`);
   for (const w of warnings) console.warn(`⚠ ${w}`);
   const skipped = found - written;
   console.log(`Wrote ${MANIFEST.replace(`${ROOT}/`, '')} (${written} plate${written === 1 ? '' : 's'}${skipped ? `; ${skipped} skipped` : ''}).`);
