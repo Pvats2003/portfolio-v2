@@ -1,8 +1,66 @@
 # 360° panoramas for /world
 
-There are two ways to make a viewpoint. The **free route** uses four square Gemini pictures that the script stitches into a panorama. The **360° generator route** uses one equirectangular image from Blockade Labs Skybox AI or similar. Each viewpoint can use either.
+There are three ways to make a viewpoint. The **extend route** (free) grows one continuous painting in Gemini by extending a picture to the right until it comes back round. The **four-view route** (free) uses four square Gemini pictures that the script stitches together. The **360° generator route** uses one equirectangular image from Blockade Labs Skybox AI or similar. Each viewpoint can use any of them.
 
-## Free route: four Gemini views per viewpoint
+## Extend route: one painting, extended to the right until it wraps
+
+Start from the land picture, turn it square, then keep extending it to the right in Google AI Studio. Each new picture repeats the right third of the one before and paints new scenery beyond it. The last picture joins back onto the first. `npm run world:pano` lines up every overlap (it allows for Gemini redrawing it slightly bigger, smaller, higher or lower), matches the colours, cuts each join where the two pictures differ least, spreads any leftover mismatch evenly round the loop, and wraps the painting round you.
+
+**How many steps:** 6 pictures in all.
+
+- Picture 0 is the land picture made square.
+- Pictures 1 to 4 are extensions.
+- Picture 5 is the closing picture that joins back onto picture 0.
+
+Each picture shows 90° of the view and overlaps the one before by a third, so each step turns 60°. Four pictures' worth of width goes all the way round. If the script says the pictures come out much wider or narrower than 90°, it tells you whether to add or drop one extension.
+
+| ✓ | File name (exact) | What it is | Faces |
+|---|---|---|---|
+| ☐ | `square-strip-0.png` | The land picture, made square | the inn (0°) |
+| ☐ | `square-strip-1.png` | Extension 1 | 60° right |
+| ☐ | `square-strip-2.png` | Extension 2 | 120° right |
+| ☐ | `square-strip-3.png` | Extension 3 | behind you (180°) |
+| ☐ | `square-strip-4.png` | Extension 4 | 120° left |
+| ☐ | `square-strip-5.png` | Closing picture: joins 4 back onto 0 | 60° left |
+
+**Rules:**
+- **Every picture is square (1:1)**, set in AI Studio's aspect ratio option. Square pictures reach about 34° above the horizon and 53° below it, so at the lowest viewing angle only a thin strip of the ground is painted by the script. 16:9 pictures would reach only about 19° above and 38° below, so about a third of the screen would be painted ground (see the end of this section if you want 16:9 anyway).
+- **Attach the previous picture exactly as AI Studio gave it** (no need to upscale in between). When all six are done, **upscale every one 2× in Upscayl** with the same model, then upload.
+- **Keep the horizon, camera height and downward angle the same in every picture.** That's what makes the joins line up; the script can absorb small drift, not big jumps.
+- **Nothing new in the overlap:** the left third of each new picture should show what the right third of the one before showed. If Gemini paints something different there, make that picture again. The script names the picture that doesn't fit and stops for that viewpoint, keeping the current panorama.
+- **Made in AI Studio** (no visible watermark). The script checks every picture's bottom-right corner anyway.
+
+**Step 0: `square-strip-0.png` (attach your land picture)**
+> Make this picture square (1:1). Keep everything in it exactly as it is, the same size and in the same place, and add more below it: the dirt path with its stepping stones continuing toward the viewer, grass, wildflowers and a few mossy stones at your feet. Add a little more soft sky above. The horizon ends up about a third of the way down the picture. Same style, light and colours. No text, logos or watermark.
+
+If you'd rather not have the two people and the cow in the 360° (they'll be frozen in place), add: "Leave out the people and the cow; keep the fields empty."
+
+**Extension lines (start steps 1–5 with these):**
+> Square 1:1 image of the same place, as if the camera turned 60 degrees to the right. The left third of the new image shows exactly what is in the right third of the attached image: the same things, the same size, at the same height. The rest continues the scene to the right. Keep the horizon, the camera height and the slightly downward view exactly as in the attached image. Same style, light and colours: cinematic anime countryside painting, original style, soft cel shading, painterly textures, dark painted outlines, late-afternoon golden hour, lavender haze on the far mountains. No new people or animals, no text, readable signs, logos or watermark.
+
+**Step 1: `square-strip-1.png` (attach picture 0)**
+> Continuing to the right: the stream winding past the water-wheel mill, more flooded rice paddies and terraced fields climbing the hillside, small farm sheds, the rocky wooded slope. The low sun is now just off the left edge, so warm light comes from the left with a golden glow in the upper-left sky. In the foreground beside the path, a round red post box on a short post.
+
+**Step 2: `square-strip-2.png` (attach picture 1)**
+> Continuing to the right, turning away from the sun: the paddies give way to a wooded hillside and a small farmhouse with a vegetable patch, and a narrow lane runs between them. Warm light from behind on the left, long soft shadows reaching to the right.
+
+**Step 3: `square-strip-3.png` (attach picture 2)**
+> Continuing to the right, now facing away from the village: the dirt path leading out between green fields and low wooden fences, toward gentle hills and distant mountains. The sun is behind the viewer, so everything is warmly lit and the shadows point away down the path.
+
+**Step 4: `square-strip-4.png` (attach picture 3)**
+> Continuing to the right, turning back toward the village: the fields meet the first small wooden houses, with a vegetable garden, a low fence and a forested slope behind. Warm light from behind on the right.
+
+**Step 5, the closing picture: `square-strip-5.png` (attach picture 4 first, then picture 0)**
+> Square 1:1 image that joins the two attached images into one continuous scene. Its left third shows exactly what is in the right third of the first attached image, and its right third shows exactly what is in the left third of the second attached image: the same things, the same size, at the same height. The middle paints what lies between them: small wooden houses with flower boxes and laundry, and in the foreground a blank wooden notice board on two posts, with no writing on it. Keep the horizon, the camera height and the slightly downward view exactly as in the attached images. Same style, light and colours. No new people or animals, no text, readable signs, logos or watermark.
+
+**Then:** upload the six upscaled pictures to this folder. I'll set where the horizon is on picture 0 (`horizon` in `content/world-pano-spots.json`), run `npm run world:pano`, put the markers on the inn, the post box and the notice board, and send screenshots. The flat painting is also saved to `.cache/pano/square-strip.jpg` so the joins can be checked by eye.
+
+**16:9 instead:** skip step 0, use your land picture as picture 0 as it is, and write "16:9" instead of "square 1:1" in the prompts. It's the same number of steps, but about a third of the screen is painted ground when looking down.
+
+---
+
+
+## Four-view route: four Gemini views per viewpoint
 
 Four **square (1:1)** pictures from where you stand: facing the inn, then turning **90° right** each time. Each one is a 90° slice of the view, so together they wrap all the way round. `npm run world:pano` stitches them: it matches colours across the seams, softens the joins, paints the sky overhead and grows the grass underfoot.
 

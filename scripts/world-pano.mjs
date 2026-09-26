@@ -10,6 +10,11 @@
 //     turning right each time), they're stitched into the cube with blended seams, a painted sky overhead and grass
 //     underfoot (scripts/pano-stitch.mjs; the free route with Gemini, see art/pano/README.md). Every view is checked for
 //     Gemini's visible watermark first; if one has it, the script names the file and stops (--allow-watermark skips this);
+//   - if art/pano/<spot>-strip-0, -1, -2 … exist (one continuous painting grown by extending picture 0 to the right
+//     again and again; the last picture leads back into picture 0), they're aligned, colour-matched, cut along their
+//     best seams and wrapped round you as a cylinder, with sky and ground painted beyond its edges
+//     (scripts/pano-strip.mjs; the extend route, see art/pano/README.md). The viewpoint's optional `horizon` (0 top …
+//     1 bottom of picture 0) says where its horizon is. These are checked for the watermark too;
 //   - otherwise a STAND-IN is painted from the land plate (public/world/plates/land-day-3840.webp): the painting
 //     wrapped around you four times (mirrored every other quarter so the edges meet), a gradient sky with soft clouds
 //     above it and the grass extended below. Obviously fake; it's there so the viewer can be judged before the art.
@@ -20,6 +25,7 @@ import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join, parse } from 'node:path';
 import sharp from 'sharp';
 import { findSparkle, stitchViews } from './pano-stitch.mjs';
+import { stripPanorama } from './pano-strip.mjs';
 
 const ROOT = process.cwd();
 const SPOTS = JSON.parse(await readFile(join(ROOT, 'content/world-pano-spots.json'), 'utf8'));
@@ -233,6 +239,13 @@ async function build(spot, colourAt) {
 }
 
 const artFiles = await readdir(join(ROOT, 'art/pano')).catch(() => []);
+/** The extend route's pictures for a viewpoint, in order (<spot>-strip-0, -1, …). */
+const stripFiles = (spot) =>
+  artFiles
+    .map((f) => [f, parse(f).name.toLowerCase().match(new RegExp(`^${spot}-strip-(\\d+)$`))])
+    .filter(([f, m]) => m && /\.(jpe?g|png|webp)$/i.test(f))
+    .sort((a, b) => Number(a[1][1]) - Number(b[1][1]))
+    .map(([f]) => f);
 
 // Safety net: a Gemini view with the visible watermark would put a sparkle in the finished 360° (low down, near each
 // seam), so check every stitched view's bottom-right corner first and stop before writing anything.
@@ -240,8 +253,8 @@ const artFiles = await readdir(join(ROOT, 'art/pano')).catch(() => []);
 if (!process.argv.includes('--allow-watermark')) {
   const flagged = [];
   for (const spot of Object.keys(SPOTS)) {
-    for (const v of VIEWS) {
-      const f = artFiles.find((n) => parse(n).name.toLowerCase() === `${spot}-${v}` && /\.(jpe?g|png|webp)$/i.test(n));
+    const viewFiles = VIEWS.map((v) => artFiles.find((n) => parse(n).name.toLowerCase() === `${spot}-${v}` && /\.(jpe?g|png|webp)$/i.test(n)));
+    for (const f of [...viewFiles, ...stripFiles(spot)]) {
       if (!f) continue;
       const hit = await findSparkle(join(ROOT, 'art/pano', f));
       if (hit.found) flagged.push(`  ✖ art/pano/${f}: the Gemini watermark (sparkle) at about ${round(hit.x * 100)}% across, ${round(hit.y * 100)}% down.`);
@@ -255,14 +268,42 @@ if (!process.argv.includes('--allow-watermark')) {
   }
 }
 const manifest = { sizes: SIZES, spots: {} };
+const previous = JSON.parse(await readFile(MANIFEST, 'utf8').catch(() => '{}'));
 let plate = null;
 for (const [spot, cfg] of Object.entries(SPOTS)) {
   const find = (name) => artFiles.find((f) => parse(f).name.toLowerCase() === name && /\.(jpe?g|png|webp)$/i.test(f));
   const src = find(spot);
   const views = Object.fromEntries(VIEWS.map((v) => [v, find(`${spot}-${v}`)]));
   const haveViews = VIEWS.filter((v) => views[v]);
+  const strip = stripFiles(spot);
   let bytes;
-  if (!src && haveViews.length === 4) {
+  if (!src && strip.length >= 3) {
+    // One continuous painting grown to the right, wrapped round: scripts/pano-strip.mjs.
+    if (haveViews.length) console.warn(`⚠ ${spot}: both strip pictures and four views are in art/pano; using the strip.`);
+    let pano;
+    try {
+      pano = await stripPanorama(
+        strip.map((f) => join(ROOT, 'art/pano', f)),
+        { horizon: cfg.horizon ?? 0.5, rotate: cfg.rotate ?? 0, H: FACE, guessSky },
+        (m) => console.warn(`⚠ ${m}`),
+      );
+    } catch (e) {
+      if (!e.strip) throw e;
+      // Keep this viewpoint's current faces and manifest entry; the other viewpoints still build.
+      console.error(`✖ ${spot}: not built, its current panorama is kept.\n${e.message.replace(/^/gm, '    ')}`);
+      if (previous.spots?.[spot]) manifest.spots[spot] = previous.spots[spot];
+      process.exitCode = 1;
+      continue;
+    }
+    for (const line of pano.report) console.log(`    ${line}`);
+    // The flat painting, for checking the joins by eye (.cache is gitignored).
+    await mkdir(join(ROOT, '.cache/pano'), { recursive: true });
+    await sharp(pano.flat.data, { raw: { width: pano.flat.width, height: pano.flat.height, channels: 3 } })
+      .jpeg({ quality: 85 })
+      .toFile(join(ROOT, `.cache/pano/${spot}-strip.jpg`));
+    bytes = await build(spot, pano.colourAt);
+    manifest.spots[spot] = { source: `strip of ${strip.length} (${strip.join(', ')})` };
+  } else if (!src && haveViews.length === 4) {
     // Four square views (inn ahead, right, behind, left) stitched into a cube: scripts/pano-stitch.mjs.
     const faces = await stitchViews(Object.fromEntries(VIEWS.map((v) => [v, join(ROOT, 'art/pano', views[v])])), FACE, (m) => console.warn(`⚠ ${m}`));
     bytes = await writeFaces(spot, faces);
@@ -276,6 +317,7 @@ for (const [spot, cfg] of Object.entries(SPOTS)) {
     bytes = await build(spot, (lon, lat) => equirectColour(img, lon + turn, lat));
     manifest.spots[spot] = { source: src };
   } else {
+    if (strip.length) console.warn(`⚠ ${spot}: only ${strip.length} strip picture${strip.length > 1 ? 's' : ''} (${strip.join(', ')}); the loop needs at least 3, so using the stand-in for now.`);
     if (haveViews.length) console.warn(`⚠ ${spot}: only ${haveViews.join(', ')} of the four views (front, right, back, left); using the stand-in until all four are there.`);
     if (!plate) {
       plate = await rgba(PLATE);
