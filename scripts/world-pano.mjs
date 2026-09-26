@@ -8,7 +8,8 @@
 //     and cut into cube faces (turned by the viewpoint's optional `rotate`, in degrees, so the inn is straight ahead);
 //   - if art/pano/<spot>-front/-right/-back/-left.(png|jpg|webp) exist (four square 90° views: facing the inn, then
 //     turning right each time), they're stitched into the cube with blended seams, a painted sky overhead and grass
-//     underfoot (scripts/pano-stitch.mjs; the free route with Gemini, see art/pano/README.md);
+//     underfoot (scripts/pano-stitch.mjs; the free route with Gemini, see art/pano/README.md). Every view is checked for
+//     Gemini's visible watermark first; if one has it, the script names the file and stops (--allow-watermark skips this);
 //   - otherwise a STAND-IN is painted from the land plate (public/world/plates/land-day-3840.webp): the painting
 //     wrapped around you four times (mirrored every other quarter so the edges meet), a gradient sky with soft clouds
 //     above it and the grass extended below. Obviously fake; it's there so the viewer can be judged before the art.
@@ -18,7 +19,7 @@
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join, parse } from 'node:path';
 import sharp from 'sharp';
-import { stitchViews } from './pano-stitch.mjs';
+import { findSparkle, stitchViews } from './pano-stitch.mjs';
 
 const ROOT = process.cwd();
 const SPOTS = JSON.parse(await readFile(join(ROOT, 'content/world-pano-spots.json'), 'utf8'));
@@ -232,6 +233,27 @@ async function build(spot, colourAt) {
 }
 
 const artFiles = await readdir(join(ROOT, 'art/pano')).catch(() => []);
+
+// Safety net: a Gemini view with the visible watermark would put a sparkle in the finished 360° (low down, near each
+// seam), so check every stitched view's bottom-right corner first and stop before writing anything.
+// --allow-watermark skips the check (for a false alarm).
+if (!process.argv.includes('--allow-watermark')) {
+  const flagged = [];
+  for (const spot of Object.keys(SPOTS)) {
+    for (const v of VIEWS) {
+      const f = artFiles.find((n) => parse(n).name.toLowerCase() === `${spot}-${v}` && /\.(jpe?g|png|webp)$/i.test(n));
+      if (!f) continue;
+      const hit = await findSparkle(join(ROOT, 'art/pano', f));
+      if (hit.found) flagged.push(`  ✖ art/pano/${f}: the Gemini watermark (sparkle) at about ${round(hit.x * 100)}% across, ${round(hit.y * 100)}% down.`);
+    }
+  }
+  if (flagged.length) {
+    console.error(`Stopped: ${flagged.length === 1 ? 'this view has' : 'these views have'} the visible Gemini watermark, which would show in the 360°:\n${flagged.join('\n')}`);
+    console.error('Export the view again without it (Google AI Studio doesn\'t add it), replace the file, and run again.');
+    console.error('Nothing was written. If it\'s a false alarm, run: node scripts/world-pano.mjs --allow-watermark');
+    process.exit(1);
+  }
+}
 const manifest = { sizes: SIZES, spots: {} };
 let plate = null;
 for (const [spot, cfg] of Object.entries(SPOTS)) {

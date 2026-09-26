@@ -37,6 +37,8 @@ For the other viewpoints use the same names with `doorstep-` or `footbridge-` in
 **`square-left.png`: turned 90° to the left of the inn (attach the back and front pictures)**
 > Turned 90 degrees to the right of the first attached picture (so its left edge continues that picture's right edge, and its right edge leads into the second attached picture's left edge). Small wooden houses with flower boxes and laundry, a vegetable garden with a low fence, and in the foreground a blank wooden notice board on two posts, with no writing on it. Warm sunlight falls on the houses from behind the viewer.
 
+**Watermark check:** before stitching, the script checks each view's bottom-right corner for Gemini's visible sparkle. If it finds one, it names the file and stops without writing anything. Export that view again without the mark (Google AI Studio doesn't add it) and run again. If it's ever a false alarm, `node scripts/world-pano.mjs --allow-watermark` skips the check.
+
 **What the stitching can and can't fix:** colour differences at the joins are matched and the joins are softened. Shapes that don't line up (a ridgeline at a different height, a fence that stops) stay slightly visible where two pictures meet, so the horizon rule matters most. If one join looks bad, regenerate just that picture.
 
 ---

@@ -233,3 +233,89 @@ export async function stitchViews(files, N, warn = console.warn) {
   const toBuf = (img) => Buffer.from(Uint8ClampedArray.from(img));
   return { f: toBuf(views.f), r: toBuf(views.r), b: toBuf(views.b), l: toBuf(views.l), u: up, d: down };
 }
+
+// ---- watermark check ----
+
+const WORK = 640; // analyse at this width
+/** Points on the outline of a four-pointed star (|x|^p + |y|^p = 1) with inward normals, skipping the sharp tips. */
+function outline(p, count = 56) {
+  const pts = [];
+  for (let k = 0; k < count; k++) {
+    const t = ((k + 0.5) / count) * 2 * Math.PI;
+    const c = Math.cos(t), s = Math.sin(t);
+    const x = Math.sign(c) * Math.abs(c) ** (2 / p), y = Math.sign(s) * Math.abs(s) ** (2 / p);
+    if (Math.abs(x) < 0.08 || Math.abs(y) < 0.08) continue; // too close to a tip: the edge direction is unreliable
+    let nx = Math.sign(x) * Math.abs(x) ** (p - 1), ny = Math.sign(y) * Math.abs(y) ** (p - 1);
+    const l = Math.hypot(nx, ny);
+    pts.push([x, y, -nx / l, -ny / l]); // inward normal
+  }
+  return pts;
+}
+// The real Gemini sparkle fits p ≈ 0.62–0.7; thinner stars are left out because grass blades fit them too.
+const OUTLINES = [0.62, 0.7, 0.8].map((p) => ({ p, pts: outline(p) }));
+
+/**
+ * Looks for Gemini's visible watermark (a four-pointed "sparkle", a translucent white overlay) near a view's
+ * bottom-right corner. Returns { found, x, y, size } (x, y: centre as fractions of width and height).
+ * It checks two things a real sparkle always has and grass, flowers or stones don't: all the way round a four-pointed
+ * star outline the inside is lighter than the outside, and the four tips are lit while the notches between them aren't.
+ * Tuned on the real mark from the Sep 26 drafts plus synthetic ones; clean painted corners score well below the bar.
+ */
+export async function findSparkle(file) {
+  const img = sharp(file).rotate().removeAlpha().greyscale();
+  const meta = await img.metadata();
+  const H = Math.round((meta.height / meta.width) * WORK);
+  const L = Float32Array.from(await img.resize(WORK, H).raw().toBuffer());
+  const at = (x, y) => {
+    const x0 = Math.floor(x), y0 = Math.floor(y);
+    if (x0 < 0 || y0 < 0 || x0 >= WORK - 1 || y0 >= H - 1) return NaN;
+    const fx = x - x0, fy = y - y0, i = y0 * WORK + x0;
+    return (L[i] * (1 - fx) + L[i + 1] * fx) * (1 - fy) + (L[i + WORK] * (1 - fx) + L[i + WORK + 1] * fx) * fy;
+  };
+  // Gemini puts its sparkle ~8.7% of the width in from the right and bottom edges; look only around there
+  // (centre 3–22% of the width in from each edge), so star-like details elsewhere in the painting can't trigger it.
+  const x0r = Math.floor(WORK * 0.78), y0r = Math.max(0, Math.floor(H - WORK * 0.22));
+  const xMax = WORK - WORK * 0.03, yMax = H - WORK * 0.03;
+  let best = { score: 0 };
+  for (let frac = 0.026; frac <= 0.078; frac *= 1.1) {
+    const r = (frac * WORK) / 2;
+    const d = Math.max(1.1, r * 0.1); // how far either side of the edge to compare
+    for (const { p, pts } of OUTLINES) {
+      for (let cy = y0r; cy < Math.min(H - r, yMax); cy += 1) {
+        for (let cx = x0r; cx < Math.min(WORK - r, xMax); cx += 1) {
+          let pass = 0, diff = 0, seen = 0;
+          for (let k = 0; k < pts.length; k++) {
+            const [px, py, nx, ny] = pts[k];
+            const ex = cx + px * r, ey = cy + py * r;
+            const inside = at(ex + nx * d, ey + ny * d), outside = at(ex - nx * d, ey - ny * d);
+            const dd = inside - outside;
+            seen++;
+            diff += dd;
+            if (dd > 5) pass++;
+            // bail out early when it clearly isn't a star here
+            if (k === 11 && pass < 9) break;
+          }
+          if (seen < pts.length) continue;
+          if (pass / pts.length < 0.85) continue;
+          // The star's signature: its four tips are lit, the notches between them are background. A round or square blob
+          // is lit (or dark) all the way round at this distance, so it fails.
+          let tipPass = 0;
+          const tipR = r * 0.62, notchR = r * 0.62;
+          const notch = [];
+          for (const [dx, dy] of [[0.7071, 0.7071], [-0.7071, 0.7071], [-0.7071, -0.7071], [0.7071, -0.7071]]) notch.push(at(cx + dx * notchR, cy + dy * notchR));
+          const tips = [[1, 0], [0, 1], [-1, 0], [0, -1]].map(([dx, dy]) => at(cx + dx * tipR, cy + dy * tipR));
+          for (let k = 0; k < 4; k++) {
+            if (tips[k] - notch[k] > 5) tipPass++;
+            if (tips[k] - notch[(k + 3) % 4] > 5) tipPass++;
+          }
+          if (tipPass < 8) continue;
+          const tipMean = tips.reduce((a, b) => a + b, 0) / 4 - notch.reduce((a, b) => a + b, 0) / 4;
+          const score = (pass / pts.length) * (tipPass / 8);
+          if (score > best.score || (score === best.score && diff / seen > (best.step ?? 0)))
+            best = { score, outline: pass / pts.length, tips: tipPass, tipContrast: tipMean, step: diff / seen, x: cx / WORK, y: cy / H, size: frac, p };
+        }
+      }
+    }
+  }
+  return { ...best, found: best.score >= 0.95 && (best.step ?? 0) >= 15 && (best.tipContrast ?? 0) >= 20 };
+}
