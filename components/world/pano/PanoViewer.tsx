@@ -2,9 +2,11 @@
 
 // The 360° viewer at /world. Each viewpoint is a cube of six painted faces (scripts/world-pano.mjs) shown with CSS 3D
 // transforms, so there's no WebGL or 3D library to download. Hotspots live in the same 3D space as the faces, so they
-// stay pinned to the scenery as you look around. Drag or swipe to look, scroll or pinch to zoom, arrow keys and +/−
-// work too, and phones can opt in to device tilt. Arrows on the ground hop to the next viewpoint.
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
+// stay pinned to the scenery as you look around: small glowing lights (the inn, the resume, contact) that show their
+// name on hover or focus (first tap on phones) and open on click. Drag or swipe to look (from 25° down to 60° up),
+// scroll or pinch to zoom, arrow keys and +/− work too, and phones can opt in to device tilt. Small arrows on the
+// ground hop to the next viewpoint.
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { worldCopy as copy } from '@/content/world';
 import { faceSizes, firstSpot, spots, type Hotspot, type PlaceId, type SpotId } from '@/content/world-pano';
 import { lookFromOrientation, requestTilt, tiltAvailable } from '../tilt';
@@ -21,7 +23,12 @@ const FACE_TURN: Record<(typeof FACES)[number], string> = {
 };
 const FOV_MIN = 30;
 const FOV_MAX = 95;
-const PITCH_MAX = 82;
+// Looking down stops at 25° below the horizon (and the bottom of the screen at 60° below, when zoomed out), so the
+// painted floor is only ever a band at the bottom; looking up stops at 60°.
+const PITCH_DOWN = 25;
+const PITCH_UP = 60;
+const BOTTOM_EDGE = 60;
+const HINT_KEY = 'world-hint-seen';
 const KEY_TURN = 80; // degrees per second
 const LABEL: Record<PlaceId, string> = { inn: copy.innLabel, resume: copy.resume, contact: copy.contact };
 
@@ -48,7 +55,12 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
   const nightLoads = useRef(new Set<string>());
   if (night && !wantNight) setWantNight(true);
   const [fading, setFading] = useState(false);
-  const [hint, setHint] = useState(true);
+  // One short hint on the first visit only; it fades after a few seconds or as soon as you start looking around.
+  const [hint, setHint] = useState<'on' | 'fading' | 'off'>('off');
+  // Set once the visitor starts looking around: then the next viewpoints are fetched so hops are quick.
+  const [engaged, setEngaged] = useState(false);
+  // Phones: the first tap on a light shows its name, the second opens it.
+  const [revealed, setRevealed] = useState<string | null>(null);
   const [tilt, setTilt] = useState<'off' | 'on' | 'denied'>('off');
   const [coarse] = useState(() => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches);
   const [canTilt] = useState(() => tiltAvailable());
@@ -142,8 +154,8 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
         }
       }
       v.yaw = wrap(v.yaw);
-      v.pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, v.pitch));
       v.fov = Math.max(FOV_MIN, Math.min(FOV_MAX, v.fov));
+      v.pitch = Math.max(Math.max(-PITCH_DOWN, -BOTTOM_EDGE + v.fov / 2), Math.min(PITCH_UP, v.pitch));
       apply();
       v.raf = moving ? requestAnimationFrame(tick) : 0;
       if (!moving) v.last = 0;
@@ -160,6 +172,33 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
       v.raf = 0;
     };
   }, [R]);
+
+  const engage = useCallback(() => {
+    setEngaged(true);
+    setHint((h) => (h === 'on' ? 'fading' : h));
+  }, []);
+
+  // First visit: show the hint, remember it was shown, fade it after 5 s.
+  useEffect(() => {
+    if (!interactive) return;
+    let seen = false;
+    try {
+      seen = localStorage.getItem(HINT_KEY) === '1';
+      localStorage.setItem(HINT_KEY, '1');
+    } catch {
+      // Storage blocked (private mode): the hint just shows each time.
+    }
+    if (seen) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of browser storage
+    setHint('on');
+    const t = setTimeout(() => setHint((h) => (h === 'on' ? 'fading' : h)), 5000);
+    return () => clearTimeout(t);
+  }, [interactive]);
+  useEffect(() => {
+    if (hint !== 'fading') return;
+    const t = setTimeout(() => setHint('off'), reduced ? 0 : 700);
+    return () => clearTimeout(t);
+  }, [hint, reduced]);
 
   // Input: drag / swipe, pinch, wheel, keys.
   useEffect(() => {
@@ -183,7 +222,8 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
       samples = [{ x: e.clientX, y: e.clientY, t: e.timeStamp }];
       if (pts.size === 2) pinch = { d: spread(), fov: v.fov };
       el.classList.add('dragging');
-      setHint(false);
+      engage();
+      setRevealed(null);
     };
     const onMove = (e: PointerEvent) => {
       const p = pts.get(e.pointerId);
@@ -230,7 +270,7 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
       e.preventDefault();
       v.tween = null;
       v.fov *= Math.exp(e.deltaY * 0.0012);
-      setHint(false);
+      engage();
       v.kick();
     };
     const typing = (t: EventTarget | null) => t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
@@ -249,7 +289,7 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
       e.preventDefault();
       v.tween = null;
       v.keys[k[0]] = k[1];
-      setHint(false);
+      engage();
       v.kick();
     };
     const onKeyUp = (e: KeyboardEvent) => {
@@ -277,7 +317,7 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('blur', stop);
     };
-  }, [interactive]);
+  }, [interactive, engage]);
 
   // Device tilt, once the visitor turns it on.
   useEffect(() => {
@@ -298,10 +338,10 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
     };
   }, [tilt]);
 
-  // Once the visitor starts looking around (the hint goes away), fetch the next viewpoints' faces so hops are quick.
+  // Once the visitor starts looking around, fetch the next viewpoints' faces so hops are quick.
   // Not before: a visitor who only glances at the first view downloads just that one.
   useEffect(() => {
-    if (hint) return;
+    if (!engaged) return;
     const t = setTimeout(() => {
       for (const h of current.hotspots) {
         if (h.kind !== 'go') continue;
@@ -309,7 +349,7 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
       }
     }, 800);
     return () => clearTimeout(t);
-  }, [current, size, hint]);
+  }, [current, size, engaged]);
 
   const glideTo = (yaw: number, pitch: number, fov: number, ms: number, done?: () => void) => {
     const v = view.current;
@@ -327,7 +367,8 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
   const hop = (h: Extract<Hotspot, { kind: 'go' }>) => {
     const v = view.current;
     const fovBefore = v.fov;
-    setHint(false);
+    engage();
+    setRevealed(null);
     // Turn toward the arrow and push in, fade, swap the panorama, then open back out facing onward.
     glideTo(h.yaw, Math.max(-20, h.pitch + 10), Math.max(FOV_MIN, fovBefore * 0.6), 420);
     setFading(true);
@@ -352,7 +393,7 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
   const toggleTilt = async () => {
     if (tilt === 'on') return setTilt('off');
     setTilt((await requestTilt()) ? 'on' : 'denied');
-    setHint(false);
+    engage();
   };
 
   return (
@@ -410,18 +451,31 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
           {current.hotspots.map((h, i) => {
             const place = `rotateY(${(-h.yaw).toFixed(2)}deg) rotateX(${(-h.pitch).toFixed(2)}deg) translateZ(${-R}px) translate(-50%, -50%) scale(var(--hs, 1))`;
             if (h.kind === 'place') {
+              const key = `${spotId}-${i}`;
               return (
                 <button
-                  key={`${spotId}-${i}`}
+                  key={key}
                   type="button"
-                  className="pano-hot world-pin"
+                  className={`pano-marker ${revealed === key ? 'revealed' : ''}`}
                   style={{ transform: place }}
                   aria-haspopup="dialog"
                   aria-label={h.id === 'inn' ? `${copy.inn}: ${copy.innLabel.toLowerCase()}` : LABEL[h.id]}
                   onFocus={() => glideTo(h.yaw, h.pitch, view.current.fov, 500)}
-                  onClick={() => onPlace(h.id)}
+                  onClick={(e) => {
+                    // Phones: first tap shows the name, second opens. Mouse and keyboard open straight away.
+                    if (coarse && e.detail !== 0 && revealed !== key) {
+                      setRevealed(key);
+                      engage();
+                      return;
+                    }
+                    setRevealed(null);
+                    onPlace(h.id);
+                  }}
                 >
-                  {LABEL[h.id]}
+                  <span aria-hidden className="pano-marker-dot" />
+                  <span aria-hidden className="pano-marker-label">
+                    {LABEL[h.id]}
+                  </span>
                 </button>
               );
             }
@@ -438,38 +492,47 @@ export default function PanoViewer({ night, interactive, reduced, paused, onPlac
                 <span aria-hidden className="pano-go-ring">
                   ↑
                 </span>
-                <span className="pano-go-label">{spots[h.to].label}</span>
+                <span aria-hidden className="pano-go-label">
+                  {spots[h.to].label}
+                </span>
               </button>
             );
           })}
         </div>
       </div>
       <div aria-hidden className={`pano-fade pointer-events-none absolute inset-0 ${fading ? 'on' : ''}`} />
-      {current.standIn && (
-        <p className="world-status pointer-events-none absolute left-3 top-16 sm:left-4">
-          Stand-in panorama · {current.label}
-        </p>
+      {/* Dev-only reminder (never in a build): this viewpoint is still the stand-in painted from the land plate. */}
+      {process.env.NODE_ENV === 'development' && current.standIn && (
+        <p className="pointer-events-none absolute bottom-1 left-2 font-mono text-[10px] text-white/70">dev: stand-in panorama · {current.label}</p>
       )}
       {interactive && (
-        <div className="absolute bottom-3 right-3 flex items-end gap-2 sm:bottom-4 sm:right-4">
+        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 sm:bottom-4 sm:right-4">
           {canTilt && (
-            <button type="button" className="world-btn" aria-pressed={tilt === 'on'} onClick={toggleTilt}>
-              {tilt === 'on' ? 'Tilt: on' : tilt === 'denied' ? 'Tilt blocked' : 'Tilt to look'}
+            <button
+              type="button"
+              className="world-icon-btn"
+              aria-pressed={tilt === 'on'}
+              aria-label={tilt === 'denied' ? 'Tilt to look (blocked in this browser)' : 'Tilt to look'}
+              title="Tilt to look"
+              onClick={toggleTilt}
+            >
+              <svg aria-hidden viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="8" y="3" width="8" height="18" rx="2" />
+                <path d="M4 8a9 9 0 0 0 0 8M20 8a9 9 0 0 1 0 8" />
+              </svg>
             </button>
           )}
-          <div className="flex gap-2">
-            <button type="button" className="world-btn" aria-label="Zoom in" onClick={() => glideTo(view.current.yaw, view.current.pitch, view.current.fov / 1.35, 250)}>
-              +
-            </button>
-            <button type="button" className="world-btn" aria-label="Zoom out" onClick={() => glideTo(view.current.yaw, view.current.pitch, view.current.fov * 1.35, 250)}>
-              −
-            </button>
-          </div>
+          <button type="button" className="world-icon-btn" aria-label="Zoom in" title="Zoom in" onClick={() => glideTo(view.current.yaw, view.current.pitch, view.current.fov / 1.35, 250)}>
+            +
+          </button>
+          <button type="button" className="world-icon-btn" aria-label="Zoom out" title="Zoom out" onClick={() => glideTo(view.current.yaw, view.current.pitch, view.current.fov * 1.35, 250)}>
+            −
+          </button>
         </div>
       )}
-      {interactive && hint && (
-        <p aria-hidden className="world-hint pointer-events-none absolute bottom-[4.25rem] left-3 sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2">
-          {coarse ? 'Drag to look · pinch to zoom · tap a sign' : 'Drag to look · scroll to zoom · click a sign'}
+      {interactive && hint !== 'off' && (
+        <p aria-hidden className={`world-hint world-hint-first pointer-events-none absolute bottom-16 left-1/2 -translate-x-1/2 sm:bottom-5 ${hint === 'fading' ? 'fading' : ''}`}>
+          {coarse ? 'Drag to look around · tap the glowing lights' : 'Drag to look around · click the glowing lights'}
         </p>
       )}
     </div>

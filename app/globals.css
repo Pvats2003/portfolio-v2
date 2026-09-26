@@ -626,49 +626,173 @@ body {
   backface-visibility: hidden;
   pointer-events: none;
 }
-.pano-hot,
+/* Places: a small warm light with a soft pulse; the name shows on hover or focus (or the first tap on a phone). */
+.pano-marker,
 .pano-go {
   position: absolute;
   left: 0;
   top: 0;
-}
-.pano-hot:focus-visible,
-.pano-go:focus-visible .pano-go-ring {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
-}
-.pano-go {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  cursor: pointer;
-}
-.pano-go-ring {
   display: grid;
   place-items: center;
-  width: 3rem;
-  height: 3rem;
-  border: 2px solid var(--ink);
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--surface) 85%, transparent);
-  color: var(--ink);
-  font: 600 1.35rem/1 var(--font-plex-mono), ui-monospace, monospace;
-  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+}
+.pano-marker:focus-visible,
+.pano-go:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 0;
+}
+.pano-marker-dot {
+  position: relative;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 2px solid #fffaf0;
+  border-radius: 50%;
+  background: #ffc36b;
+  box-shadow:
+    0 0 0 1px rgba(40, 30, 20, 0.35),
+    0 0 12px 4px rgba(255, 190, 100, 0.75);
   transition: transform 150ms ease;
 }
-.pano-go:hover .pano-go-ring {
-  transform: translateY(-3px);
+.pano-marker-dot::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid rgba(255, 214, 150, 0.9);
+  border-radius: 50%;
+  opacity: 0;
 }
+.pano-marker:hover .pano-marker-dot,
+.pano-marker:focus-visible .pano-marker-dot,
+.pano-marker.revealed .pano-marker-dot {
+  transform: scale(1.2);
+}
+@keyframes pano-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pano:not(.reduced) .pano-marker-dot::after {
+    animation: pano-pulse 2.4s ease-out infinite;
+  }
+}
+.pano-marker-label,
 .pano-go-label {
-  padding: 0.15rem 0.45rem;
+  position: absolute;
+  bottom: calc(100% - 0.2rem);
+  left: 50%;
+  padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--ink) 78%, transparent);
+  background: color-mix(in srgb, var(--ink) 82%, transparent);
   color: var(--surface);
   font: 500 0.68rem/1.2 var(--font-plex-mono), ui-monospace, monospace;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+  pointer-events: none;
+}
+.pano-marker:hover .pano-marker-label,
+.pano-marker:focus-visible .pano-marker-label,
+.pano-marker.revealed .pano-marker-label,
+.pano-go:hover .pano-go-label,
+.pano-go:focus-visible .pano-go-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+/* Hops to another viewpoint: a small arrow, no text until hover or focus. */
+.pano-go-ring {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  background: rgba(20, 24, 32, 0.35);
+  color: #fff;
+  font: 600 0.95rem/1 var(--font-plex-mono), ui-monospace, monospace;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(2px);
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease;
+}
+.pano-go:hover .pano-go-ring,
+.pano-go:focus-visible .pano-go-ring {
+  transform: translateY(-2px);
+  background: rgba(20, 24, 32, 0.55);
+}
+/* Small round controls (tilt, zoom) and the corner menu button. */
+.world-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  color: var(--ink);
+  font: 600 1.05rem/1 var(--font-plex-mono), ui-monospace, monospace;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(3px);
+}
+.world-icon-btn:hover {
+  background: var(--surface);
+}
+.world-icon-btn[aria-pressed='true'],
+.world-icon-btn[aria-expanded='true'] {
+  background: var(--ink);
+  color: var(--surface);
+}
+.world-icon-btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.world-menu {
+  min-width: 12rem;
+  padding: 0.35rem;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.world-menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.7rem;
+  border-radius: 5px;
+  font: 500 0.75rem/1.2 var(--font-plex-mono), ui-monospace, monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: left;
+}
+.world-menu-item:hover,
+.world-menu-item:focus-visible {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  outline: none;
+}
+.world-hint-first {
+  transition: opacity 700ms ease;
+}
+.world-hint-first.fading {
+  opacity: 0;
 }
 .pano-fade {
   background: #f3ead9;

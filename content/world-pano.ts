@@ -62,21 +62,22 @@ const spot = (id: SpotId, start: Spot['start'], hotspots: Hotspot[], glows?: Glo
 };
 
 export const spots: Record<SpotId, Spot> = {
-  square: spot('square', { yaw: 0, pitch: -3 }, [
-    { kind: 'place', id: 'inn', ...onPlate('square', 0.5, 0.4) },
-    // Placeholders until the real panorama: the house on the left and the shed on the right.
+  square: spot('square', { yaw: 0, pitch: 2 }, [
+    { kind: 'place', id: 'inn', ...onPlate('square', 0.5, 0.5) },
+    // Placeholders until the real panorama (where they go on the notice board and the post box): the house on the
+    // left and the shed on the right.
     { kind: 'place', id: 'resume', ...onPlate('square', 0.08, 0.49) },
     { kind: 'place', id: 'contact', ...onPlate('square', 0.79, 0.44) },
     { kind: 'go', to: 'doorstep', ...onPlate('square', 0.5, 0.8) },
     { kind: 'go', to: 'footbridge', ...onPlate('square', 0.73, 0.68) },
   ]),
-  doorstep: spot('doorstep', { yaw: 0, pitch: 2 }, [
-    { kind: 'place', id: 'inn', ...onPlate('doorstep', 0.5, 0.36) },
+  doorstep: spot('doorstep', { yaw: 0, pitch: 6 }, [
+    { kind: 'place', id: 'inn', ...onPlate('doorstep', 0.5, 0.5) },
     { kind: 'go', to: 'footbridge', ...onPlate('doorstep', 0.74, 0.68) },
     { kind: 'go', to: 'square', yaw: 180, pitch: -28 },
   ]),
-  footbridge: spot('footbridge', { yaw: 0, pitch: -2 }, [
-    { kind: 'place', id: 'inn', ...onPlate('footbridge', 0.5, 0.4) },
+  footbridge: spot('footbridge', { yaw: 0, pitch: 3 }, [
+    { kind: 'place', id: 'inn', ...onPlate('footbridge', 0.5, 0.5) },
     { kind: 'place', id: 'contact', ...onPlate('footbridge', 0.79, 0.44) },
     { kind: 'go', to: 'doorstep', ...onPlate('footbridge', 0.5, 0.7) },
     { kind: 'go', to: 'square', yaw: 180, pitch: -28 },
