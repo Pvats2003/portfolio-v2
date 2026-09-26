@@ -5,13 +5,16 @@
   ],
   "spots": {
     "square": {
-      "source": "stand-in"
+      "source": "stand-in",
+      "night": true
     },
     "doorstep": {
-      "source": "stand-in"
+      "source": "stand-in",
+      "night": true
     },
     "footbridge": {
-      "source": "stand-in"
+      "source": "stand-in",
+      "night": true
     }
   }
 }

@@ -11,7 +11,7 @@ import { RESUME_PDF } from '@/content/resume';
 import { contact } from '@/content/site';
 import { worldCopy as copy, type InnProject } from '@/content/world';
 import type { PlaceId } from '@/content/world-pano';
-import { useReducedMotion } from './useEnv';
+import { useReducedMotion, useSiteMood } from './useEnv';
 
 const PanoViewer = dynamic(() => import('./pano/PanoViewer'), { ssr: false });
 const DepthPhoto = dynamic(() => import('./depth/DepthPhoto'), { ssr: false });
@@ -22,6 +22,8 @@ const SPEAKER: Record<PlaceId, string> = { inn: `${copy.inn} · ${copy.innLabel}
 
 export function WorldView({ projects, scene }: { projects: InnProject[]; scene: 'pano' | 'depth' }) {
   const reducedMotion = useReducedMotion();
+  // The site theme (light / dark / system) drives day and night in both scenes, live.
+  const night = useSiteMood() === 'night';
   const [shot, setShot] = useState(false);
   const [panel, setPanel] = useState<PlaceId | null>(null);
   const [listOpen, setListOpen] = useState(false);
@@ -71,9 +73,9 @@ export function WorldView({ projects, scene }: { projects: InnProject[]; scene: 
 
       <div className="absolute inset-0">
         {scene === 'pano' ? (
-          <PanoViewer interactive={!shot} reduced={reducedMotion} paused={!!panel || listOpen} onPlace={open} />
+          <PanoViewer night={night} interactive={!shot} reduced={reducedMotion} paused={!!panel || listOpen} onPlace={open} />
         ) : (
-          <DepthPhoto interactive={!shot} reduced={reducedMotion} onOpen={() => open('inn')} />
+          <DepthPhoto night={night} interactive={!shot} reduced={reducedMotion} onOpen={() => open('inn')} />
         )}
       </div>
 

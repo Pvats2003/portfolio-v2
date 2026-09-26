@@ -4,7 +4,7 @@
 // transforms, so there's no WebGL or 3D library to download. Hotspots live in the same 3D space as the faces, so they
 // stay pinned to the scenery as you look around. Drag or swipe to look, scroll or pinch to zoom, arrow keys and +/−
 // work too, and phones can opt in to device tilt. Arrows on the ground hop to the next viewpoint.
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { worldCopy as copy } from '@/content/world';
 import { faceSizes, firstSpot, spots, type Hotspot, type PlaceId, type SpotId } from '@/content/world-pano';
 import { lookFromOrientation, requestTilt, tiltAvailable } from '../tilt';
@@ -26,6 +26,8 @@ const KEY_TURN = 80; // degrees per second
 const LABEL: Record<PlaceId, string> = { inn: copy.innLabel, resume: copy.resume, contact: copy.contact };
 
 type Props = {
+  /** Dark theme: the moonlit faces, glowing windows and fireflies. */
+  night: boolean;
   /** Off for screenshots (?shot): no dragging or keys. */
   interactive: boolean;
   /** prefers-reduced-motion: no gliding, no inertia, instant hops. */
@@ -35,11 +37,16 @@ type Props = {
   onPlace: (id: PlaceId) => void;
 };
 
-export default function PanoViewer({ interactive, reduced, paused, onPlace }: Props) {
+export default function PanoViewer({ night, interactive, reduced, paused, onPlace }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const cube = useRef<HTMLDivElement>(null);
   const [spotId, setSpotId] = useState<SpotId>(firstSpot);
+  // Night faces are only downloaded once the dark theme is actually used, then kept; they fade in when all six are in.
+  const [wantNight, setWantNight] = useState(night);
+  const [nightReady, setNightReady] = useState<SpotId | null>(null);
+  const nightLoads = useRef(new Set<string>());
+  if (night && !wantNight) setWantNight(true);
   const [fading, setFading] = useState(false);
   const [hint, setHint] = useState(true);
   const [tilt, setTilt] = useState<'off' | 'on' | 'denied'>('off');
@@ -63,6 +70,7 @@ export default function PanoViewer({ interactive, reduced, paused, onPlace }: Pr
     tiltLook: null as null | [number, number],
     paused: false,
     reduced: false,
+    night: false,
     raf: 0,
     last: 0,
     kick: () => {},
@@ -70,7 +78,8 @@ export default function PanoViewer({ interactive, reduced, paused, onPlace }: Pr
   useEffect(() => {
     view.current.paused = paused;
     view.current.reduced = reduced;
-  }, [paused, reduced]);
+    view.current.night = night;
+  }, [paused, reduced, night]);
 
   // Camera: the cube sits at the eye; perspective sets the field of view.
   useLayoutEffect(() => {
@@ -325,7 +334,7 @@ export default function PanoViewer({ interactive, reduced, paused, onPlace }: Pr
     window.setTimeout(
       () => {
         const next = spots[h.to];
-        Promise.all(FACES.map((f) => decodeImage(faceSrc(h.to, f, size)))).finally(() => {
+        Promise.all(FACES.map((f) => decodeImage(faceSrc(h.to, f, size, view.current.night)))).finally(() => {
           setSpotId(h.to);
           const facing = h.to === 'square' ? next.start.yaw : v.yaw;
           [v.yaw, v.pitch, v.fov] = [facing, next.start.pitch, Math.max(FOV_MIN, fovBefore * 0.8)];
@@ -347,22 +356,57 @@ export default function PanoViewer({ interactive, reduced, paused, onPlace }: Pr
   };
 
   return (
-    <div ref={root} className={`pano absolute inset-0 overflow-hidden ${interactive ? 'pano-live' : ''}`}>
+    <div ref={root} className={`pano absolute inset-0 overflow-hidden ${interactive ? 'pano-live' : ''} ${night ? 'is-night' : ''} ${nightReady === spotId ? 'night-ready' : ''} ${reduced ? 'reduced' : ''}`}>
       <div ref={stage} className="pano-stage absolute inset-0">
         <div ref={cube} className="pano-cube">
-          {FACES.map((f) => (
-            // eslint-disable-next-line @next/next/no-img-element -- six fixed-size faces placed in 3D; next/image adds nothing here
-            <img
-              key={`${spotId}-${f}`}
-              src={faceSrc(spotId, f, size)}
-              alt=""
+          {FACES.map((f) => {
+            const style = { width: size, height: size, left: -size / 2, top: -size / 2, transform: `${FACE_TURN[f]} translateZ(${-size / 2}px) scale(1.004)` };
+            return (
+              <Fragment key={`${spotId}-${f}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element -- six fixed-size faces placed in 3D; next/image adds nothing here */}
+                <img src={faceSrc(spotId, f, size)} alt="" aria-hidden draggable={false} decoding="async" className="pano-face" style={style} />
+                {wantNight && (
+                  // eslint-disable-next-line @next/next/no-img-element -- as above: the same face in moonlight, faded in over the day one
+                  <img
+                    src={faceSrc(spotId, f, size, true)}
+                    alt=""
+                    aria-hidden
+                    draggable={false}
+                    decoding="async"
+                    className="pano-face pano-face-night"
+                    style={style}
+                    onLoad={() => {
+                      nightLoads.current.add(`${spotId}-${f}`);
+                      if (FACES.every((g) => nightLoads.current.has(`${spotId}-${g}`))) setNightReady(spotId);
+                    }}
+                  />
+                )}
+              </Fragment>
+            );
+          })}
+          {current.glows.map((g, i) => (
+            <span
+              key={`${spotId}-glow-${i}`}
               aria-hidden
-              draggable={false}
-              decoding="async"
-              className="pano-face"
-              style={{ width: size, height: size, left: -size / 2, top: -size / 2, transform: `${FACE_TURN[f]} translateZ(${-size / 2}px) scale(1.004)` }}
+              className="pano-glow"
+              style={{
+                width: 2 * R * Math.tan((g.w * Math.PI) / 360),
+                height: 2 * R * Math.tan((g.h * Math.PI) / 360),
+                transform: `rotateY(${(-g.yaw).toFixed(2)}deg) rotateX(${(-g.pitch).toFixed(2)}deg) translateZ(${-(R + 12)}px) translate(-50%, -50%)`,
+              }}
             />
           ))}
+          {night &&
+            FIREFLIES.map((q, i) => (
+              <span
+                key={`fly-${i}`}
+                aria-hidden
+                className="world-firefly"
+                style={{ transform: `rotateY(${(-q.yaw).toFixed(2)}deg) rotateX(${(-q.pitch).toFixed(2)}deg) translateZ(${-(R + 6)}px)` }}
+              >
+                <i style={{ animationDelay: `${q.delay}s` }} />
+              </span>
+            ))}
           {current.hotspots.map((h, i) => {
             const place = `rotateY(${(-h.yaw).toFixed(2)}deg) rotateX(${(-h.pitch).toFixed(2)}deg) translateZ(${-R}px) translate(-50%, -50%) scale(var(--hs, 1))`;
             if (h.kind === 'place') {
@@ -432,7 +476,18 @@ export default function PanoViewer({ interactive, reduced, paused, onPlace }: Pr
   );
 }
 
-const faceSrc = (spot: SpotId, face: string, size: number) => `/world/pano/${spot}/${face}-${size}.webp`;
+const faceSrc = (spot: SpotId, face: string, size: number, night = false) => `/world/pano/${spot}/${face}-${size}${night ? '-night' : ''}.webp`;
+
+/** Fireflies at night: fixed, seeded directions, mostly low over the paddies on the right. */
+const FIREFLIES = (() => {
+  let seed = 23;
+  const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  return Array.from({ length: 26 }, (_, i) => ({
+    yaw: i < 18 ? 12 + r() * 70 : -70 + r() * 60,
+    pitch: -22 + r() * 16,
+    delay: -r() * 6,
+  }));
+})();
 
 function decodeImage(src: string) {
   const img = new Image();

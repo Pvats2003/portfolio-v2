@@ -683,6 +683,96 @@ body {
     transition-duration: 100ms;
   }
 }
+/* ---------- /world night (dark theme, live): moonlit faces, window glows, fireflies, starry sky ---------- */
+.pano.is-night {
+  background: #16223f;
+}
+.pano-face-night,
+.pano-glow,
+.world-firefly,
+.world-night-sky,
+.depth-glow {
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.pano.is-night.night-ready .pano-face-night {
+  opacity: 1;
+}
+.pano-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  /* A lit pane: translucent enough that the painted lattice still shows, with a soft glow around it. */
+  border-radius: 2px;
+  background: linear-gradient(rgba(255, 204, 128, 0.5), rgba(255, 180, 100, 0.42));
+  box-shadow: 0 0 16px 5px rgba(255, 176, 96, 0.38);
+}
+.pano.is-night.night-ready .pano-glow {
+  opacity: 1;
+}
+.world-firefly {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  pointer-events: none;
+}
+.world-firefly i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #f4ff9a;
+  box-shadow: 0 0 8px 3px rgba(244, 255, 154, 0.55);
+}
+.is-night .world-firefly,
+.is-night .world-night-sky,
+.is-night .depth-glow {
+  opacity: 1;
+}
+.pano.is-night:not(.night-ready) .world-firefly {
+  opacity: 0;
+}
+.world-night-sky {
+  background:
+    radial-gradient(1.2px 1.2px at 8% 12%, #fff 50%, transparent 55%),
+    radial-gradient(1px 1px at 17% 30%, #fff 50%, transparent 55%),
+    radial-gradient(1.4px 1.4px at 26% 8%, #fff 50%, transparent 55%),
+    radial-gradient(1px 1px at 34% 22%, #dfe7ff 50%, transparent 55%),
+    radial-gradient(1.2px 1.2px at 43% 5%, #fff 50%, transparent 55%),
+    radial-gradient(1px 1px at 52% 18%, #fff 50%, transparent 55%),
+    radial-gradient(1.5px 1.5px at 61% 10%, #fff 50%, transparent 55%),
+    radial-gradient(1px 1px at 69% 27%, #dfe7ff 50%, transparent 55%),
+    radial-gradient(1.2px 1.2px at 78% 6%, #fff 50%, transparent 55%),
+    radial-gradient(1px 1px at 86% 20%, #fff 50%, transparent 55%),
+    radial-gradient(1.3px 1.3px at 93% 11%, #fff 50%, transparent 55%),
+    radial-gradient(1px 1px at 3% 26%, #fff 50%, transparent 55%),
+    linear-gradient(#0a1434 0%, #1c3570 40%, #34518f 62%, #4a6199 100%);
+}
+.reduced .pano-face-night,
+.reduced .pano-glow,
+.reduced .world-firefly,
+.reduced .world-night-sky,
+.reduced .depth-glow {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pano-face-night,
+  .pano-glow,
+  .world-firefly,
+  .world-night-sky,
+  .depth-glow {
+    transition: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .is-night:not(.reduced) .world-firefly i {
+    animation: lookdev-firefly 5s ease-in-out infinite alternate;
+  }
+}
 .depth-photo {
   cursor: crosshair;
   touch-action: none;

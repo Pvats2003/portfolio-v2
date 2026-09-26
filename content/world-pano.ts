@@ -4,6 +4,7 @@
 // worked out from points on that plate, so they land on the inn, the houses and the paths. When a real 360° image
 // arrives for a viewpoint, its hotspots switch to `onImage(...)`: positions measured on the panorama image itself.
 import spotsJson from './world-pano-spots.json';
+import { plateScene } from './world-scene';
 import manifest from './world-pano.json';
 
 export type SpotId = keyof typeof spotsJson;
@@ -11,7 +12,9 @@ export type PlaceId = 'inn' | 'resume' | 'contact';
 export type Hotspot =
   | { kind: 'place'; id: PlaceId; yaw: number; pitch: number }
   | { kind: 'go'; to: SpotId; yaw: number; pitch: number };
-export type Spot = { id: SpotId; label: string; standIn: boolean; start: { yaw: number; pitch: number }; hotspots: Hotspot[] };
+/** A warm window glow at night: centre direction and angular size, in degrees. */
+export type Glow = { yaw: number; pitch: number; w: number; h: number };
+export type Spot = { id: SpotId; label: string; standIn: boolean; start: { yaw: number; pitch: number }; hotspots: Hotspot[]; glows: Glow[] };
 
 const DEG = 180 / Math.PI;
 /** The direction of point (x, y) on the land plate (0–1 from the top left), as seen from a stand-in viewpoint. */
@@ -44,13 +47,19 @@ export function onView(view: 'front' | 'right' | 'back' | 'left', x: number, y: 
   return { yaw: Math.atan2(d[0], -d[2]) * DEG, pitch: Math.atan2(d[1], Math.hypot(d[0], d[2])) * DEG };
 }
 
-const spot = (id: SpotId, start: Spot['start'], hotspots: Hotspot[]): Spot => ({
-  id,
-  label: spotsJson[id].label,
-  standIn: manifest.spots[id]?.source === 'stand-in',
-  start,
-  hotspots,
-});
+/** The inn's windows, glowing at night. On a stand-in they come from the land plate; real panoramas need them measured. */
+function plateGlows(spot: SpotId): Glow[] {
+  return plateScene.windows.map(({ at: [x, y], w, h }) => {
+    const a = onPlate(spot, x, y);
+    const b = onPlate(spot, x + w, y + h);
+    return { yaw: (a.yaw + b.yaw) / 2, pitch: (a.pitch + b.pitch) / 2, w: Math.abs(b.yaw - a.yaw), h: Math.abs(b.pitch - a.pitch) };
+  });
+}
+
+const spot = (id: SpotId, start: Spot['start'], hotspots: Hotspot[], glows?: Glow[]): Spot => {
+  const standIn = manifest.spots[id]?.source === 'stand-in';
+  return { id, label: spotsJson[id].label, standIn, start, hotspots, glows: glows ?? (standIn ? plateGlows(id) : []) };
+};
 
 export const spots: Record<SpotId, Spot> = {
   square: spot('square', { yaw: 0, pitch: -3 }, [

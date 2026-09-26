@@ -18,19 +18,29 @@ const RELIEF = 0.42;
 const SWING = { x: 0.22, y: 0.1 };
 const CAMERA = 3.2;
 
-type Props = { interactive: boolean; reduced: boolean; onOpen: () => void };
+type Props = { night: boolean; interactive: boolean; reduced: boolean; onOpen: () => void };
 
-export default function DepthPhoto({ interactive, reduced, onOpen }: Props) {
+export default function DepthPhoto({ night, interactive, reduced, onOpen }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const hot = useRef<HTMLButtonElement>(null);
   const pin = useRef<HTMLSpanElement>(null);
+  const glows = useRef<(HTMLSpanElement | null)[]>([]);
+  const flies = useRef<(HTMLSpanElement | null)[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'nogl'>('loading');
   const [hint, setHint] = useState(true);
   const [tilt, setTilt] = useState<'off' | 'on' | 'denied'>('off');
   const [canTilt] = useState(() => tiltAvailable());
   const [coarse] = useState(() => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches);
-  const aim = useRef({ tx: 0, ty: 0, x: 0, y: 0, kick: () => {}, tiltBase: null as null | [number, number] });
+  // n / nt: how night it is (0 day … 1 night), eased toward the target so the theme switch fades (instant if reduced).
+  const aim = useRef({ tx: 0, ty: 0, x: 0, y: 0, n: night ? 1 : 0, nt: night ? 1 : 0, reduced, kick: () => {}, tiltBase: null as null | [number, number] });
+  useEffect(() => {
+    const a = aim.current;
+    a.nt = night ? 1 : 0;
+    a.reduced = reduced;
+    if (reduced) a.n = a.nt;
+    a.kick();
+  }, [night, reduced]);
 
   useEffect(() => {
     const el = root.current;
@@ -90,8 +100,15 @@ export default function DepthPhoto({ interactive, reduced, onOpen }: Props) {
         gl,
         `attribute vec3 p; attribute vec2 t; uniform mat4 m; varying vec2 vt;
          void main() { vt = t; gl_Position = m * vec4(p, 1.0); }`,
-        `precision mediump float; uniform sampler2D s; varying vec2 vt;
-         void main() { gl_FragColor = texture2D(s, vt); }`,
+        // Night: desaturate a little and multiply by moonlight blue (lighter up top, deeper low down), like the plates.
+        `precision mediump float; uniform sampler2D s; uniform float n; varying vec2 vt;
+         void main() {
+           vec4 c = texture2D(s, vt);
+           float lum = dot(c.rgb, vec3(0.3, 0.59, 0.11));
+           vec3 tint = mix(vec3(118.0, 152.0, 226.0), vec3(78.0, 110.0, 196.0), vt.y) / 255.0;
+           vec3 moon = mix(c.rgb, vec3(lum), 0.35) * tint * 0.92;
+           gl_FragColor = vec4(mix(c.rgb, moon, n), c.a);
+         }`,
       );
       const vb = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, vb);
@@ -118,12 +135,17 @@ export default function DepthPhoto({ interactive, reduced, onOpen }: Props) {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       const uM = gl.getUniformLocation(prog, 'm');
+      const uN = gl.getUniformLocation(prog, 'n');
 
       // The inn's outline and label in plate space, at the inn's depth.
       const { polygon, label } = plateScene.inn;
       const innDepth = depthAt(0.5, 0.5) * RELIEF * 2;
       const innPoly = polygon.map(([u, v]) => [(u - 0.5) * 2 * ASPECT, (0.5 - v) * 2, innDepth] as [number, number, number]);
       const labelPt: [number, number, number] = [(label[0] - 0.5) * 2 * ASPECT, (0.5 - label[1]) * 2, innDepth];
+      // Night extras: the inn's windows (at the inn's depth) and fireflies over the paddies (at their own depth).
+      const at = (u: number, v: number, z: number): [number, number, number] => [(u - 0.5) * 2 * ASPECT, (0.5 - v) * 2, z];
+      const winRects = plateScene.windows.map(({ at: [u, v], w: ww, h: hh }) => [at(u, v, innDepth), at(u + ww, v + hh, innDepth)] as const);
+      const flyPts = FIREFLY_SPOTS.map(([u, v]) => at(u, v, depthAt(u, v) * RELIEF * 2 + 0.01));
 
       const draw = () => {
         const w = el.clientWidth;
@@ -145,6 +167,7 @@ export default function DepthPhoto({ interactive, reduced, onOpen }: Props) {
         const target: [number, number, number] = [0, 0, RELIEF * 0.55];
         const m = mul(perspective(fov, aspect, 0.1, 20), lookAt(eye, target));
         gl.uniformMatrix4fv(uM, false, m);
+        gl.uniform1f(uN, a.n * a.n * (3 - 2 * a.n)); // eased
         gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_INT, 0);
         // Project the inn outline and label into CSS pixels.
         const project = ([x, y, z]: [number, number, number]) => {
@@ -158,12 +181,33 @@ export default function DepthPhoto({ interactive, reduced, onOpen }: Props) {
           const [px, py] = project(labelPt);
           pin.current.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, -100%)`;
         }
+        winRects.forEach(([p0, p1], i) => {
+          const g = glows.current[i];
+          if (!g) return;
+          const [x0, y0] = project(p0);
+          const [x1, y1] = project(p1);
+          Object.assign(g.style, { left: `${x0.toFixed(1)}px`, top: `${y0.toFixed(1)}px`, width: `${(x1 - x0).toFixed(1)}px`, height: `${(y1 - y0).toFixed(1)}px` });
+        });
+        flyPts.forEach((q, i) => {
+          const f = flies.current[i];
+          if (!f) return;
+          const [x, y] = project(q);
+          f.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+        });
       };
-      const tick = () => {
+      let last = 0;
+      const tick = (t: number) => {
+        const dt = last ? Math.min(0.1, (t - last) / 1000) : 0.016;
+        last = t;
         a.x += (a.tx - a.x) * 0.08;
         a.y += (a.ty - a.y) * 0.08;
+        // Day ↔ night takes 0.6 s whatever the frame rate (instant under reduced motion).
+        const step = a.reduced ? 1 : dt / 0.6;
+        a.n = a.nt > a.n ? Math.min(a.nt, a.n + step) : Math.max(a.nt, a.n - step);
         draw();
-        raf = Math.abs(a.tx - a.x) + Math.abs(a.ty - a.y) > 0.0005 ? requestAnimationFrame(tick) : 0;
+        const moving = Math.abs(a.tx - a.x) + Math.abs(a.ty - a.y) > 0.0005 || a.n !== a.nt;
+        raf = moving ? requestAnimationFrame(tick) : 0;
+        if (!moving) last = 0;
       };
       a.kick = () => {
         if (!raf) raf = requestAnimationFrame(tick);
@@ -233,9 +277,33 @@ export default function DepthPhoto({ interactive, reduced, onOpen }: Props) {
   };
 
   return (
-    <div ref={root} className="depth-photo absolute inset-0 overflow-hidden">
+    <div ref={root} className={`depth-photo absolute inset-0 overflow-hidden ${night ? 'is-night' : ''} ${reduced ? 'reduced' : ''}`}>
       <div aria-hidden className="plate-sky-fallback absolute inset-0" />
+      <div aria-hidden className="world-night-sky absolute inset-0" />
       <canvas ref={canvas} aria-hidden className="absolute inset-0 h-full w-full" />
+      {plateScene.windows.map((_, i) => (
+        <span
+          key={`glow-${i}`}
+          ref={(n) => {
+            glows.current[i] = n;
+          }}
+          aria-hidden
+          className="plate-window depth-glow pointer-events-none absolute"
+        />
+      ))}
+      {night &&
+        FIREFLY_SPOTS.map((_, i) => (
+          <span
+            key={`fly-${i}`}
+            ref={(n) => {
+              flies.current[i] = n;
+            }}
+            aria-hidden
+            className="world-firefly"
+          >
+            <i style={{ animationDelay: `${-((i * 0.37) % 6)}s` }} />
+          </span>
+        ))}
       {status === 'nogl' && <p className="world-status absolute left-3 top-16">This test needs WebGL, which this browser has turned off.</p>}
       {/* Rendered from the start (hidden until the mesh is up) so the first frame can place them. */}
       <button
@@ -263,6 +331,14 @@ export default function DepthPhoto({ interactive, reduced, onOpen }: Props) {
     </div>
   );
 }
+
+/** Firefly positions on the plate, scattered over the firefly area (content/world-scene.ts), seeded. */
+const FIREFLY_SPOTS: [number, number][] = (() => {
+  const [x0, y0, x1, y1] = plateScene.fireflies;
+  let seed = 11;
+  const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  return Array.from({ length: 20 }, () => [x0 + r() * (x1 - x0), y0 + r() * (y1 - y0)] as [number, number]);
+})();
 
 function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {

@@ -12,7 +12,8 @@
 //   - otherwise a STAND-IN is painted from the land plate (public/world/plates/land-day-3840.webp): the painting
 //     wrapped around you four times (mirrored every other quarter so the edges meet), a gradient sky with soft clouds
 //     above it and the grass extended below. Obviously fake; it's there so the viewer can be judged before the art.
-// Faces are written to public/world/pano/<spot>/<face>-<size>.webp (faces: f r b l u d) and listed in
+// Faces are written to public/world/pano/<spot>/<face>-<size>.webp (faces: f r b l u d), plus a night version of each
+// (<face>-<size>-night.webp: blue moonlight, darker starry sky) for the dark theme, and listed in
 // content/world-pano.json.
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join, parse } from 'node:path';
@@ -125,17 +126,17 @@ function standInColour(plate, view, lon, lat) {
   const py = view.cy + vf / (1.125 * view.zoom);
   if (px < 0) px = -px;
   if (px > 1) px = 2 - px;
-  if (py < 0) return sky(lon, lat);
+  if (py < 0) return [...sky(lon, lat), 1];
   if (py > 1) {
     // Below the painting: its bottom colours, heavily blurred, fading into plain grass, with a little grain.
     const base = groundBase[max(0, min(plate.w - 1, round(px * (plate.w - 1))))];
-    const edge = sample(plate, px * (plate.w - 1), plate.h - 1);
+    const edge = sample(plate, px * (plate.w - 1), plate.h - 1).slice(0, 3);
     const near = mix(edge, base, smooth(0, 0.015 * view.zoom, py - 1));
     const n = (grain(round(lon * 900), round(lat * 900)) - 0.5) * 14;
-    return mix(near, FAR_GROUND, smooth(0.02, 0.7, py - 1)).map((x) => x + n);
+    return [...mix(near, FAR_GROUND, smooth(0.02, 0.7, py - 1)).map((x) => x + n), 0];
   }
   const s = sample(plate, px * (plate.w - 1), py * (plate.h - 1));
-  return mix(sky(lon, lat), s, s[3] / 255);
+  return [...mix(sky(lon, lat), s.slice(0, 3), s[3] / 255), 1 - s[3] / 255];
 }
 
 // ---- equirectangular → cube ----
@@ -145,25 +146,73 @@ function equirectColour(img, lon, lat) {
   return sample(img, ((x % img.w) + img.w) % img.w, y);
 }
 
-async function writeFaces(spot, faces) {
+// ---- night: the same faces in blue moonlight, with a darker, starry sky ----
+const NIGHT_LOW = [118, 152, 226]; // moonlight multiply near the ground…
+const NIGHT_HIGH = [78, 110, 196]; // …and higher up
+const SKY_HORIZON = [44, 66, 124];
+const SKY_ZENITH = [10, 20, 54];
+/** How sky-like a pixel is when we don't know (real panoramas, stitched views): high up, bright and bluish. */
+function guessSky(c, latDeg) {
+  const [r, g, b] = c;
+  const bright = (r + g + b) / 3;
+  return smooth(4, 16, latDeg) * smooth(120, 170, bright) * smooth(-10, 12, b - r);
+}
+function nightColour(c, lon, lat, skyness) {
+  const d = (lat * 180) / PI;
+  const lum = 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2];
+  const tint = mix(NIGHT_LOW, NIGHT_HIGH, smooth(-10, 50, d));
+  const land = c.map((x, i) => (x + (lum - x) * 0.35) * (tint[i] / 255) * 0.92);
+  // Night sky: deep blue, a trace of the day's clouds, and a sprinkle of stars well above the horizon.
+  let skyC = mix(SKY_HORIZON, SKY_ZENITH, smooth(0, 70, d));
+  skyC = mix(skyC, land, 0.22);
+  const cell = grain(round(lon * 1400), round(lat * 1400));
+  if (d > 14 && cell > 0.9978) skyC = mix(skyC, [236, 240, 255], 0.55 + (cell - 0.9978) * 200);
+  return mix(land, skyC, skyness);
+}
+
+async function writeFaces(spot, faces, skyMasks = null) {
   const dir = join(OUT, spot);
   await mkdir(dir, { recursive: true });
   let bytes = 0;
+  let nightBytes = 0;
   for (const face of FACES) {
+    const day = faces[face];
+    const night = Buffer.alloc(day.length);
+    for (let j = 0; j < FACE; j++) {
+      const v = ((j + 0.5) / FACE) * 2 - 1;
+      for (let i = 0; i < FACE; i++) {
+        const u = ((i + 0.5) / FACE) * 2 - 1;
+        const [X, Y, Z] = dirOf(face, u, v);
+        const lon = atan2(X, -Z);
+        const lat = asin(Y / hypot(X, Y, Z));
+        const o = (j * FACE + i) * 3;
+        const c = [day[o], day[o + 1], day[o + 2]];
+        const sky = skyMasks ? skyMasks[face][j * FACE + i] : guessSky(c, (lat * 180) / PI);
+        const n = nightColour(c, lon, lat, sky);
+        night[o] = n[0]; night[o + 1] = n[1]; night[o + 2] = n[2];
+      }
+    }
     for (const size of SIZES) {
-      const file = join(dir, `${face}-${size}.webp`);
-      await sharp(faces[face], { raw: { width: FACE, height: FACE, channels: 3 } }).resize(size, size).webp({ quality: 82, effort: 5 }).toFile(file);
-      if (size === SIZES[0]) bytes += (await stat(file)).size;
+      for (const [buf, suffix] of [[day, ''], [night, '-night']]) {
+        const file = join(dir, `${face}-${size}${suffix}.webp`);
+        await sharp(buf, { raw: { width: FACE, height: FACE, channels: 3 } }).resize(size, size).webp({ quality: 82, effort: 5 }).toFile(file);
+        if (size !== SIZES[0]) continue;
+        if (suffix) nightBytes += (await stat(file)).size;
+        else bytes += (await stat(file)).size;
+      }
     }
   }
-  return bytes;
+  return [bytes, nightBytes];
 }
 
-/** Renders all six faces from a colour-by-direction function (lon, lat in radians). */
+/** Renders all six faces from a colour-by-direction function (lon, lat in radians); a 4th channel, if given, is how much of the pixel is sky. */
 async function build(spot, colourAt) {
   const faces = {};
+  const masks = {};
+  let hasMask = true;
   for (const face of FACES) {
     const buf = Buffer.alloc(FACE * FACE * 3);
+    const mask = new Float32Array(FACE * FACE);
     for (let j = 0; j < FACE; j++) {
       const v = ((j + 0.5) / FACE) * 2 - 1;
       for (let i = 0; i < FACE; i++) {
@@ -172,11 +221,14 @@ async function build(spot, colourAt) {
         const c = colourAt(atan2(X, -Z), asin(Y / hypot(X, Y, Z)));
         const o = (j * FACE + i) * 3;
         buf[o] = c[0]; buf[o + 1] = c[1]; buf[o + 2] = c[2];
+        if (c.length > 3) mask[j * FACE + i] = c[3];
+        else hasMask = false;
       }
     }
     faces[face] = buf;
+    masks[face] = mask;
   }
-  return writeFaces(spot, faces);
+  return writeFaces(spot, faces, hasMask ? masks : null);
 }
 
 const artFiles = await readdir(join(ROOT, 'art/pano')).catch(() => []);
@@ -210,7 +262,8 @@ for (const [spot, cfg] of Object.entries(SPOTS)) {
     bytes = await build(spot, (lon, lat) => standInColour(plate, cfg.standIn, lon, lat));
     manifest.spots[spot] = { source: 'stand-in' };
   }
-  console.log(`  ${spot}: ${manifest.spots[spot].source}, six ${SIZES[0]} px faces = ${(bytes / 1024).toFixed(0)} KB`);
+  manifest.spots[spot].night = true;
+  console.log(`  ${spot}: ${manifest.spots[spot].source}, six ${SIZES[0]} px faces = ${(bytes[0] / 1024).toFixed(0)} KB day, ${(bytes[1] / 1024).toFixed(0)} KB night`);
 }
 await writeFile(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
 console.log(`Wrote ${MANIFEST.replace(`${ROOT}/`, '')}.`);
